@@ -220,7 +220,7 @@ Sept phases, dont une tranche verticale tôt : DOS puis Windows 3.1 entièrement
 - [x] Sons Web Audio de chaque époque
 - [x] Passe téléphone, `prefers-reduced-motion`, navigation clavier
 - [x] Image de partage Open Graph, favicon, mesure Lighthouse
-- [ ] Déploiement
+- [x] Déploiement (Netlify : https://escape-os-hfvc.netlify.app)
 
 Une fois les phases 1 et 2 posées, le contrat d'écran permet de développer les écrans restants en parallèle, par exemple avec plusieurs agents Claude Code.
 
