@@ -5,6 +5,8 @@ Mini escape game pédagogique : remonter le temps des systèmes d'exploitation, 
 À chaque époque, le joueur doit trouver le geste qui fait passer à la suivante : trier des cartes, enchaîner des commandes Unix, passer de `A:` à `C:` sous DOS, déplacer une fenêtre, envoyer un « Wizz »… jusqu'au retour au présent, où un agent IA le félicite.
 
 > **Statut : jouable.** Les 10 époques, le HUD, le carnet, les indices, les fiches et le saut temporel sont en place.
+>
+> **Jouer en ligne : [escape-os-hfvc.netlify.app](https://escape-os-hfvc.netlify.app/)**
 
 ## Jouer
 

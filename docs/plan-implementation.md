@@ -187,39 +187,39 @@ Sept phases, dont une tranche verticale tôt : DOS puis Windows 3.1 entièrement
 
 **1. Socle**
 
-- [ ] `index.html`, HUD (frise, année, carnet, indice, son) et écran titre « Appuyer pour allumer », qui débloque l'audio
-- [ ] État et `localStorage`, routeur d'écrans, paramètres `?screen=` et `?debug`
-- [ ] Thèmes par époque en variables CSS (`data-era`)
+- [x] `index.html`, HUD (frise, année, carnet, indice, son) et écran titre « Appuyer pour allumer », qui débloque l'audio
+- [x] État et `localStorage`, routeur d'écrans, paramètres `?screen=` et `?debug`
+- [x] Thèmes par époque en variables CSS (`data-era`)
 
 **2. Tranche verticale : DOS puis Windows 3.1**
 
-- [ ] Composant terminal et écran 2 complet
-- [ ] Gestionnaire de fenêtres et écran 3 complet
-- [ ] Saut temporel entre les deux : extinction, compteur, métamorphose du cadre, démarrage
-- [ ] Revue visuelle : si ce passage n'impressionne pas, le retravailler avant d'aller plus loin
+- [x] Composant terminal et écran 2 complet
+- [x] Gestionnaire de fenêtres et écran 3 complet
+- [x] Saut temporel entre les deux : extinction, compteur, métamorphose du cadre, démarrage
+- [x] Revue visuelle : si ce passage n'impressionne pas, le retravailler avant d'aller plus loin
 
 **3. Écrans en ligne de commande**
 
-- [ ] Écran 1 (Unix, mode papier) et écran 7 (Ubuntu, mot de passe sans écho)
+- [x] Écran 1 (Unix, mode papier) et écran 7 (Ubuntu, mot de passe sans écho)
 
 **4. Écrans graphiques**
 
-- [ ] Écrans 4, 5 et 6 (Windows 95, 98, XP)
+- [x] Écrans 4, 5 et 6 (Windows 95, 98, XP)
 
 **5. Écrans à gestes**
 
-- [ ] Écran 0 (cartes : glisser-déposer, FLIP, trait de feutre) et écran 8 (glissière, pincement, composeur)
+- [x] Écran 0 (cartes : glisser-déposer, FLIP, trait de feutre) et écran 8 (glissière, pincement, composeur)
 
 **6. Final**
 
-- [ ] Écran 9 : agent scénarisé, statistiques, titres, partage
-- [ ] Fiches « Le saviez-vous ? » et indices branchés sur tous les écrans
+- [x] Écran 9 : agent scénarisé, statistiques, titres, partage
+- [x] Fiches « Le saviez-vous ? » et indices branchés sur tous les écrans
 
 **7. Finitions**
 
-- [ ] Sons Web Audio de chaque époque
-- [ ] Passe téléphone, `prefers-reduced-motion`, navigation clavier
-- [ ] Image de partage Open Graph, favicon, mesure Lighthouse
+- [x] Sons Web Audio de chaque époque
+- [x] Passe téléphone, `prefers-reduced-motion`, navigation clavier
+- [x] Image de partage Open Graph, favicon, mesure Lighthouse
 - [ ] Déploiement
 
 Une fois les phases 1 et 2 posées, le contrat d'écran permet de développer les écrans restants en parallèle, par exemple avec plusieurs agents Claude Code.
