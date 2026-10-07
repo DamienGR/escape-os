@@ -94,7 +94,7 @@ export async function bios(view, ctx, { variant = '95' } = {}) {
       <p class="w9x-bios-logo">TEMPO BIOS ${is98 ? 'v6.00PG' : 'v4.51PG'}<br><small>Copyright (C) 1984-${is98 ? '98' : '95'}, Tempo Systèmes</small></p>
       <p>${is98 ? 'Processeur à 266 MHz' : 'Processeur Pentium(R) à 75 MHz'}</p>
       <p>Test mémoire : <span class="w9x-bios-mem">0</span> Ko</p>
-      <p class="w9x-bios-drives" hidden>Détection des lecteurs IDE… Disque C: ${is98 ? '4,3 Go' : '540 Mo'}, CD-ROM D:</p>
+      <p class="w9x-bios-drives" hidden>Détection des lecteurs IDE… Disque C: ${is98 ? '4,3 Go' : '540 Mo'}, CD-ROM D:</p>
     </div>`,
     'is-text',
   );
@@ -163,10 +163,10 @@ export async function scandisk(view, ctx, { drive = 'C' } = {}) {
 vos disques peuvent contenir des erreurs.</p>
         <p>Pour ne plus voir ce message, arrêtez toujours votre ordinateur
 en choisissant <b>Arrêter</b> dans le menu <b>Démarrer</b>.</p>
-        <p>ScanDisk vérifie maintenant le lecteur ${drive} :</p>
+        <p>ScanDisk vérifie maintenant le lecteur ${drive} :</p>
         <ul class="w9x-scan-steps">${SCAN_STEPS.map((s) => `<li><i></i>${esc(s)}</li>`).join('')}</ul>
         <div class="w9x-scan-meter"><span class="w9x-scan-fill"></span></div>
-        <p class="w9x-scan-pct">0 % effectué</p>
+        <p class="w9x-scan-pct">0 % effectué</p>
       </div>
       <div class="w9x-scan-foot"><span>&lt; Pause &gt;</span><span>&lt; Plus d’infos &gt;</span><span>&lt; Quitter &gt;</span></div>
     </div>`,
@@ -184,13 +184,13 @@ en choisissant <b>Arrêter</b> dans le menu <b>Démarrer</b>.</p>
     for (let k = 1; k <= 5; k++) {
       const value = Math.round(from + (k / 5) * (100 / steps.length));
       fill.style.width = `${value}%`;
-      pct.textContent = `${value} % effectué`;
+      pct.textContent = `${value} % effectué`;
       await ctx.wait(70, skip);
     }
     steps[i].classList.remove('is-now');
     steps[i].classList.add('is-done');
   }
-  pct.textContent = 'ScanDisk n’a trouvé aucune erreur sur ce lecteur. Ouf !';
+  pct.textContent = 'ScanDisk n’a trouvé aucune erreur sur ce lecteur. Ouf !';
   await ctx.wait(1300, skip);
 }
 

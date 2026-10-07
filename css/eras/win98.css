@@ -1460,7 +1460,7 @@
   background: #fff;
   box-shadow: 0 calc(var(--p) * 0.6) calc(var(--p) * 1.4) rgba(0, 0, 0, 0.35);
   color: #111;
-  font: 700 max(12px, calc(var(--p) * 1.9)) / 1.2 'Comic Sans MS', 'Comic Neue', 'Chalkboard SE', 'Segoe Print', cursive;
+  font: 700 max(12px, calc(var(--p) * 1.9)) / 1.2 'Comic Sans MS', 'Comic Neue', 'Chalkboard SE', 'Segoe Print', 'Trebuchet MS', var(--font-ui);
   pointer-events: none;
 }
 

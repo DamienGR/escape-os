@@ -3,7 +3,7 @@
 // d'abonnement posé à côté du moniteur. Le modem crisse, la page arrive ligne
 // par ligne… et gare à qui décroche le téléphone pendant la connexion.
 
-import { createShell } from './win9x/shell.js';
+import { createShell, fr } from './win9x/shell.js';
 import { createApps } from './win9x/apps.js';
 import { createMachine } from './win9x/machine.js';
 import { createBrowser } from './win9x/browser.js';
@@ -12,7 +12,8 @@ import { createCd, createPhone, zoomCd, CD_URL } from './win9x/props98.js';
 import { ICON16, ICON32 } from './win9x/icons.js';
 import { ICONS } from '../ui/icons.js';
 
-const PHONE_NUMBER = '08 60 19 98 98';
+const PHONE_NUMBER = '08\u00a060\u00a019\u00a098\u00a098';
+const bytes = (n) => n.toLocaleString('fr-FR').replace(/\s/g, '\u00a0');
 const IDLE_PICKUP_MS = 40_000;
 
 const README = `Lisezmoi.txt — Windows 98
@@ -122,6 +123,9 @@ export default {
       onPowerLoss: () => {
         shell?.menus.closeSilently();
         hangup({ silent: true });
+        // La page n'avait pas fini de s'afficher : tout est à refaire.
+        ctx.clear(doneTimer);
+        solved = false;
       },
       onBsod: () => shell?.menus.closeSilently(),
     });
@@ -129,6 +133,7 @@ export default {
 
     function destroyShell() {
       ctx.clear(idleTimer);
+      browser?.destroy();
       shell?.destroy();
       shell = null;
       apps = null;
@@ -187,7 +192,6 @@ export default {
         date: 'jeudi 25 juin 1998',
         start: startItems,
         smallIcons: () => apps?.smallIcons,
-        onStart: () => ctx.progress(),
         onDesktopProperties: () => apps.display(),
         onTaskbarProperties: () => apps.taskbarProps(),
         openNew: (kind, label) =>
@@ -216,20 +220,14 @@ export default {
         online: () => net === 'online',
         onDialup: () => dial(),
         onScandisk: () => shell.alert({ title: 'ScanDisk - (C:)', text: 'ScanDisk n’a trouvé aucune erreur sur le lecteur C:.', icon: 'info' }),
-        onTaskbarProperties: () => apps.taskbarProps(),
         onUrl: (raw) => openBrowser(raw),
       });
       browser = createBrowser(shell, ctx, {
         tower,
         online: () => net === 'online',
-        onTyping: () => {
-          armIdle();
-          ctx.progress();
-        },
+        onTyping: () => armIdle(),
         onNavigate: () => armIdle(),
-        onError: (kind, target, anachronism) => {
-          if (!anachronism) ctx.error();
-        },
+        onError: () => ctx.error(),
         onSolutionStart: () => solving(),
         onSolutionLoaded: () => {
           doneTimer = ctx.timeout(() => leave(), 7000);
@@ -256,9 +254,7 @@ export default {
     }
 
     function openBrowser(url) {
-      if (!browser) return;
-      browser.open(url);
-      ctx.progress();
+      browser?.open(url);
     }
 
     // ——— Fenêtre de bienvenue ———
@@ -326,10 +322,10 @@ export default {
         className: 'w98-dun',
         body: `
           <div class="w98-dun-head">${ICONS.dialup}<b>Saut Temporel Online</b></div>
-          <label class="w9x-field-row"><span><u>N</u>om d’utilisateur :</span><input type="text" name="user" class="win9x-field" value="voyageur" autocomplete="off" autocapitalize="none" spellcheck="false"></label>
-          <label class="w9x-field-row"><span><u>M</u>ot de passe :</span><input type="password" name="pass" class="win9x-field" value="saut98" autocomplete="off"></label>
+          <label class="w9x-field-row"><span><u>N</u>om d’utilisateur :</span><span class="w9x-input win9x-field"><input type="text" name="user" value="voyageur" autocomplete="off" autocapitalize="none" spellcheck="false"></span></label>
+          <label class="w9x-field-row"><span><u>M</u>ot de passe :</span><span class="w9x-input win9x-field"><input type="password" name="pass" value="saut98" autocomplete="off"></span></label>
           <div class="w9x-field-row"><span></span><label class="w9x-check"><input type="checkbox" checked> <span><u>E</u>nregistrer le mot de passe</span></label></div>
-          <label class="w9x-field-row"><span>N° de <u>t</u>éléphone :</span><input type="text" name="tel" class="win9x-field" value="${PHONE_NUMBER}" inputmode="tel" autocomplete="off"></label>
+          <label class="w9x-field-row"><span>N° de <u>t</u>éléphone :</span><span class="w9x-input win9x-field"><input type="text" name="tel" value="${PHONE_NUMBER}" inputmode="tel" autocomplete="off"></span></label>
           <div class="w9x-field-row"><span><u>A</u>ppel depuis :</span><span class="w9x-combo">Nouvel emplacement</span></div>`,
         onButton: (button) => {
           if (button !== 'Propriétés') return true;
@@ -381,11 +377,11 @@ export default {
         await ctx.wait(at - elapsed);
         elapsed = at;
         if (stale() || net !== 'dialing') return;
-        statusEl.textContent = text;
+        statusEl.textContent = fr(text);
       }
       await ctx.wait(total - elapsed);
       if (stale() || net !== 'dialing') return;
-      statusEl.textContent = 'État : Connecté à 56 000 bit/s';
+      statusEl.textContent = fr('État : Connecté à 56 000 bit/s');
       dialWin.el.classList.add('is-connected');
       net = 'online';
       connectedAt = Date.now();
@@ -423,8 +419,8 @@ export default {
         body: `<div class="w98-netstat-body">${ICONS.dialup}<dl>
           <dt>Connecté à</dt><dd>56 000 bit/s</dd>
           <dt>Durée</dt><dd>${dur}</dd>
-          <dt>Octets reçus</dt><dd>${(18_432 + seconds * 611).toLocaleString('fr-FR')}</dd>
-          <dt>Octets envoyés</dt><dd>${(4_096 + seconds * 97).toLocaleString('fr-FR')}</dd>
+          <dt>Octets reçus</dt><dd>${bytes(18_432 + seconds * 611)}</dd>
+          <dt>Octets envoyés</dt><dd>${bytes(4_096 + seconds * 97)}</dd>
         </dl></div>`,
       });
       dlg.win.spec.id = 'netstat';
@@ -458,8 +454,8 @@ export default {
       phone?.lift(true);
       audio.noise({ type: 'bandpass', freq: 1800, q: 0.7, attack: 0.01, hold: 0.5, release: 0.3, vol: 0.12 });
       audio.tone({ freq: 2100, to: 900, glide: 0.5, attack: 0.01, hold: 0.3, release: 0.2, vol: 0.04, type: 'square', filter: { freq: 2600 } });
-      if (byPlayer) phone?.say(online ? 'Kshhhh… criii… Ah ! C’est le modem…' : 'Tuuut… La ligne est libre.', 2600);
-      else phone?.say('Allô ? Qui est sur la ligne ?', 3600);
+      if (byPlayer) phone?.say(fr(online ? 'Kshhhh… criii… Ah ! C’est le modem…' : 'Tuuut… La ligne est libre.'), 2600);
+      else phone?.say(fr('Allô ? Qui est sur la ligne ?'), 3600);
       if (!online) {
         audio.tone({ freq: 440, attack: 0.02, hold: 1.2, release: 0.1, vol: 0.04 });
         await ctx.wait(1800);
@@ -524,7 +520,7 @@ export default {
       const done = await machine.bsod(BSOD_USB);
       scannerBusy = false;
       if (!done || !shell) return;
-      ctx.toast('Clin d’œil historique : en avril 1998, Windows 98 a planté ainsi en pleine démonstration publique, au branchement d’un scanner USB.', { icon: 'hint', duration: 7000 });
+      ctx.toast(fr('Clin d’œil historique : en avril 1998, Windows 98 a planté ainsi en pleine démonstration publique, au branchement d’un scanner USB.'), { icon: 'hint', duration: 7000 });
     }
 
     // ——— Arrêter ? C'était la sortie de 1995 ———

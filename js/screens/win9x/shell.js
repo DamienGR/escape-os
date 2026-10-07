@@ -18,6 +18,9 @@ const GRID = { x0: 4, y0: 4, w: 75, h: 70 };
 const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
+// Typographie française : espace insécable avant : ; ? ! » et après «
+export const fr = (s) => String(s).replace(/ ([:;?!»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
+
 const IBEAM = pixelArt([9, 16], (p) =>
   p.map(0, 0, [
     'KKKK.KKKK',
@@ -87,7 +90,6 @@ export const CURSORS = {
   text: svgCursor(IBEAM, 4, 8, 'text'),
 };
 
-// Les mois et jours de l'époque, pour l'infobulle de l'horloge
 const pad = (n) => String(n).padStart(2, '0');
 
 export function createShell(mountEl, ctx, options = {}) {
@@ -99,7 +101,6 @@ export function createShell(mountEl, ctx, options = {}) {
     icons: [],
     quick: [],
     date: '',
-    desktopMenu: null,
     ...options,
   };
   const abort = new AbortController();
@@ -135,6 +136,12 @@ export function createShell(mountEl, ctx, options = {}) {
   const workArea = () => ({ x: 0, y: 0, w: SCREEN_W, h: SCREEN_H - TASKBAR_H });
   const desk = createDesktop(deskEl, { theme: 'win9x', variant: is98 ? '98' : undefined, drag: 'outline', workArea });
   const sys = createDesktop(sysEl, { theme: 'win9x', variant: is98 ? '98' : undefined, drag: 'outline' });
+  // Titres et contenus passent par la typographie française
+  for (const layer of [desk, sys]) {
+    const rawOpen = layer.open;
+    layer.open = (spec) =>
+      rawOpen({ ...spec, title: spec.title && fr(spec.title), body: typeof spec.body === 'string' ? fr(spec.body) : spec.body });
+  }
 
   const menus = createMenus(el, {
     variant: o.variant,
@@ -399,7 +406,7 @@ export function createShell(mountEl, ctx, options = {}) {
     tipEl?.remove();
     tipEl = document.createElement('div');
     tipEl.className = 'w9x-tip';
-    tipEl.textContent = text;
+    tipEl.textContent = fr(text);
     el.append(tipEl);
     const host = el.getBoundingClientRect();
     const r = target.getBoundingClientRect();
@@ -548,10 +555,10 @@ export function createShell(mountEl, ctx, options = {}) {
   function createNew(kind, at) {
     newCount += 1;
     const specs = {
-      folder: { label: 'Nouveau dossier', svg: ICONS.folder, type: 'dossier' },
-      text: { label: 'Nouveau Document texte.txt', svg: ICONS.readme, type: 'texte' },
-      shortcut: { label: 'Nouveau raccourci', svg: ICONS.exe, type: 'raccourci' },
-      bitmap: { label: 'Nouvelle Image bitmap.bmp', svg: ICONS.control, type: 'image' },
+      folder: { label: 'Nouveau dossier', svg: ICONS.folder, type: 'y', kind: 'dossier de fichiers' },
+      text: { label: 'Nouveau Document texte.txt', svg: ICONS.readme, type: 'z', kind: 'document texte' },
+      shortcut: { label: 'Nouveau raccourci', svg: ICONS.exe, type: 'z', kind: 'raccourci' },
+      bitmap: { label: 'Nouvelle Image bitmap.bmp', svg: ICONS.control, type: 'z', kind: 'image bitmap' },
     };
     const spec = specs[kind];
     const label = newCount > 1 && kind === 'folder' ? `${spec.label} (${newCount})` : spec.label;
@@ -567,8 +574,6 @@ export function createShell(mountEl, ctx, options = {}) {
   }
 
   function desktopMenu(at) {
-    const custom = o.desktopMenu?.(at);
-    if (custom) return custom;
     return [
       {
         label: '&Réorganiser les icônes',
@@ -606,16 +611,21 @@ export function createShell(mountEl, ctx, options = {}) {
         ],
       },
       '-',
-      { label: '&Propriétés', bold: false, run: () => o.onDesktopProperties?.() },
+      { label: '&Propriétés', run: () => o.onDesktopProperties?.() },
     ];
   }
 
   function iconMenu(entry) {
+    const properties = () =>
+      alert({
+        title: `Propriétés de ${entry.label}`,
+        text: `${entry.label}\n\nType : ${entry.kind ?? 'élément du bureau'}\nEmplacement : Bureau`,
+        icon: 'info',
+      });
     return [
       { label: '&Ouvrir', bold: true, run: () => entry.open?.(entry.el) },
-      ...(entry.menu?.() ?? []),
       '-',
-      { label: '&Propriétés', run: () => (o.onIconProperties ? o.onIconProperties(entry) : alert({ title: `Propriétés de ${entry.label}`, text: `${entry.label}\n\nType : ${entry.type ?? 'élément du bureau'}\nEmplacement : Bureau`, icon: 'info' })) },
+      { label: '&Propriétés', run: properties },
     ];
   }
 
@@ -675,16 +685,18 @@ export function createShell(mountEl, ctx, options = {}) {
     return false;
   }
 
+  // Clic droit, ou appui long au tactile (iOS ne déclenche pas « contextmenu ») ;
+  // le menu natif d'Android et notre appui long ne doivent pas s'ouvrir deux fois.
   let lastLongPress = 0;
+  let pressTimer = 0;
+  const cancelLongPress = () => clearTimeout(pressTimer);
   on(el, 'contextmenu', (event) => {
     event.preventDefault();
+    cancelLongPress();
     if (performance.now() - lastLongPress < 900) return;
     if (contextAt(event, event.target)) o.onContext?.();
   });
 
-  // Appui long au tactile (iOS ne déclenche pas « contextmenu »)
-  let pressTimer = 0;
-  const cancelLongPress = () => clearTimeout(pressTimer);
   on(el, 'pointerdown', (event) => {
     if (event.pointerType !== 'touch') return;
     const target = event.target;
@@ -712,8 +724,8 @@ export function createShell(mountEl, ctx, options = {}) {
     const focusedIcon = document.activeElement?.closest?.('.wm-desk-icon');
     const entry = icons.find((e) => e.el === focusedIcon);
     event.preventDefault();
-    if (entry) menus.open(iconMenu(entry), { x: entry.x + 30, y: entry.y + 30, keyboard: true, className: 'w9x-context' });
-    else menus.open(desktopMenu({ x: 200, y: 160 }), { x: 200, y: 160, keyboard: true, className: 'w9x-context' });
+    const at = entry ? { x: entry.x + 30, y: entry.y + 30 } : { x: 200, y: 160 };
+    menus.open(entry ? iconMenu(entry) : desktopMenu(at), { ...at, keyboard: true, className: 'w9x-context' });
   });
 
   // ——— Boîtes de dialogue ———
@@ -722,11 +734,12 @@ export function createShell(mountEl, ctx, options = {}) {
   function alert(spec) {
     const icon = spec.icon ?? 'info';
     if (spec.sound !== false) icon === 'error' ? audio.winError() : audio.ding();
-    return desk.alert({ ...spec, icon, className: `w9x-msgbox ${spec.className ?? ''}` });
+    return desk.alert({ ...spec, title: fr(spec.title ?? 'Windows'), text: fr(spec.text ?? ''), icon, className: `w9x-msgbox ${spec.className ?? ''}` });
   }
 
   // Dialogue sur mesure : { title, icon (16 px, barre de titre), body (HTML),
-  // buttons, defaultButton, cancelButton, width, layer: 'desk' | 'sys', dither }
+  // buttons, defaultButton, cancelButton, width, layer: 'desk' | 'sys', dither,
+  // modal, closable, taskbar, onButton (false = rester ouvert), onReady }
   function dialog(spec) {
     const target = spec.layer === 'sys' ? sys : desk;
     const buttons = spec.buttons ?? ['OK'];
@@ -749,7 +762,7 @@ export function createShell(mountEl, ctx, options = {}) {
       y: spec.y,
       taskbar: spec.taskbar ?? false,
       className: `wm-dialog w9x-dialog ${spec.className ?? ''}`,
-      controls: { min: false, max: false, close: spec.closable !== false, ...(spec.help ? {} : {}) },
+      controls: { min: false, max: false, close: spec.closable !== false },
       body: `<form class="w9x-dlg" novalidate>${spec.body ?? ''}${
         buttons.length
           ? `<div class="w9x-dlg-buttons">${buttons
@@ -758,15 +771,6 @@ export function createShell(mountEl, ctx, options = {}) {
           : ''
       }</form>`,
     });
-    if (spec.help) {
-      const help = document.createElement('button');
-      help.type = 'button';
-      help.className = 'wm-btn wm-help';
-      help.setAttribute('aria-label', 'Aide');
-      help.innerHTML = '<b>?</b>';
-      help.addEventListener('click', () => spec.onHelp?.(win));
-      win.el.querySelector('.wm-ctrls')?.prepend(help);
-    }
     const z = Number(win.el.style.zIndex) || 30;
     win.el.style.zIndex = String(z + 1);
     blocker.style.zIndex = String(z);
@@ -838,9 +842,10 @@ export function createShell(mountEl, ctx, options = {}) {
     el.querySelectorAll('.wm-blocker, .w9x-dither').forEach((b) => b.remove());
   }
 
+  // Les fenêtres sont fermées pour de bon : chaque programme arrête ses minuteurs.
   function destroy() {
+    closeAllWindows();
     abort.abort();
-    menus.closeSilently();
     clearTimeout(busyTimer);
     clearTimeout(tipTimer);
     cancelLongPress();

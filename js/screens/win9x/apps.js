@@ -96,7 +96,7 @@ const DRIVE_C = [
   ['Mes documents', 'dossier', ICONS.folder],
   ['Program Files', 'dossier', ICONS.folder],
   ['Windows', 'dossier', ICONS.folder],
-  ['Autoexec.bat', '1 Ko', ICON32.find],
+  ['Autoexec.bat', '1 Ko', ICONS.exe],
   ['Command.com', '92 Ko', ICONS.exe],
   ['Config.sys', '1 Ko', ICONS.readme],
   ['Lisezmoi.txt', '2 Ko', ICONS.readme],
@@ -127,6 +127,7 @@ export function createApps(shell, ctx, opts = {}) {
   const year = is98 ? 1998 : 1995;
   const apps = new Map();
   let cascadeStep = 0;
+  let lastRun = '';
 
   const nextPos = (w, h) => {
     cascadeStep = (cascadeStep + 1) % 6;
@@ -220,9 +221,9 @@ export function createApps(shell, ctx, opts = {}) {
         ctx.progress();
       };
       win.body.querySelectorAll('.w9x-node').forEach((btn) => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (event) => {
           select(btn);
-          if (btn.dataset.book) toggleBook(btn);
+          if (btn.dataset.book && event.detail < 2) toggleBook(btn);
         });
         btn.addEventListener('dblclick', () => btn.dataset.topic && show(btn));
       });
@@ -279,7 +280,7 @@ export function createApps(shell, ctx, opts = {}) {
       className: 'w9x-run',
       body: `
         <div class="w9x-run-row">${ICON32.run}<p>Tapez le nom d’un programme, dossier ou document, et Windows l’ouvrira pour vous.</p></div>
-        <label class="w9x-field-row"><span><u>O</u>uvrir :</span><span class="w9x-combo-field"><input type="text" name="cmd" class="win9x-field" autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="go" autofocus value="${esc(opts.lastRun ?? '')}"><i aria-hidden="true"></i></span></label>`,
+        <label class="w9x-field-row"><span><u>O</u>uvrir :</span><span class="w9x-input w9x-combo-field win9x-field"><input type="text" name="cmd" autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="go" autofocus value="${esc(lastRun)}"><i aria-hidden="true"></i></span></label>`,
       onButton: (button) => {
         if (button === 'Parcourir…') {
           shell.alert({ title: 'Parcourir', text: 'La boîte « Parcourir » cherche encore ses lunettes.\nTapez plutôt un nom de programme : notepad, calc, winmine…', icon: 'info' });
@@ -293,7 +294,7 @@ export function createApps(shell, ctx, opts = {}) {
     if (button !== 'OK') return;
     const cmd = form.elements.cmd.value.trim();
     if (!cmd) return;
-    opts.lastRun = cmd;
+    lastRun = cmd;
     runCommand(cmd);
   }
 
@@ -317,7 +318,7 @@ export function createApps(shell, ctx, opts = {}) {
       control: () => control(),
       winhelp: () => help(),
       scandskw: () => opts.onScandisk?.(),
-      win: () => shell.alert({ title: 'Windows', text: 'Windows est déjà lancé !\nEn 1995, plus besoin de taper WIN : il démarre tout seul.', icon: 'info' }),
+      win: () => shell.alert({ title: 'Windows', text: 'Windows est déjà lancé !\nDepuis 1995, plus besoin de taper WIN : il démarre tout seul.', icon: 'info' }),
       ls: () => shell.alert({ title: 'Exécuter', text: 'ls ? On n’est pas sous Unix ici !', icon: 'info' }),
       shutdown: () => shell.alert({ title: 'Exécuter', text: `La commande « shutdown » n’arrivera qu’avec Windows XP, en 2001.\nEn ${year}, on passe par le menu Démarrer.`, icon: 'info' }),
       sudo: () => shell.alert({ title: 'Exécuter', text: 'sudo ? Sous Windows 9x, tout le monde est administrateur… pour le meilleur et pour le pire.', icon: 'info' }),
@@ -367,7 +368,7 @@ export function createApps(shell, ctx, opts = {}) {
       audio.floppy();
       opts.tower?.floppy(1);
     }
-    setTimeout(
+    ctx.timeout(
       () =>
         shell.alert({
           title: drive === 'A' ? 'Disquette 3½ (A:)' : 'CD-ROM (D:)',
@@ -714,7 +715,7 @@ export function createApps(shell, ctx, opts = {}) {
         body: `<div class="w9x-defrag-body">
           <div class="w9x-defrag-grid" style="--cols:${COLS}"></div>
           <div class="w9x-defrag-bottom">
-            <div><div class="w9x-meter"><i></i></div><p class="w9x-defrag-pct">0 % effectué</p></div>
+            <div><div class="w9x-meter"><i></i></div><p class="w9x-defrag-pct">0 % effectué</p></div>
             <div class="w9x-defrag-btns"><button type="button" class="wm-push" data-act="stop">Arrêter</button><button type="button" class="wm-push" data-act="pause">Pause</button><button type="button" class="wm-push" data-act="legend">Légende</button></div>
           </div>
         </div>`,
@@ -766,7 +767,7 @@ export function createApps(shell, ctx, opts = {}) {
           cursor += 1;
           const p = Math.round((done / total) * 100);
           bar.style.width = `${p}%`;
-          pct.textContent = `${p} % effectué`;
+          pct.textContent = `${p} % effectué`;
         }, 70);
         opts.tower?.disk(0.25);
         if (Math.random() < 0.3) audio.hdd(0.08);
@@ -801,7 +802,7 @@ export function createApps(shell, ctx, opts = {}) {
           <div class="w9x-tabs"><span class="is-on">Nom &amp; emplacement</span><span>Date de modification</span><span>Avancée</span></div>
           <div class="w9x-find-page">
             <div class="w9x-tabpage">
-              <label class="w9x-field-row"><span><u>N</u>ommé :</span><input type="text" name="q" class="win9x-field" autocomplete="off" spellcheck="false" enterkeyhint="search"></label>
+              <label class="w9x-field-row"><span><u>N</u>ommé :</span><span class="w9x-input win9x-field"><input type="text" name="q" autocomplete="off" spellcheck="false" enterkeyhint="search"></span></label>
               <label class="w9x-field-row"><span><u>R</u>echercher dans :</span><span class="w9x-combo">(C:)</span></label>
             </div>
             <div class="w9x-find-btns"><button type="submit" class="wm-push is-default">Rechercher</button><button type="button" class="wm-push" data-act="new">Nouvelle recherche</button><span class="w9x-find-anim" aria-hidden="true">${ICON32.find}</span></div>
@@ -831,7 +832,6 @@ export function createApps(shell, ctx, opts = {}) {
           })
           .join('');
         status.textContent = `${found.length} fichier(s) trouvé(s)`;
-        if (q.includes('arr') || q.includes('éteind') || q.includes('shut')) opts.onFindShutdown?.();
       });
       win.body.querySelector('[data-act="new"]').addEventListener('click', () => {
         form.reset();
@@ -858,7 +858,7 @@ export function createApps(shell, ctx, opts = {}) {
         { label: 'Modems', svg: ICONS.dialup, open: () => shell.alert({ title: 'Propriétés de Modems', text: is98 ? 'Modem standard 56 000 bit/s sur COM2.\nPrêt à composer !' : 'Aucun modem n’est installé.\nInternet ? Patience, ce sera pour la prochaine époque.', icon: 'info' }) },
         { label: 'Souris', svg: ICONS.control, open: () => shell.alert({ title: 'Propriétés de Souris', text: 'Vitesse du double-clic : moyenne.\nBouton droit : il ouvre désormais des menus contextuels. Essayez sur le bureau !', icon: 'info' }) },
         { label: 'Système', svg: ICONS.computer, open: () => system() },
-        { label: 'Barre des tâches', svg: ICON32.programs, open: () => opts.onTaskbarProperties?.() },
+        { label: 'Barre des tâches', svg: ICON32.programs, open: () => taskbarProps() },
       ],
     });
   }
@@ -932,7 +932,6 @@ export function createApps(shell, ctx, opts = {}) {
       const el = shell.desk.el;
       WALLPAPERS.forEach(([, c]) => c && el.classList.remove(c));
       if (cls) el.classList.add(cls);
-      ctx.progress();
     };
   }
 
@@ -958,7 +957,6 @@ export function createApps(shell, ctx, opts = {}) {
       taskbarPrefs.small = form.elements.small.checked;
       taskbarPrefs.clock = form.elements.clock.checked;
       shell.el.classList.toggle('no-clock', !taskbarPrefs.clock);
-      ctx.progress();
     });
   }
 

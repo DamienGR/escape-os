@@ -35,10 +35,8 @@ const accelOf = (label) => {
   return (m ? m[1] : String(label).replace(/&/g, '')[0] ?? '').toLowerCase();
 };
 
-const plain = (label) => String(label).replace(/&&/g, '\u0000').replace(/&/g, '').replace(/\u0000/g, '&');
-
-export function createMenus(host, { variant = '95', signal, onOpen, onClose, sound } = {}) {
-  let stack = []; // niveaux ouverts : { el, items, hot, sub }
+export function createMenus(host, { variant = '95', signal, onClose } = {}) {
+  const stack = []; // niveaux ouverts : { el, items, hot, sub }
   let timer = 0;
   let lastActivate = 0;
   let restoreFocus = null;
@@ -75,7 +73,6 @@ export function createMenus(host, { variant = '95', signal, onOpen, onClose, sou
     return { el, items: list };
   }
 
-  const itemEls = (level) => [...stack[level].el.querySelectorAll('.w9x-mi')];
   const itemEl = (level, index) => stack[level]?.el.querySelector(`.w9x-mi[data-i="${index}"]`);
   const selectable = (level) =>
     stack[level].items.map((item, i) => (item === '-' || item?.separator ? -1 : i)).filter((i) => i >= 0);
@@ -128,8 +125,6 @@ export function createMenus(host, { variant = '95', signal, onOpen, onClose, sou
     mountLevel(typeof items === 'function' ? items() : items, opts);
     if (opts.keyboard) highlight(0, selectable(0)[0], { focus: true });
     else stack[0].el.focus({ preventScroll: true });
-    onOpen?.();
-    sound?.();
     return { close: () => closeAll() };
   }
 
@@ -355,15 +350,11 @@ export function createMenus(host, { variant = '95', signal, onOpen, onClose, sou
     get isOpen() {
       return stack.length > 0;
     },
-    get depth() {
-      return stack.length;
-    },
     // Coordonnées logiques d'un événement dans l'hôte
     point(event) {
       const rect = host.getBoundingClientRect();
       const s = scale();
       return { x: (event.clientX - rect.left) / s, y: (event.clientY - rect.top) / s };
     },
-    plain,
   };
 }

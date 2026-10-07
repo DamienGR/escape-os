@@ -3,7 +3,7 @@
 // posée à côté du moniteur : l'action sort littéralement de l'interface.
 // Le paradoxe resté célèbre : on clique sur « Démarrer »… pour arrêter.
 
-import { createShell } from './win9x/shell.js';
+import { createShell, fr } from './win9x/shell.js';
 import { createApps } from './win9x/apps.js';
 import { createMachine } from './win9x/machine.js';
 import { waitHtml, safeHtml } from './win9x/system.js';
@@ -154,7 +154,6 @@ export default {
           startedOnce = true;
           ctx.progress();
         },
-        onContext: () => ctx.progress(),
         onDesktopProperties: () => apps.display(),
         onTaskbarProperties: () => apps.taskbarProps(),
         openNew: (kind, label) =>
@@ -175,7 +174,6 @@ export default {
         journal: JOURNAL,
         date: '24/08/1995',
         onScandisk: () => scandiskWindow(),
-        onTaskbarProperties: () => apps.taskbarProps(),
         onRun: (cmd, name) => runEgg(cmd, name),
       });
       return shell;
@@ -256,7 +254,7 @@ export default {
       });
       const text = win.body.querySelector('.w95-tip-text');
       const showTip = () => {
-        text.textContent = TIPS[tipIndex];
+        text.textContent = fr(TIPS[tipIndex]);
         text.classList.toggle('is-mission', tipIndex === 0);
       };
       showTip();
@@ -339,7 +337,7 @@ export default {
       const option = SHUTDOWN_OPTIONS.find(([v]) => v === value);
       const pop = document.createElement('p');
       pop.className = 'w9x-whatsthis';
-      pop.textContent = option[2];
+      pop.textContent = fr(option[2]);
       const label = form.querySelector('input[name="how"]:checked')?.closest('label');
       win.body.querySelector('.w95-shut').append(pop);
       if (label) {
@@ -457,8 +455,8 @@ export default {
     }
 
     function backToWindows() {
-      setTimeout(() => {
-        if (machine.state === 'dos') machine.boot();
+      ctx.timeout(() => {
+        if (machine.state === 'dos') machine.boot().catch(() => {});
       }, 120);
       return 'Chargement de Windows…';
     }
@@ -487,8 +485,8 @@ export default {
         className: 'w95-logon',
         body: `<div class="w9x-logon">${ICON32.keys}<div>
           <p>Entrez un nom d’utilisateur et un mot de passe pour ouvrir une session Windows.</p>
-          <label class="w9x-field-row"><span><u>N</u>om d’utilisateur :</span><input type="text" name="user" class="win9x-field" value="voyageur" autocomplete="off" autocapitalize="none" spellcheck="false" autofocus></label>
-          <label class="w9x-field-row"><span><u>M</u>ot de passe :</span><input type="password" name="pass" class="win9x-field" autocomplete="off"></label>
+          <label class="w9x-field-row"><span><u>N</u>om d’utilisateur :</span><span class="w9x-input win9x-field"><input type="text" name="user" value="voyageur" autocomplete="off" autocapitalize="none" spellcheck="false" autofocus></span></label>
+          <label class="w9x-field-row"><span><u>M</u>ot de passe :</span><span class="w9x-input win9x-field"><input type="password" name="pass" autocomplete="off"></span></label>
         </div></div>`,
       });
       const { form } = await dlg.result;
@@ -516,7 +514,7 @@ export default {
         if (state === 'safe') return powerOff();
         if (state === 'off' || state === 'unclean') return;
         if (state === 'shutting' || state === 'restarting') {
-          ctx.toast('Patience : Windows n’a pas fini de s’arrêter.');
+          ctx.toast(fr('Patience : Windows n’a pas fini de s’arrêter.'));
           return;
         }
         if (state === 'dos') return machine.powerCycle();

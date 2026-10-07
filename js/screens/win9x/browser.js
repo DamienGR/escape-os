@@ -6,6 +6,7 @@
 
 import { MSG_ICONS } from '../../ui/windows.js';
 import { ICON16, TOOL20, GLOBE_SPRITE } from './icons.js';
+import { fr } from './shell.js';
 
 const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -278,7 +279,7 @@ export function createBrowser(shell, ctx, opts = {}) {
 
   function status(text, pct = null) {
     if (!win || win.closed) return;
-    els.status.textContent = text;
+    els.status.textContent = fr(text);
     if (pct === null) {
       els.bar.classList.remove('is-on');
     } else {
@@ -295,7 +296,7 @@ export function createBrowser(shell, ctx, opts = {}) {
 
   function show(html, title, cls = '') {
     els.page.className = `w98-page ${cls}`;
-    els.page.innerHTML = html;
+    els.page.innerHTML = fr(html);
     els.view.scrollTop = 0;
     setTitle(title);
   }
@@ -454,11 +455,19 @@ export function createBrowser(shell, ctx, opts = {}) {
     else if (act === 'mail') shell.alert({ title: 'Nouveau message', text: 'Votre logiciel de messagerie n’est pas configuré.\n(Mais l’intention est là !)', icon: 'info' });
   }
 
+  // Le bureau disparaît (extinction) : plus aucun chargement ne doit aboutir.
+  function destroy() {
+    token += 1;
+    loading = false;
+    win = null;
+  }
+
   return {
     open,
     navigate,
     stop,
     connectionLost,
+    destroy,
     get win() {
       return win;
     },

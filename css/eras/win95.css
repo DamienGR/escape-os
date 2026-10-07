@@ -599,11 +599,6 @@
   visibility: hidden;
 }
 
-/* Fond des fenêtres de dialogue 9x : gris, sans cadre intérieur */
-.w9x .wm-theme-win9x .wm-body {
-  background: #c0c0c0;
-}
-
 .w9x .wm-help {
   margin-right: 2px;
 }
@@ -986,6 +981,7 @@
 .w9x .wm-push {
   color: #000;
   font: 11px var(--font-win);
+  white-space: nowrap;
 }
 
 .w9x .wm-push u,
@@ -1029,16 +1025,51 @@
   min-width: 0;
 }
 
-.w9x-combo-field {
+/* Champ de saisie : un cadre creusé, et dedans un vrai <input>. Au doigt, le
+   texte passe à 16 px (pas de zoom automatique sur iOS), ramené à 11 px. */
+.w9x-input {
   position: relative;
   display: flex;
   flex: 1;
+  align-items: center;
+  min-width: 0;
+  height: 21px;
+  padding: 0 4px;
+  overflow: hidden;
 }
 
-.w9x-combo-field input {
+.w9x-input input {
   flex: 1;
   min-width: 0;
-  padding-right: 20px;
+  height: 15px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #000;
+  font: 11px var(--font-win);
+  outline: none;
+}
+
+.w9x-input input::selection {
+  background: #000080;
+  color: #fff;
+}
+
+@media (pointer: coarse) {
+  .w9x-input input {
+    flex: none;
+    width: 145.45%;
+    height: 22px;
+    margin-right: -45.45%;
+    font-size: 16px;
+    transform: scale(0.6875);
+    transform-origin: 0 50%;
+  }
+}
+
+.w9x-combo-field {
+  padding-right: 22px;
 }
 
 .w9x-combo-field i,
@@ -1396,11 +1427,11 @@
 
 .w9x-folder .wm-desk-icon {
   position: relative;
-  width: 76px;
+  width: 82px;
 }
 
 .w9x-folder .wm-desk-label {
-  max-width: 76px;
+  max-width: 82px;
   color: #000;
 }
 
@@ -1748,7 +1779,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  width: 112px;
+  width: 124px;
   padding-top: 4px;
 }
 
