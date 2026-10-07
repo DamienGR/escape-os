@@ -47,7 +47,7 @@ export function createTower(host, { variant = '95', audio, signal, onPower, onRe
           <button type="button" class="tw-fd-eject" aria-label="Éjecter la disquette"></button>
         </div>
         <div class="tw-panel">
-          ${is98 ? '' : `<span class="tw-mhz" aria-label="Fréquence du processeur">${sevenSeg('75')}</span>`}
+          ${is98 ? '' : `<span class="tw-mhz" role="img" aria-label="Fréquence du processeur : 75 MHz">${sevenSeg('75')}</span>`}
           <span class="tw-leds" aria-hidden="true">
             <i class="tw-led tw-power-led"></i><small>${is98 ? '⏻' : 'POWER'}</small>
             <i class="tw-led tw-hdd-led"></i><small>${is98 ? '▤' : 'HDD'}</small>
@@ -57,7 +57,7 @@ export function createTower(host, { variant = '95', audio, signal, onPower, onRe
         </div>
         <div class="tw-buttons">
           ${is98 ? '' : '<button type="button" class="tw-turbo" aria-label="Bouton Turbo" aria-pressed="true"></button>'}
-          <button type="button" class="tw-power" aria-label="Bouton d’alimentation de l’ordinateur"><span>${is98 ? '' : 'POWER'}</span></button>
+          <button type="button" class="tw-power" aria-label="${is98 ? 'Bouton' : 'POWER : bouton'} d’alimentation de l’ordinateur"><span>${is98 ? '' : 'POWER'}</span></button>
           <button type="button" class="tw-reset" aria-label="Bouton Reset : redémarre l’ordinateur"></button>
         </div>
         <div class="tw-grille" aria-hidden="true"></div>
@@ -153,7 +153,10 @@ export function createTower(host, { variant = '95', audio, signal, onPower, onRe
     },
     refreshMhz() {
       const mhz = q('.tw-mhz');
-      if (mhz) mhz.innerHTML = sevenSeg(api.on ? (turbo ? '75' : '33') : '  ');
+      if (!mhz) return;
+      const value = api.on ? (turbo ? '75' : '33') : '';
+      mhz.innerHTML = sevenSeg(value || '  ');
+      mhz.setAttribute('aria-label', value ? `Fréquence du processeur : ${value} MHz` : 'Afficheur de fréquence éteint');
     },
     // Le voyant du disque dur clignote pendant un accès.
     disk(seconds = 1) {
