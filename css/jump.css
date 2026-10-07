@@ -1,0 +1,442 @@
+/* Saut temporel : extinction façon écran cathodique, compteur d'années façon
+   odomètre, puis rallumage. Les écrans plats et le papier s'éteignent en fondu. */
+
+/* ——— Extinction et allumage ——— */
+
+.glass.off .screen-wrap {
+  opacity: 0;
+}
+
+.glass-power::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  margin-top: -1.5px;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 0 14px 4px rgba(200, 220, 255, 0.75);
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.glass.power-off .screen-wrap {
+  animation: crt-off 0.6s var(--ease-io) forwards;
+}
+
+.glass.power-off .glass-power,
+.glass.power-on .glass-power {
+  opacity: 1;
+}
+
+.glass.power-off .glass-power::before {
+  animation: beam-off 0.6s var(--ease-io) forwards;
+}
+
+.glass.power-on .screen-wrap {
+  animation: crt-on 0.75s var(--ease) both;
+}
+
+.glass.power-on .glass-power::before {
+  animation: beam-on 0.75s var(--ease) both;
+}
+
+.glass.fast .screen-wrap,
+.glass.fast .glass-power::before {
+  animation-duration: 0.2s !important;
+}
+
+@keyframes crt-off {
+  0% {
+    transform: scale(1, 1);
+    filter: brightness(1);
+    opacity: 1;
+  }
+  45% {
+    transform: scale(1, 0.008);
+    filter: brightness(3.5);
+  }
+  75% {
+    transform: scale(0.004, 0.008);
+    filter: brightness(6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes beam-off {
+  0%,
+  40% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+  46% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  76% {
+    opacity: 1;
+    transform: scaleX(0.005);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(0.005);
+  }
+}
+
+@keyframes crt-on {
+  0% {
+    transform: scale(0.003, 0.006);
+    filter: brightness(8);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1, 0.006);
+    filter: brightness(5);
+  }
+  62% {
+    transform: scale(1, 1);
+    filter: brightness(1.8) saturate(1.3);
+  }
+  100% {
+    transform: scale(1, 1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes beam-on {
+  0% {
+    opacity: 1;
+    transform: scaleX(0.005);
+  }
+  30% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  42%,
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+/* Écrans plats, téléphone, papier et salle : extinction en fondu */
+.scene:not([data-device='crt']) .glass.power-off .screen-wrap {
+  animation-name: soft-off;
+}
+
+.scene:not([data-device='crt']) .glass.power-on .screen-wrap {
+  animation-name: soft-on;
+}
+
+.scene:not([data-device='crt']) .glass-power::before {
+  display: none;
+}
+
+@keyframes soft-off {
+  to {
+    opacity: 0;
+    filter: brightness(0.4);
+  }
+}
+
+@keyframes soft-on {
+  from {
+    opacity: 0;
+    filter: brightness(1.6);
+  }
+}
+
+/* Mouvement réduit : simple fondu */
+.jump-fade .glass .screen-wrap {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* ——— Odomètre des années ——— */
+
+.jumping .glass {
+  background-color: #050505;
+}
+
+.odometer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease);
+}
+
+.odometer.leave {
+  opacity: 0;
+}
+
+.odo-warp {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(124, 92, 255, 0.14), transparent 60%);
+  overflow: hidden;
+}
+
+.odo-warp i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 70cqmin;
+  height: 70cqmin;
+  margin: -35cqmin 0 0 -35cqmin;
+  border: 2px solid rgba(124, 92, 255, 0.55);
+  border-radius: 50%;
+  opacity: 0;
+  animation: warp 1.4s var(--ease) infinite;
+}
+
+.odo-warp i:nth-child(2) {
+  animation-delay: 0.45s;
+}
+
+.odo-warp i:nth-child(3) {
+  animation-delay: 0.9s;
+}
+
+@keyframes warp {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  25% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.2);
+  }
+}
+
+.odometer.done .odo-warp i {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+.odo-digits {
+  position: relative;
+  display: flex;
+  gap: 0.02em;
+  color: #fff;
+  font: 800 clamp(40px, 24cqmin, 190px) / 1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  text-shadow: 0 0 34px rgba(124, 92, 255, 0.7), 0 0 4px rgba(255, 255, 255, 0.4);
+}
+
+.odo-col {
+  position: relative;
+  display: block;
+  width: 0.62em;
+  height: 1.08em;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 22%, #000 78%, transparent);
+}
+
+.odo-strip {
+  display: flex;
+  flex-direction: column;
+  padding-top: 0.04em;
+  transform: translateY(0);
+}
+
+.odo-strip span {
+  display: block;
+  height: 1em;
+  line-height: 1em;
+  text-align: center;
+}
+
+.odometer.run .odo-strip {
+  transform: translateY(calc(var(--steps) * -1em));
+  transition: transform var(--odo-ms, 1700ms) cubic-bezier(0.5, 0, 0.12, 1);
+  animation: odo-blur var(--odo-ms, 1700ms) linear;
+}
+
+@keyframes odo-blur {
+  0% {
+    filter: blur(0);
+  }
+  20%,
+  65% {
+    filter: blur(1.6px);
+  }
+  100% {
+    filter: blur(0);
+  }
+}
+
+.jump-fast .odometer .odo-strip {
+  transition-duration: 0.2s !important;
+  animation: none;
+}
+
+.odo-caption {
+  position: relative;
+  margin-top: 2.4cqmin;
+  padding: 0 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font: 650 clamp(10px, 2.3cqmin, 14px) / 1.2 var(--font-ui);
+  text-align: center;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+
+.odometer.done .odo-caption {
+  opacity: 1;
+  transform: none;
+}
+
+/* ——— Ouverture : la mise à jour de 2026 qui tourne mal ——— */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 36;
+  display: grid;
+  place-items: center;
+  background: #f4f3ef;
+  color: #15151a;
+}
+
+.intro-card {
+  width: min(420px, calc(100vw - 40px));
+  padding: 28px;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 30px 70px -30px rgba(20, 20, 40, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  text-align: left;
+}
+
+.intro-time {
+  margin: 0;
+  color: #8b8b95;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.intro-title {
+  margin: 6px 0 18px;
+  font-size: 22px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.intro-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: #ebe9e3;
+  overflow: hidden;
+}
+
+.intro-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.intro-status {
+  margin: 10px 0 0;
+  color: #6c6c76;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.intro-error {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 16%;
+  margin: 0;
+  color: #d0353f;
+  font: 600 14px / 1.4 var(--font-ui);
+  text-align: center;
+  opacity: 0;
+}
+
+.intro.glitch .intro-error {
+  opacity: 1;
+  animation: fade-up 0.4s var(--ease);
+}
+
+.intro.glitch .intro-card {
+  animation: glitch 0.9s steps(1) infinite;
+}
+
+.intro.glitch .intro-bar i {
+  background: #d0353f;
+}
+
+.intro.leave {
+  animation: crt-off 0.6s var(--ease-io) forwards;
+}
+
+@keyframes glitch {
+  0% {
+    transform: none;
+    filter: none;
+    clip-path: inset(0);
+  }
+  8% {
+    transform: translate(-7px, 2px);
+    filter: drop-shadow(5px 0 #ff2e6a) drop-shadow(-5px 0 #19e3ff);
+  }
+  16% {
+    transform: translate(9px, 0);
+    clip-path: inset(18% 0 56% 0);
+  }
+  24% {
+    transform: none;
+    clip-path: inset(0);
+    filter: none;
+  }
+  42% {
+    transform: translate(-12px, -1px);
+    clip-path: inset(62% 0 8% 0);
+  }
+  50% {
+    transform: translate(4px, 1px);
+    clip-path: inset(0);
+    filter: drop-shadow(-4px 0 #ff2e6a) drop-shadow(4px 0 #19e3ff);
+  }
+  66% {
+    transform: none;
+    filter: none;
+  }
+  80% {
+    transform: translate(6px, 0) skewX(-6deg);
+    clip-path: inset(40% 0 30% 0);
+  }
+  88% {
+    transform: none;
+    clip-path: inset(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro.glitch .intro-card,
+  .odo-warp i {
+    animation: none;
+  }
+}

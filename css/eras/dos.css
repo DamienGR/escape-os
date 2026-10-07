@@ -1,0 +1,47 @@
+/* Écran 2 — MS-DOS : texte gris VGA sur fond noir, police IBM VGA 8x16
+   (80 colonnes dans 640 px, 25 lignes dans 480 px), curseur clignotant. */
+
+@import url('../ui/terminal.css');
+
+.screen-dos {
+  background: #000;
+}
+
+.dos {
+  --term-bg: #000;
+  --term-lh: 18.6px;
+  --glow: 1;
+  position: absolute;
+  inset: 0;
+  color: #aaa;
+  font: 16px / 18.6px var(--font-vga);
+  font-variant-ligatures: none;
+  letter-spacing: 0;
+}
+
+.dos .dos-bright {
+  color: #fff;
+}
+
+.dos-term .term-cursor {
+  min-width: 8px;
+}
+
+/* WIN : l'écran se vide, le disque gratte, Windows arrive */
+.dos-launching .term-line {
+  visibility: hidden;
+}
+
+.dos-launching::after {
+  content: '_';
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: term-blink 0.5s steps(1) infinite;
+}
+
+/* Marges du tube : l'image ne touche pas les coins arrondis */
+.dos {
+  --term-pad-x: 18px;
+  --term-pad-y: 14px;
+}
