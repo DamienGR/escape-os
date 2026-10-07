@@ -1,0 +1,516 @@
+/* Écran 1 — Unix sur télétype (1974) : papier canari continu qui monte comme un
+   vrai rouleau, encre de ruban irrégulière, cylindre et tête d'impression qui
+   suit la colonne. Rien ne s'efface : c'est du papier. */
+
+@import url('../ui/terminal.css');
+
+.screen-unix {
+  background: #26241f;
+}
+
+.ux {
+  --paper: #f6eab4;
+  --ink: #1e1b18;
+  --lh: 24px;
+  --gap: 14px; /* jour entre le papier et la carrosserie */
+  --margin: 28px; /* marge du texte sur le papier */
+  --platen: 60px; /* zone du cylindre, sous la ligne d'impression */
+  --fibres: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='a' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .32 0 0 0 0 .1 0 0 0 -2.2 .86'/%3E%3C/filter%3E%3Cfilter id='b' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55 .06' numOctaves='2' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .4 0 0 0 0 .15 0 0 0 -1.3 .46'/%3E%3C/filter%3E%3Cfilter id='c' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.011' numOctaves='2' seed='9' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .6 0 0 0 0 .48 0 0 0 0 .18 0 0 0 -1 .43'/%3E%3C/filter%3E%3Cfilter id='d' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' seed='21' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 .94 0 0 0 2.4 -1.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23d)'/%3E%3C/svg%3E");
+  --ink-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='48'%3E%3Cfilter id='a' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55 .8' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .95 0 0 0 0 .91 0 0 0 0 .74 0 0 0 -2.6 1.02'/%3E%3C/filter%3E%3Cfilter id='b' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035 .2' numOctaves='1' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .93 0 0 0 0 .88 0 0 0 0 .7 0 0 0 -1.4 .6'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E");
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font: 18px / var(--lh) var(--font-mono);
+  font-variant-ligatures: none;
+}
+
+/* Intérieur de la machine, visible au-dessus du bord déchiré */
+.ux-interior {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 28%),
+    radial-gradient(ellipse 70% 55% at 50% 100%, rgba(150, 138, 110, 0.35), transparent 70%),
+    linear-gradient(180deg, #2f2c27, #3b3832 60%, #46423a);
+}
+
+/* ——— Le terminal, posé sur le papier ——— */
+
+.ux-term {
+  --term-pad-x: 0px;
+  --term-pad-y: 0px;
+  --term-lh: var(--lh);
+  --term-bg: var(--paper);
+}
+
+.ux-term .term-scroll {
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 var(--gap);
+}
+
+/* Le rouleau : le fond bouge avec le texte, ancré en haut de la feuille */
+.ux-feed {
+  position: relative;
+  flex: none;
+  border-top: 12px solid transparent;
+  padding-bottom: var(--platen);
+  background:
+    linear-gradient(90deg, rgba(120, 88, 18, 0.13), transparent 3.5%, transparent 96.5%, rgba(120, 88, 18, 0.15)),
+    var(--fibres),
+    linear-gradient(var(--paper), var(--paper));
+  background-clip: padding-box;
+  box-shadow:
+    -7px 0 9px -6px rgba(0, 0, 0, 0.7),
+    7px 0 9px -6px rgba(0, 0, 0, 0.7);
+  will-change: transform;
+}
+
+/* Bord déchiré par l'utilisateur précédent */
+.ux-tear {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -12px;
+  height: 14px;
+  filter: drop-shadow(0 -1px 1.2px rgba(0, 0, 0, 0.55));
+}
+
+.ux-tear i {
+  position: absolute;
+  inset: 0;
+}
+
+.ux-tear-rim {
+  background: #fbf6de;
+}
+
+.ux-tear-sheet {
+  top: 1.4px !important;
+  background:
+    linear-gradient(90deg, rgba(120, 88, 18, 0.13), transparent 3.5%, transparent 96.5%, rgba(120, 88, 18, 0.15)),
+    var(--fibres) 0 12px,
+    linear-gradient(var(--paper), var(--paper));
+}
+
+.ux-term .term-out,
+.ux-term .term-line {
+  padding: 0 var(--margin);
+}
+
+/* Papier vierge au-dessus de l'en-tête */
+.ux-term .term-out {
+  padding-top: 104px;
+}
+
+/* Encre du ruban : densité irrégulière d'un caractère à l'autre */
+.ux-term .term-row,
+.ux-term .term-line,
+.ux-flight pre,
+.ux-fold pre {
+  --ink-c: var(--ink);
+  position: relative;
+  color: transparent;
+  background-image: var(--ink-noise), linear-gradient(var(--ink-c), var(--ink-c));
+  background-position: 0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 0 0.5px rgba(30, 24, 16, 0.28);
+}
+
+.ux-term .term-row:nth-child(3n + 1) {
+  --ink-c: #2b2621;
+  background-position: 43px 9px, 0 0;
+}
+
+.ux-term .term-row:nth-child(4n + 2) {
+  --ink-c: #1b1917;
+  background-position: 97px 17px, 0 0;
+}
+
+.ux-term .term-row:nth-child(5n + 3) {
+  --ink-c: #312b25;
+  background-position: 131px 3px, 0 0;
+}
+
+.ux-term .term-row:nth-child(7n) {
+  translate: 0.4px 0;
+}
+
+.ux-term .term-row:nth-child(9n + 4) {
+  translate: -0.35px 0;
+}
+
+/* Pas de curseur : c'est la tête d'impression qui indique la colonne */
+.ux-term .term-cursor {
+  background: none !important;
+  box-shadow: none !important;
+  animation: none;
+}
+
+.ux-done .term-line {
+  display: none;
+}
+
+/* ——— Mécanique : cylindre, rail, tête d'impression ——— */
+
+.ux-machine {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.ux-machine > * {
+  position: absolute;
+  display: block;
+}
+
+/* Ombre du capot et barre de déchirement dentelée */
+.ux-shade-top {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 70px;
+  background: linear-gradient(180deg, rgba(28, 22, 10, 0.5), rgba(28, 22, 10, 0.14) 40%, transparent);
+}
+
+.ux-tearbar {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 11px;
+  background: linear-gradient(180deg, #8f8a80, #d9d5cc 45%, #77736a);
+  -webkit-mask: linear-gradient(#000 0 6px, transparent 6px), conic-gradient(from 135deg at 50% 0, #000 90deg, transparent 0) 0 6px / 6px 5px repeat-x;
+  mask: linear-gradient(#000 0 6px, transparent 6px), conic-gradient(from 135deg at 50% 0, #000 90deg, transparent 0) 0 6px / 6px 5px repeat-x;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+}
+
+/* Le papier s'enroule autour du cylindre */
+.ux-shade-platen {
+  left: var(--gap);
+  right: var(--gap);
+  bottom: 0;
+  height: 54px;
+  background: linear-gradient(180deg, transparent, rgba(110, 80, 20, 0.05) 30%, rgba(80, 58, 16, 0.24) 70%, rgba(35, 25, 8, 0.58));
+}
+
+.ux-platen-end {
+  bottom: 0;
+  width: var(--gap);
+  height: 50px;
+  background: linear-gradient(180deg, #2b2a28, #55534f 28%, #1d1c1a 62%, #0d0d0c);
+}
+
+.ux-platen-left {
+  left: 0;
+  border-radius: 0 3px 0 0;
+}
+
+.ux-platen-right {
+  right: 0;
+  border-radius: 3px 0 0 0;
+}
+
+.ux-rail {
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #6d6a64, #f1eee8 35%, #a29e96 60%, #4e4b46);
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.45);
+}
+
+.ux-head {
+  left: 0;
+  bottom: 3px;
+  width: 0;
+  height: 54px;
+  transition: transform 0.05s linear;
+}
+
+.ux-head.is-returning {
+  transition: transform 0.24s cubic-bezier(0.3, 0.7, 0.3, 1);
+}
+
+.ux-head-body {
+  position: absolute;
+  left: -19px;
+  bottom: 0;
+  width: 38px;
+  height: 54px;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.45));
+}
+
+.ux-head-body i {
+  position: absolute;
+  display: block;
+}
+
+/* Ruban encreur noir et rouge, juste sous la ligne */
+.ux-ribbon {
+  left: 4px;
+  right: 4px;
+  top: 0;
+  height: 6px;
+  border-radius: 1px;
+  background: linear-gradient(180deg, #1e1b1b 0 55%, #7a1d17 55%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.ux-ribbon::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  margin-left: -4px;
+  border: 4px solid transparent;
+  border-bottom: 0;
+  border-top-color: #1e1b1b;
+  transform: rotate(180deg);
+  transform-origin: 50% 2px;
+}
+
+/* Cylindre à caractères, gravé */
+.ux-typebox {
+  left: 3px;
+  right: 3px;
+  top: 6px;
+  height: 25px;
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0 1px, transparent 1px 5px),
+    linear-gradient(180deg, #8e8a83, #d6d2ca 30%, #9c978f 62%, #57534d);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.ux-carriage {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+  border-radius: 3px 3px 4px 4px;
+  background:
+    radial-gradient(circle at 8px 12px, #c9c5bd 0 2px, #4a4743 2.5px, transparent 3px),
+    radial-gradient(circle at 30px 12px, #c9c5bd 0 2px, #4a4743 2.5px, transparent 3px),
+    linear-gradient(180deg, #45423d, #2a2825 55%, #1a1917);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+/* Le journal file : la tête s'affole */
+.ux-head.is-frantic {
+  animation: ux-zip 0.15s linear infinite alternate;
+}
+
+@keyframes ux-zip {
+  from {
+    transform: translateX(60px);
+  }
+  to {
+    transform: translateX(580px);
+  }
+}
+
+/* ——— Le gag des 500 lignes ——— */
+
+.ux-flight {
+  position: absolute;
+  left: var(--gap);
+  right: var(--gap);
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  overflow: hidden;
+  background: var(--paper);
+  box-shadow:
+    -7px 0 9px -6px rgba(0, 0, 0, 0.7),
+    7px 0 9px -6px rgba(0, 0, 0, 0.7);
+  animation: ux-fade 0.18s ease-out both;
+}
+
+.ux-flight.is-leaving {
+  opacity: 0;
+  transition: opacity 0.26s ease-in;
+}
+
+.ux-flight-strip {
+  background:
+    linear-gradient(90deg, rgba(120, 88, 18, 0.13), transparent 3.5%, transparent 96.5%, rgba(120, 88, 18, 0.15)),
+    var(--fibres);
+  will-change: transform;
+}
+
+.ux-flight pre {
+  margin: 0;
+  padding: 0 var(--margin);
+  font: inherit;
+  white-space: pre;
+  filter: blur(0.5px);
+  text-shadow:
+    0 5px 0 rgba(34, 30, 26, 0.3),
+    0 10px 0 rgba(34, 30, 26, 0.18),
+    0 -5px 0 rgba(34, 30, 26, 0.18);
+}
+
+.is-printing-fast .ux-flight {
+  animation: ux-fade 0.18s ease-out both, ux-shake 0.09s steps(2) infinite;
+}
+
+@keyframes ux-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes ux-shake {
+  0% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0.8px -0.6px;
+  }
+  100% {
+    translate: -0.6px 0.4px;
+  }
+}
+
+/* Le papier s'entasse en accordéon */
+.ux-term .ux-pile-row {
+  padding: 0;
+  min-height: 0;
+  background: none;
+  color: inherit;
+  text-shadow: none;
+}
+
+.ux-pile {
+  position: relative;
+  margin: 0 -10px;
+  background: linear-gradient(180deg, rgba(40, 28, 10, 0.55), rgba(40, 28, 10, 0.25) 50%, rgba(40, 28, 10, 0.5));
+}
+
+.ux-fold {
+  position: absolute;
+  left: var(--x);
+  top: var(--top);
+  width: var(--w);
+  height: 96px;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(120, 88, 18, 0.16), transparent 4%, transparent 96%, rgba(120, 88, 18, 0.18)),
+    var(--fibres),
+    linear-gradient(var(--paper), var(--paper));
+  transform-origin: 50% 0;
+  transform: perspective(520px) rotateX(var(--rx, 62deg)) rotate(var(--r)) skewX(var(--sk));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  animation: ux-fold-in 0.5s var(--d) cubic-bezier(0.2, 0.8, 0.3, 1.1) both;
+}
+
+.ux-fold.is-down {
+  --rx: -58deg;
+}
+
+.ux-fold::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 252, 235, 0.32), rgba(255, 252, 235, 0) 45%, rgba(60, 40, 10, 0.16));
+}
+
+.ux-fold.is-down::after {
+  background: linear-gradient(180deg, rgba(50, 34, 8, 0.22), rgba(50, 34, 8, 0.38) 70%, rgba(30, 20, 5, 0.55));
+}
+
+.ux-fold pre {
+  margin: 0;
+  padding: 2px var(--margin);
+  font: inherit;
+  white-space: pre;
+}
+
+@keyframes ux-fold-in {
+  from {
+    opacity: 0;
+    translate: 0 26px;
+  }
+}
+
+/* Coup de crayon rouge autour du mot à retenir */
+.ux-circle {
+  position: absolute;
+  top: -8px;
+  height: 40px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.ux-circle path {
+  fill: none;
+  stroke: #c23a2b;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0.88;
+  animation: ux-draw 0.85s 0.05s cubic-bezier(0.45, 0.1, 0.3, 1) forwards;
+}
+
+@keyframes ux-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ——— Étiquette en relief sur le capot ——— */
+
+.ux-dymo {
+  position: absolute;
+  left: calc(var(--u) * 6.5);
+  top: calc(var(--u) * 2.5);
+  display: flex;
+  gap: calc(var(--u) * 1.4);
+  padding: calc(var(--u) * 0.5) calc(var(--u) * 1.1) calc(var(--u) * 0.45);
+  border-radius: calc(var(--u) * 0.3);
+  background: linear-gradient(180deg, #d8372d, #b0241c 60%, #9a1f18);
+  box-shadow:
+    0 calc(var(--u) * 0.15) calc(var(--u) * 0.35) rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  color: #fff3ec;
+  font: 700 calc(var(--u) * 1.3) / 1 var(--font-ui);
+  letter-spacing: 0.16em;
+  text-shadow:
+    0 -1px 0 rgba(90, 0, 0, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: rotate(-1.2deg);
+  pointer-events: none;
+}
+
+.scene[data-compact='true'] .ux-dymo {
+  top: calc(var(--u) * 0.9);
+  font-size: calc(var(--u) * 1.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ux-head,
+  .ux-head.is-returning {
+    transition: none;
+  }
+
+  .ux-head.is-frantic {
+    animation: none;
+  }
+
+  .ux-fold {
+    animation: none;
+  }
+
+  .ux-circle path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
