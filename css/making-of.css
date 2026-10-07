@@ -1,0 +1,135 @@
+/* Page making-of : mêmes jetons que le HUD, mise en page de lecture. */
+
+body.mo {
+  height: auto;
+  overflow: auto;
+  background:
+    radial-gradient(1100px 520px at 50% -10%, rgba(124, 92, 255, 0.2), transparent 60%),
+    #0b0b10;
+}
+
+.mo-hero,
+.mo-main,
+.mo-foot {
+  width: min(760px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+.mo-hero {
+  padding: 40px 0 24px;
+}
+
+.mo-back {
+  color: var(--fg-dim);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.mo-back:hover {
+  color: var(--fg);
+}
+
+.mo-hero .kicker {
+  display: flex;
+  margin-top: 48px;
+}
+
+.mo-hero h1 {
+  margin: 8px 0 0;
+  font-size: clamp(44px, 9vw, 80px);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.mo-lead {
+  margin: 20px 0 0;
+  color: var(--fg-dim);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.mo-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mo-stats li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.mo-stats b {
+  color: var(--accent-2);
+  font-size: 26px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.mo-stats span {
+  color: var(--fg-dim);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.mo-main section {
+  padding: 36px 0 8px;
+  border-top: 1px solid var(--line);
+  margin-top: 28px;
+}
+
+.mo-main h2 {
+  margin: 0 0 12px;
+  font-size: 24px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+
+.mo-main p,
+.mo-main li {
+  color: rgba(244, 244, 247, 0.82);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.mo-main ul {
+  padding-left: 20px;
+}
+
+.mo-main code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  font: 0.9em ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+.mo-main pre {
+  margin: 18px 0;
+  padding: 18px 20px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #101017;
+}
+
+.mo-main pre code {
+  padding: 0;
+  background: none;
+  color: #d9d6ff;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.mo-foot {
+  padding: 48px 0 64px;
+  text-align: center;
+}

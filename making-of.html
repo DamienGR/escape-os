@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Making-of — Escape OS</title>
+  <meta name="description" content="Les coulisses d’Escape OS : zéro dépendance, effets cathodiques en CSS seul, sons synthétisés en Web Audio, Pointer Events et FLIP.">
+  <meta name="theme-color" content="#0d0d12">
+  <meta property="og:title" content="Making-of — Escape OS">
+  <meta property="og:description" content="Zéro dépendance, effets cathodiques en CSS seul, sons synthétisés, Pointer Events et FLIP.">
+  <meta property="og:image" content="assets/og-image.png">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/making-of.css">
+</head>
+<body class="mo">
+  <header class="mo-hero">
+    <a class="mo-back" href="./">← Retour au jeu</a>
+    <p class="kicker">Making-of</p>
+    <h1>Escape <span class="title-os">OS</span></h1>
+    <p class="mo-lead">Un escape game pédagogique en dix époques, des cartes perforées de 1965 à l’agent IA de 2026, écrit en HTML, CSS et JavaScript natifs. Le soin visuel avant tout : chaque époque est reconstituée « dans l’esprit », sans un seul logo, fond d’écran ni son d’origine.</p>
+    <ul class="mo-stats" aria-label="Chiffres clés">
+      <li><b>0</b><span>dépendance</span></li>
+      <li><b>0</b><span>étape de build</span></li>
+      <li><b>0</b><span>fichier audio</span></li>
+      <li><b data-stat="first">40 Ko</b><span>compressés au premier chargement, hors polices</span></li>
+      <li><b>10</b><span>écrans chargés à la demande</span></li>
+    </ul>
+  </header>
+
+  <main class="mo-main">
+    <section>
+      <h2>Zéro dépendance, aucune étape de build</h2>
+      <p>Des modules ES natifs servis tels quels. Chaque époque est un module chargé avec <code>import()</code> au moment du saut, avec sa feuille de style : le joueur ne télécharge que l’époque qu’il visite. Pendant qu’il joue, l’époque suivante se précharge en tâche de fond.</p>
+      <pre><code>export function load(era) {
+  return Promise.all([
+    import(`../screens/${era.file}`),
+    loadCss(`css/eras/${era.id}.css`),
+  ]).then(([mod]) =&gt; mod.default);
+}</code></pre>
+      <p>Chaque écran respecte le même contrat : <code>{ id, era, year, mount(root, ctx) }</code>, et <code>mount</code> renvoie sa fonction de nettoyage. Le contexte fournit le carnet, les indices, les sons et la fin d’époque : un écran n’est qu’un décor et un scénario posés sur trois composants partagés (terminal, fenêtres, gestes).</p>
+    </section>
+
+    <section>
+      <h2>Le cadre qui se métamorphose</h2>
+      <p>Le matériel autour de l’écran est dessiné en CSS : télétype, moniteur cathodique beige, écran plat, téléphone, puis plus rien en 2026. Pendant le saut, la position, la taille, les rayons et la couleur du cadre transitionnent ; l’écran garde sa résolution logique d’époque (640 × 480, 1024 × 768, 320 × 480) et il est mis à l’échelle d’un <code>transform</code>.</p>
+      <pre><code>.scene.morphing &gt; * {
+  transition:
+    left 1.15s, top 1.15s, width 1.15s, height 1.15s,
+    border-radius 1.15s, background-color 1.15s, box-shadow 1.15s;
+}</code></pre>
+    </section>
+
+    <section>
+      <h2>Effets cathodiques, en CSS seul</h2>
+      <p>Lignes de balayage, vignettage, reflet du verre, scintillement très léger et extinction qui réduit l’image à une ligne puis à un point : aucun canvas, aucun shader. Le tout disparaît si le système demande moins d’animations.</p>
+      <pre><code>.glass-fx {
+  background:
+    radial-gradient(ellipse, transparent 62%, rgb(0 0 0 / .5) 100%),
+    repeating-linear-gradient(180deg, rgb(0 0 0 / .11) 0 1px, transparent 1px 3px);
+}
+
+@keyframes crt-off {
+  45%  { transform: scale(1, .008);    filter: brightness(3.5); }
+  75%  { transform: scale(.004, .008); filter: brightness(6); }
+  100% { transform: scale(0, 0);       opacity: 0; }
+}</code></pre>
+    </section>
+
+    <section>
+      <h2>Le compteur d’années</h2>
+      <p>Un odomètre : chaque chiffre est une colonne de chiffres qui défile d’un seul <code>transform</code>. Les chiffres de droite font plus de tours, et un léger flou de mouvement accompagne la course.</p>
+      <pre><code>.odometer.run .odo-strip {
+  transform: translateY(calc(var(--steps) * -1em));
+  transition: transform 1.7s cubic-bezier(.5, 0, .12, 1);
+}</code></pre>
+    </section>
+
+    <section>
+      <h2>Des sons synthétisés</h2>
+      <p>Cliquetis du télétype, bip du haut-parleur du PC, disquette qui gratte, carillons de démarrage, poignée de main d’un modem 56k, Wizz : tout est fabriqué en direct par Web Audio, à partir d’oscillateurs et de bruit filtré. Aucun fichier audio, et aucun son protégé.</p>
+      <pre><code>dtmf(key) {
+  const i = '123456789*0#'.indexOf(key);
+  this.tone({ freq: [697, 770, 852, 941][Math.floor(i / 3)], hold: 0.12 });
+  this.tone({ freq: [1209, 1336, 1477][i % 3], hold: 0.12 });
+}</code></pre>
+    </section>
+
+    <section>
+      <h2>Pointer Events et FLIP</h2>
+      <p>L’API Drag and Drop de HTML5 ne fonctionne pas au doigt : fenêtres, cartes perforées et glissière du téléphone reposent sur les Pointer Events, souris et tactile confondus. Les cartes se réordonnent avec la technique FLIP : on mesure, on change le DOM, puis on anime l’écart.</p>
+      <pre><code>export function flip(elements, mutate) {
+  const first = new Map(elements.map((el) =&gt; [el, el.getBoundingClientRect()]));
+  mutate();
+  for (const el of elements) {
+    const a = first.get(el);
+    const b = el.getBoundingClientRect();
+    el.animate(
+      [{ translate: `${a.left - b.left}px ${a.top - b.top}px` }, { translate: '0 0' }],
+      { duration: 280, easing: 'cubic-bezier(.2, .7, .2, 1)' },
+    );
+  }
+}</code></pre>
+      <p>Le pincement du smartphone combine deux doigts, le pincement du pavé tactile (transmis comme une molette avec <code>ctrlKey</code>) et des boutons +/− de secours.</p>
+    </section>
+
+    <section>
+      <h2>Du pixel art en SVG</h2>
+      <p>Icônes et pointeurs (flèche, sablier) sont dessinés sur une petite grille puis convertis en chemins SVG nets à toute échelle, avec <code>shape-rendering: crispEdges</code>.</p>
+      <pre><code>const HOURGLASS = pixelArt([13, 22], (p) =&gt; p.map(0, 0, [
+  'KKKKKKKKKKKKK',
+  'KWWWWWWWWWWWK',
+  // …
+]));
+root.style.cursor = svgCursor(HOURGLASS, 6, 11, 'wait');</code></pre>
+    </section>
+
+    <section>
+      <h2>Accessible et jouable partout</h2>
+      <ul>
+        <li>Chaque geste a son alternative : clavier pour le glisser-déposer, flèches pour déplacer une fenêtre, boutons +/− pour le pincement, touche Entrée et commandes en pastilles sur mobile.</li>
+        <li>Sorties des terminaux annoncées aux lecteurs d’écran, fenêtres et boutons atteignables au clavier.</li>
+        <li>Mouvement réduit respecté : ni scintillement ni tremblement, sauts en simple fondu.</li>
+        <li>Conçu pour l’ordinateur, jouable au téléphone : HUD replié en barre basse, matériel simplifié.</li>
+      </ul>
+    </section>
+
+    <section class="mo-credits">
+      <h2>Crédits</h2>
+      <ul>
+        <li><b>Inter</b> — The Inter Project Authors, SIL Open Font License 1.1.</li>
+        <li><b>Courier Prime</b> — The Courier Prime Project Authors, SIL Open Font License 1.1.</li>
+        <li><b>Px437 IBM VGA 8x16</b> — VileR, Ultimate Oldschool PC Font Pack (int10h.org), CC BY-SA 4.0.</li>
+        <li>Noms de systèmes et de logiciels cités : propriété de leurs détenteurs respectifs, mentionnés pour raconter leur histoire.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="mo-foot">
+    <a class="btn btn-primary" href="./">Jouer à Escape OS</a>
+  </footer>
+</body>
+</html>

@@ -460,6 +460,7 @@ export function createDesktop(el, options = {}) {
       (event) => {
         if (event.button !== 0 || event.target.closest('.wm-btn') || win.maximized || win.spec.movable === false) return;
         event.preventDefault();
+        bar.focus({ preventScroll: true });
         focusWin(win);
         const scale = scaleOf();
         const start = { x: event.clientX, y: event.clientY, wx: win.x, wy: win.y };

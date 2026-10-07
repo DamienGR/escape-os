@@ -73,7 +73,7 @@
 /* Verre brillant du smartphone */
 .scene[data-device='phone'] .glass-fx {
   z-index: 2;
-  background: linear-gradient(118deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.05) 42%, transparent 42.2%);
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 42%, transparent 42.2%);
 }
 
 /* La salle machine : simple vignettage */

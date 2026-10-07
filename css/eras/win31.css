@@ -488,3 +488,123 @@
 .mines-cell.wrong {
   background: repeating-linear-gradient(45deg, #c0c0c0 0 3px, #ff8080 3px 4px);
 }
+
+/* ——— Solitaire ——— */
+
+.w31-sol-host {
+  height: 100%;
+}
+
+.sol {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sol-felt {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: #008000;
+  touch-action: none;
+}
+
+.sol-slot {
+  position: absolute;
+  top: 8px;
+  left: 9px;
+  width: 50px;
+  height: 68px;
+  border: 1px solid #00b000;
+  border-radius: 4px;
+}
+
+.sol-found::after {
+  content: 'A';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #00b000;
+  font: 700 20px Arial, sans-serif;
+}
+
+.sol-stock-slot::after {
+  content: '';
+  position: absolute;
+  inset: 16px 12px;
+  border: 3px solid #00b000;
+  border-radius: 50%;
+}
+
+.sol-tab {
+  border-style: dotted;
+}
+
+.sol-card {
+  position: absolute;
+  width: 50px;
+  height: 68px;
+  border: 1px solid #000;
+  border-radius: 4px;
+  background: #fff;
+  color: #000;
+  font: 700 11px / 1 Arial, var(--font-win);
+  transition: left 0.18s ease-out, top 0.18s ease-out;
+  user-select: none;
+  touch-action: none;
+}
+
+.sol-card.is-red {
+  color: #e00000;
+}
+
+.sol-corner {
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  text-align: center;
+  line-height: 1.05;
+}
+
+.sol-corner-b {
+  left: auto;
+  top: auto;
+  right: 3px;
+  bottom: 3px;
+  rotate: 180deg;
+}
+
+.sol-pip {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+}
+
+.sol-card.is-down {
+  background:
+    radial-gradient(circle at 50% 50%, #fff 0 1.2px, transparent 1.6px) 0 0 / 6px 6px,
+    linear-gradient(45deg, #1d3fbf 25%, #0f2a90 25% 50%, #1d3fbf 50% 75%, #0f2a90 75%) 0 0 / 8px 8px;
+  box-shadow: inset 0 0 0 2px #fff;
+}
+
+.sol-card.is-down > * {
+  visibility: hidden;
+}
+
+.sol-cascade {
+  position: absolute;
+  inset: 0;
+  z-index: 900;
+}
+
+.sol-status {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 8px;
+  border-top: 1px solid #000;
+  background: #fff;
+  font-size: 11px;
+}

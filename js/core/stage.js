@@ -207,8 +207,10 @@ export function layout() {
 
     const totalW = sw * wF;
     const totalH = sw * hF;
+    // Sur téléphone, le matériel posé sur un bureau remonte : place pour le clavier virtuel.
+    const bias = compact && ['crt', 'flat', 'teletype'].includes(era.device) ? 0.2 : 0.5;
     const x0 = availX + (availW - totalW) / 2;
-    const y0 = availY + (availH - totalH) / 2;
+    const y0 = availY + (availH - totalH) * bias;
     const dx = x0;
     const dy = y0;
     const dw = sw * (bl + 1 + br);
@@ -239,8 +241,8 @@ export function layout() {
       place(els.sideProps, dx + dw, dy, 0, dh);
     }
 
-    // Bouton principal du téléphone
-    const hd = sw * (compact ? 0.15 : 0.19);
+    // Bouton principal du téléphone (taille nulle ailleurs : il naît pendant le saut)
+    const hd = era.device === 'phone' ? sw * (compact ? 0.15 : 0.19) : 0;
     place(els.home, dx + (dw - hd) / 2, gy + sh + (sw * bb - hd) / 2, hd, hd);
 
     // Le bureau sous le matériel

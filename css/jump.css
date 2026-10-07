@@ -160,7 +160,7 @@
 
 /* ——— Odomètre des années ——— */
 
-.jumping .glass {
+body.jumping .scene .glass {
   background-color: #050505;
 }
 

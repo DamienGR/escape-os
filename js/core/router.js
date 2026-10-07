@@ -41,7 +41,16 @@ function loadCss(href) {
   return cssCache.get(href);
 }
 
+// Polices d'époque préchargées avec le module, pendant le saut
+const FONTS = {
+  cards: ['16px "Courier Prime"', 'bold 16px "Courier Prime"'],
+  unix: ['16px "Courier Prime"', 'bold 16px "Courier Prime"'],
+  dos: ['16px "IBM VGA"'],
+  win31: ['16px "IBM VGA"'],
+};
+
 export function load(era) {
+  for (const font of FONTS[era.id] ?? []) document.fonts?.load(font).catch(() => {});
   if (!modCache.has(era.id)) {
     const promise = Promise.all([import(`../screens/${era.file}`), loadCss(`css/eras/${era.id}.css`)]).then(
       ([mod]) => mod.default,

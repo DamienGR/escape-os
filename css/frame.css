@@ -241,7 +241,7 @@ body[data-era='cards'] .stage::before {
 }
 
 .scene[data-device='teletype'] .deco-badge::after {
-  content: 'TÉLÉTYPE · MODÈLE 33';
+  content: 'TÉLÉIMPRIMEUR · 110 BAUDS';
 }
 
 .dev-keys {
@@ -252,7 +252,10 @@ body[data-era='cards'] .stage::before {
   gap: calc(var(--u) * 0.9);
   padding: calc(var(--u) * 1.6) calc(var(--u) * 4) calc(var(--u) * 2.4);
   border-radius: calc(var(--u) * 1) calc(var(--u) * 1) calc(var(--u) * 3) calc(var(--u) * 3);
-  background: linear-gradient(180deg, #bdb59d, #cfc8b2 30%, #b7af96);
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.22), transparent calc(var(--u) * 1.2)),
+    linear-gradient(0deg, #9c937b, #b3ab92 calc(var(--u) * 1.4), transparent calc(var(--u) * 1.5)),
+    linear-gradient(180deg, #bdb59d, #cfc8b2 30%, #b7af96);
   box-shadow: 0 calc(var(--u) * 2.5) calc(var(--u) * 5) calc(var(--u) * -1) rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   opacity: 0;
   pointer-events: none;

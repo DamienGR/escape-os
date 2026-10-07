@@ -6,6 +6,7 @@ import { createTerminal } from '../ui/terminal.js';
 import { ICONS } from '../ui/icons.js';
 import { ARROW, HOURGLASS, svgCursor } from '../ui/pixel.js';
 import { createMinesweeper } from './win31/minesweeper.js';
+import { createSolitaire } from './win31/solitaire.js';
 
 const README = `Bienvenue dans Windows 3.1 !
 
@@ -119,12 +120,11 @@ export default {
           return false;
         },
       });
-      progman.on('move', checkReveal);
-      progman.on('minimize', checkReveal);
-      progman.on('maximize', checkReveal);
+      for (const type of ['move', 'minimize', 'maximize', 'restore']) progman.on(type, checkReveal);
       progman.on('move', () => ctx.progress());
 
       buildGroups();
+      checkReveal();
     }
 
     function buildGroups() {
@@ -177,25 +177,30 @@ export default {
         ['Horloge', ICONS.clock, () => openClock()],
         ['Calculatrice', ICONS.calc, () => openCalculator()],
       ]);
-      group('Jeux', [['Démineur', ICONS.mine, () => openMinesweeper()]]);
+      group('Jeux', [
+        ['Solitaire', ICONS.cards, () => openSolitaire()],
+        ['Démineur', ICONS.mine, () => openMinesweeper()],
+      ]);
       group('Démarrage', []);
       principal.focus();
     }
 
-    // La sortie apparaît-elle ?
+    // La sortie apparaît-elle ? Tant qu'elle est cachée, elle n'est pas atteignable,
+    // même au clavier : il faut d'abord déplacer la fenêtre (flèches sur la barre de titre).
     function checkReveal() {
-      if (revealed || !saut) return;
-      const icon = { x: 60, y: 96, w: 72, h: 52 };
+      if (!saut || !progman) return;
+      const cx = 96;
+      const cy = 118;
       const covered =
         !progman.minimized &&
-        !(progman.x > icon.x + icon.w - 10 ||
-          progman.x + progman.w < icon.x + 10 ||
-          progman.y > icon.y + icon.h - 10 ||
-          progman.y + progman.el.offsetHeight < icon.y + 10);
-      if (!covered) {
+        cx > progman.x &&
+        cx < progman.x + progman.w &&
+        cy > progman.y &&
+        cy < progman.y + progman.el.offsetHeight;
+      saut.inert = covered;
+      if (!covered && !revealed) {
         revealed = true;
         ctx.progress();
-        audio.click();
       }
     }
 
@@ -382,14 +387,33 @@ export default {
           title: 'Démineur',
           x: 230,
           y: 60,
-          w: 182,
-          h: 270,
+          w: 178,
+          h: 258,
           controls: { max: false },
           iconSvg: ICONS.mine,
           menu: ['&Partie', '&?'],
           body: '<div class="w31-mines-host"></div>',
         });
         const game = createMinesweeper(win.body.querySelector('.w31-mines-host'), { audio, signal: ctx.signal });
+        win.on('close', () => game.destroy());
+        return win;
+      });
+    }
+
+    function openSolitaire() {
+      single('solitaire', () => {
+        const win = desk.open({
+          title: 'Solitaire',
+          x: 80,
+          y: 30,
+          w: 438,
+          h: 410,
+          controls: { max: false },
+          iconSvg: ICONS.cards,
+          menu: ['&Partie', '&?'],
+          body: '<div class="w31-sol-host"></div>',
+        });
+        const game = createSolitaire(win.body.querySelector('.w31-sol-host'), { audio });
         win.on('close', () => game.destroy());
         return win;
       });

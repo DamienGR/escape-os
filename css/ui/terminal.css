@@ -121,7 +121,7 @@
 
 .term-enter {
   margin-left: auto;
-  background: var(--accent);
+  background: var(--accent-strong);
   border-color: transparent;
   font-family: var(--font-ui);
 }
