@@ -289,7 +289,7 @@ export default {
       }
 
       // Cadence de frappe : plus rapide pour les longs paragraphes, pause après la ponctuation.
-      const cps = clamp(total / 2.6, 52, 92);
+      const cps = clamp(total / 2.2, 58, 110);
       const times = [];
       let t = 0;
       for (const p of parts) {
@@ -297,8 +297,8 @@ export default {
           t += (1000 / cps) * (0.55 + Math.random() * 0.9);
           times.push(t);
           const ch = p.text[i];
-          if ('.!?…'.includes(ch)) t += 170;
-          else if (',;:'.includes(ch)) t += 70;
+          if ('.!?…'.includes(ch)) t += 140;
+          else if (',;:'.includes(ch)) t += 55;
         }
       }
 

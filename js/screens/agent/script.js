@@ -79,7 +79,7 @@ export function titleFor({ hints, visit }) {
 
 export function opening({ visit }) {
   return [
-    { type: 'think', ms: 1300 },
+    { type: 'think', ms: 1100 },
     { type: 'h', text: visit ? 'Bienvenue en 2026 !' : 'Bon retour en 2026 !' },
     visit
       ? 'Le mode visite t’a fait sauter quelques étapes : te voici déjà au bout du voyage. Le parcours complet, des cartes perforées à aujourd’hui, t’attend quand tu veux.'
@@ -87,7 +87,7 @@ export function opening({ visit }) {
     `${visit ? 'Le' : 'Ton'} voyage tient en neuf gestes, un par époque :`,
     { type: 'frieze' },
     'Des cartes perforées à l’écran tactile, il fallait chaque fois apprendre la langue de la machine. Aujourd’hui, plus besoin de syntaxe : il suffit de demander.',
-    { type: 'think', ms: 800 },
+    { type: 'think', ms: 700 },
     'Et voici ton bilan :',
     { type: 'stats' },
     'Une question ? Écris-moi, ou choisis une suggestion ci-dessous.',

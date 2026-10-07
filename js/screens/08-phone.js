@@ -327,7 +327,7 @@ export default {
       if (current) return;
       const answer = await alert(SMS.from, SMS.text, { buttons: ['Fermer', 'Lire'] });
       if (answer === 'Lire' && !current && state.phase === 'home') {
-        open('messages', home.querySelector('[data-app="messages"]'));
+        open('messages', home.querySelector('[data-app="messages"]'), { direct: true });
       }
     }
 
@@ -373,11 +373,16 @@ export default {
         state.smsRead = true;
         badge.hidden = true;
       },
+      setAirplane(on) {
+        state.airplane = on;
+        phone.toggleAttribute('data-airplane', on);
+        q('.ph-carrier').textContent = on ? '' : 'Opérateur';
+      },
     };
 
     const BUILDERS = { photos: photosApp, phone: phoneApp, ...MINI_APPS };
 
-    async function open(id, icon) {
+    async function open(id, icon, opts = {}) {
       const build = BUILDERS[id];
       if (!build || busy || current) return;
       busy = true;
@@ -386,7 +391,7 @@ export default {
       apps.append(el);
       current = { id, el, icon, api: null };
       setTone(TONES[id] ?? 'gray');
-      current.api = build(el, kit) ?? {};
+      current.api = build(el, kit, opts) ?? {};
       if (id === 'photos' && !state.photosSeen) {
         state.photosSeen = true;
         ctx.progress();

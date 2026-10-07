@@ -24,8 +24,8 @@ export function burst(canvas, { x, y, count = 56, signal } = {}) {
       y: y + (Math.random() - 0.5) * 10,
       vx: Math.cos(angle) * speed,
       vy: Math.sin(angle) * speed - 1.6,
-      w: 5 + Math.random() * 4,
-      h: 2.4 + Math.random() * 2.2,
+      w: 6 + Math.random() * 4,
+      h: 3 + Math.random() * 2.4,
       round: Math.random() < 0.28,
       rot: Math.random() * Math.PI * 2,
       spin: (Math.random() - 0.5) * 0.28,
@@ -76,7 +76,7 @@ export function burst(canvas, { x, y, count = 56, signal } = {}) {
           g.fill();
         } else {
           // Le papier tourne sur lui-même : sa hauteur apparente oscille
-          g.scale(1, Math.max(0.15, Math.abs(Math.cos(p.flip))));
+          g.scale(1, Math.max(0.3, Math.abs(Math.cos(p.flip))));
           g.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
         }
         g.restore();
