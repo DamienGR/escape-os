@@ -197,7 +197,7 @@ export const RULES = [
     id: 'win',
     test: /(^|[^a-z0-9])win(\.com)?($|[^a-z0-9])/,
     reply: [
-      'Plus besoin de taper `WIN` : c’était en 1981, sous MS-DOS, une fois passé sur le disque dur. Aujourd’hui, l’ordinateur démarre tout seul… et il t’écoute.',
+      'Plus besoin de taper `WIN` : c’était en 1981, sous MS-DOS, pour lancer Windows depuis le disque dur. Aujourd’hui, l’ordinateur démarre tout seul… et il t’écoute.',
     ],
   },
   {

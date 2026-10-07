@@ -968,7 +968,7 @@ export function createApps(shell, ctx, opts = {}) {
     return single('cdplayer', () =>
       open({
         title: 'Lecteur CD',
-        icon: ICON16.cards.replace('', ''),
+        icon: ICON16.cdrom,
         w: 260,
         h: 'auto',
         controls: { max: false },
@@ -1010,7 +1010,7 @@ export function createApps(shell, ctx, opts = {}) {
             icon: ICON16.folder,
             sub: [
               { label: 'Contrôle du volume', icon: ICON16.speaker, run: volume },
-              { label: 'Lecteur CD', icon: ICON16.cdrom ?? ICON16.disc ?? ICON16.globe, run: cdPlayer },
+              { label: 'Lecteur CD', icon: ICON16.cdrom, run: cdPlayer },
             ],
           },
           {

@@ -28,17 +28,29 @@ export function createTube(root) {
     el.classList.add(cls);
   };
 
+  // Chaque contenu de la couche a son signal : changer d'écran retire ses écouteurs.
+  let layerAbort = new AbortController();
+  const renew = () => {
+    layerAbort.abort();
+    layerAbort = new AbortController();
+  };
+
   return {
     tube,
     host,
     layer,
+    get layerSignal() {
+      return layerAbort.signal;
+    },
     show(html, cls = '') {
+      renew();
       layer.className = `w9x-layer ${cls}`;
       layer.innerHTML = html;
       layer.hidden = false;
       return layer;
     },
     hide() {
+      renew();
       layer.hidden = true;
       layer.className = 'w9x-layer';
       layer.innerHTML = '';
@@ -71,9 +83,33 @@ export function createTube(root) {
   };
 }
 
-// ——— Texte de démarrage ———
+// ——— Texte de démarrage et test du BIOS ———
 
 export const bootHtml = (text) => `<div class="w9x-text"><p>${esc(text)}<span class="w9x-caret">_</span></p></div>`;
+
+export async function bios(view, ctx, { variant = '95' } = {}) {
+  const is98 = variant === '98';
+  const el = view.show(
+    `<div class="w9x-text w9x-bios">
+      <p class="w9x-bios-logo">TEMPO BIOS ${is98 ? 'v6.00PG' : 'v4.51PG'}<br><small>Copyright (C) 1984-${is98 ? '98' : '95'}, Tempo Systèmes</small></p>
+      <p>${is98 ? 'Processeur à 266 MHz' : 'Processeur Pentium(R) à 75 MHz'}</p>
+      <p>Test mémoire : <span class="w9x-bios-mem">0</span> Ko</p>
+      <p class="w9x-bios-drives" hidden>Détection des lecteurs IDE… Disque C: ${is98 ? '4,3 Go' : '540 Mo'}, CD-ROM D:</p>
+    </div>`,
+    'is-text',
+  );
+  const mem = el.querySelector('.w9x-bios-mem');
+  const total = is98 ? 32768 : 8192;
+  const skip = { skippable: true };
+  for (let k = 0; k <= total; k += total / 16) {
+    mem.textContent = String(k);
+    await ctx.wait(28, skip);
+  }
+  mem.textContent = `${total} OK`;
+  ctx.audio.beep(1050, 0.07);
+  el.querySelector('.w9x-bios-drives').hidden = false;
+  await ctx.wait(700, skip);
+}
 
 // ——— Ciel nuageux (logo, attente d'arrêt) ———
 
@@ -169,26 +205,27 @@ export function bsodHtml({ title = 'Windows', lines = [], prompt = 'Appuyez sur 
     </div>`;
 }
 
-// Affiche un écran bleu et attend une touche, un clic ou un tap.
+// Affiche un écran bleu et attend une touche, un clic ou un tap. Renvoie true,
+// ou false si un autre écran l'a remplacé entre-temps (extinction…).
 export function bsod(view, ctx, spec) {
   view.show(bsodHtml(spec), 'is-bsod');
+  const signal = view.layerSignal;
   return new Promise((resolve) => {
     let armed = false;
     const done = (event) => {
       if (!armed) return;
-      if (event?.type === 'keydown' && ['Shift', 'Control', 'Alt', 'Meta'].includes(event.key)) return;
-      event?.preventDefault?.();
-      off.abort();
+      if (event.type === 'keydown' && ['Shift', 'Control', 'Alt', 'Meta', 'CapsLock'].includes(event.key)) return;
+      event.preventDefault();
+      event.stopPropagation();
       view.hide();
-      resolve();
+      resolve(true);
     };
-    const off = new AbortController();
-    ctx.signal.addEventListener('abort', () => off.abort(), { once: true });
+    signal.addEventListener('abort', () => resolve(false), { once: true });
     // Laisse retomber le geste qui a provoqué l'écran bleu.
     setTimeout(() => {
       armed = true;
     }, 600);
-    window.addEventListener('keydown', done, { signal: off.signal, capture: true });
-    view.layer.addEventListener('pointerdown', done, { signal: off.signal });
+    window.addEventListener('keydown', done, { signal, capture: true });
+    view.layer.addEventListener('pointerdown', done, { signal });
   });
 }

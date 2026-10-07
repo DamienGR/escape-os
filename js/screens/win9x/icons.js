@@ -376,6 +376,14 @@ export const ICON16 = {
     p.rect(2, 4, 12, 1, 'D');
   }),
 
+  cdrom: i16((p) => {
+    p.disc(7.5, 7.5, 7, 'K');
+    p.disc(7.5, 7.5, 6, 'L');
+    p.map(3, 3, ['..cc', '.cmm', 'cmy.', 'cy..']);
+    p.disc(7.5, 7.5, 2, 'K');
+    p.disc(7.5, 7.5, 1, 'W');
+  }),
+
   browser: i16((p) => {
     p.rect(0, 1, 16, 14, 'K');
     p.rect(1, 2, 14, 2, 'B');

@@ -39,6 +39,46 @@ const IBEAM = pixelArt([9, 16], (p) =>
   ]),
 );
 
+// Boutons radio et cases à cocher de l'époque, en pixel art
+const radio = (checked) =>
+  pixelArt(12, (p) => {
+    const c = 5.5;
+    for (let y = 0; y < 12; y++) {
+      for (let x = 0; x < 12; x++) {
+        const d = Math.hypot(x - c, y - c);
+        const topLeft = x - c + (y - c) < 0;
+        if (d > 6.1) continue;
+        if (d > 5.1) p.px(x, y, topLeft ? 'D' : 'W');
+        else if (d > 4.1) p.px(x, y, topLeft ? 'K' : '#dfdfdf');
+        else p.px(x, y, 'W');
+      }
+    }
+    if (checked) p.map(4, 4, ['.KK.', 'KKKK', 'KKKK', '.KK.']);
+  });
+
+const checkbox = (checked, disabled = false) =>
+  pixelArt(13, (p) => {
+    p.rect(0, 0, 13, 13, 'W');
+    p.hline(0, 0, 12, 'D');
+    p.vline(0, 0, 12, 'D');
+    p.rect(1, 1, 11, 11, '#dfdfdf');
+    p.hline(1, 1, 10, 'K');
+    p.vline(1, 1, 10, 'K');
+    p.rect(2, 2, 9, 9, disabled ? 'L' : 'W');
+    if (checked) p.map(3, 3, ['......K', '.....KK', 'K...KKK', 'KK.KKK.', 'KKKKK..', '.KKK...', '..K....'], { K: disabled ? 'D' : 'K' });
+  });
+
+const url = (svg) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+
+const CONTROLS = {
+  radio: url(radio(false)),
+  'radio-on': url(radio(true)),
+  check: url(checkbox(false)),
+  'check-on': url(checkbox(true)),
+  'check-dis': url(checkbox(false, true)),
+  'check-on-dis': url(checkbox(true, true)),
+};
+
 export const CURSORS = {
   arrow: svgCursor(ARROW, 0, 0, 'default'),
   busy: svgCursor(HOURGLASS, 6, 11, 'wait'),
@@ -70,6 +110,7 @@ export function createShell(mountEl, ctx, options = {}) {
   const el = document.createElement('div');
   el.className = `w9x w9x-${o.variant}`;
   for (const [name, value] of Object.entries(CURSORS)) el.style.setProperty(`--cur-${name}`, value);
+  for (const [name, value] of Object.entries(CONTROLS)) el.style.setProperty(`--${name}`, value);
   el.innerHTML = `
     <div class="w9x-desktop"></div>
     <div class="w9x-taskbar" role="toolbar" aria-label="Barre des tâches">
@@ -756,7 +797,7 @@ export function createShell(mountEl, ctx, options = {}) {
     };
     win.body.querySelectorAll('.w9x-dlg-buttons .wm-push').forEach((btn) =>
       btn.addEventListener('click', () => {
-        const value = buttons[Number(btn.dataset.i)];
+        const value = buttons[Number(btn.dataset.i)].replace(/&/g, '');
         if (spec.onButton?.(value, form, win) === false) return;
         finish(value);
       }),
@@ -766,7 +807,7 @@ export function createShell(mountEl, ctx, options = {}) {
       if (event.key === 'Escape') {
         event.preventDefault();
         event.stopPropagation();
-        if (spec.closable !== false) finish(buttons[cancelIndex] ?? null);
+        if (spec.closable !== false) finish(buttons[cancelIndex]?.replace(/&/g, '') ?? null);
       } else if (event.key === 'Enter' && event.target.closest('input:not([type=radio]):not([type=checkbox]), select')) {
         event.preventDefault();
         win.body.querySelector(`.w9x-dlg-buttons .wm-push[data-i="${defIndex}"]`)?.click();
