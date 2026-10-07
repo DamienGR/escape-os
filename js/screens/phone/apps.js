@@ -5,8 +5,8 @@ import { ICONS, GLYPHS, clockFace, ids, lg, rg } from './art.js';
 import { h, nav, createStack, play, fadeIn } from './kit.js';
 
 export const SMS_THREAD = [
-  'Salut, c’est toi… en 2026 !',
-  'Le bug temporel t’a déposé en 2007, hein ?',
+  'Salut, c’est toi… en 2026\u00a0!',
+  'Le bug temporel t’a déposé en 2007, hein\u00a0?',
   'Le chemin du retour est dans tes photos. Regarde bien chaque détail.',
 ];
 
@@ -25,8 +25,8 @@ function messages(host, kit, { direct = false } = {}) {
   const stack = createStack(host.firstElementChild);
   const list = h(`<section class="ph-page ph-sms-list">
     ${nav({ title: 'Messages' })}
-    <ul class="ph-table ph-table-plain">
-      <li><button type="button" class="ph-row ph-sms-row">
+    <ul class="ph-table">
+      <li><button type="button" class="ph-row ph-sms-row${kit.state.threadRead ? ' is-read' : ''}">
         <span class="ph-sms-from">Moi (2026)</span><span class="ph-sms-time">9:38</span>
         <span class="ph-sms-preview">${SMS_THREAD.at(-1)}</span>
         <span class="ph-chev">${GLYPHS.chevron}</span>
@@ -41,11 +41,20 @@ function messages(host, kit, { direct = false } = {}) {
     </div>
     <div class="ph-sms-compose" aria-hidden="true"><span class="ph-sms-field"></span><span class="ph-sms-send">Envoyer</span></div>
   </section>`);
+  const row = list.querySelector('.ph-sms-row');
+  const read = () => {
+    kit.state.threadRead = true;
+    row.classList.add('is-read');
+  };
   stack.push(list, { animate: false });
-  if (direct) stack.push(thread, { animate: false });
-  list.querySelector('.ph-sms-row').addEventListener('click', () => {
+  if (direct) {
+    stack.push(thread, { animate: false });
+    read();
+  }
+  row.addEventListener('click', () => {
     kit.audio.tap();
     stack.push(thread);
+    read();
   });
   back(thread, stack, kit);
 }
@@ -56,7 +65,7 @@ const EVENTS = {
   1: [['journée', 'Jour de l’an']],
   9: [
     ['9:00', 'Présentation d’un téléphone sans clavier'],
-    ['18:30', 'Dîner : raconter la présentation'],
+    ['18:30', 'Dîner\u00a0: raconter la présentation'],
   ],
   17: [['14:00', 'Synchroniser le téléphone']],
 };
@@ -195,7 +204,7 @@ function calc(host, kit) {
       entry = '0';
       fresh = true;
     } else if (k === '±') {
-      entry = String(-Number(entry));
+      if (entry !== 'Erreur') entry = String(-Number(entry));
     } else {
       const value = Number(entry);
       if (op && !fresh) acc = compute(acc, value, op);
@@ -327,9 +336,9 @@ function browser(host, kit) {
     </header>
     <article class="ph-web-page" hidden>
       <p class="ph-web-mast">La Chronique<small>mardi 9 janvier 2007</small></p>
-      <h3>Un téléphone sans clavier ? Les experts restent sceptiques</h3>
+      <h3>Un téléphone sans clavier&nbsp;? Les experts restent sceptiques</h3>
       <div class="ph-web-pic" aria-hidden="true">${ICONS.phone()}</div>
-      <p>Tout se ferait du bout des doigts : glisser, pincer, toucher. Mais qui voudra taper ses messages sur une vitre ?</p>
+      <p>Tout se ferait du bout des doigts&nbsp;: glisser, pincer, toucher. Mais qui voudra taper ses messages sur une vitre&nbsp;?</p>
       <p class="ph-web-more">Lire la suite ›</p>
     </article>
     <footer class="ph-web-tools" aria-hidden="true">${GLYPHS.back}${GLYPHS.forward}${GLYPHS.add}${GLYPHS.book}${GLYPHS.pages}</footer>
@@ -384,7 +393,7 @@ function cover() {
 function music(host, kit) {
   host.innerHTML = `<section class="ph-page ph-music">
     ${nav({ title: '<small>Les Voyageurs</small>Saut temporel<small>2007</small>', style: 'clear' })}
-    <div class="ph-cover">${cover()}<div class="ph-cover-reflect" aria-hidden="true"></div></div>
+    <div class="ph-cover">${cover()}</div>
     <div class="ph-player">
       <div class="ph-progress" aria-hidden="true"><span class="ph-time-a">0:00</span><span class="ph-bar"><i></i></span><span class="ph-time-b">−0:05</span></div>
       <div class="ph-transport">
@@ -441,7 +450,7 @@ function music(host, kit) {
       }
     }),
   );
-  return { dispose: () => bus?.stop(0.05) };
+  return { dispose: stop };
 }
 
 export const MINI_APPS = { messages, calendar, notes, clock, calc, settings, weather, browser, music };

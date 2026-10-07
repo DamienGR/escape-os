@@ -25,14 +25,22 @@ const HISTORY = [
 
 // Réveil : [délai de frappe en ms, message]
 const WAKE = [
-  [1300, 'WAAAH !! tu m’as fé tomber de ma chaise avec ton wizz xD'],
-  [1900, 'ok ok promis c promis : la sortie c’est 2006 !! ya 1 manchot ki t’attend là-bas ;)'],
-  [1100, 'et ressors ton mot de passe de 1974, il va servir… @+ (H)'],
+  [1100, "WAAAH !! tu m'as fé tomber de ma chaise avec ton wizz xD"],
+  [1700, "ok ok promis c promis : la sortie c'est 2006 !! ya 1 manchot ki t'attend là-bas ;)"],
+  [1000, 'et ressors ton mot de passe de 1974, il va servir... @+ (H)'],
 ];
 
 const OTHERS = [
-  { nick: '♥ Mél@nie ♥ vive les vacances !!!', status: 'online', text: 'Mél@nie est en ligne… mais c’est Kev1n qui connaît la sortie.' },
-  { nick: '[DJ] Thomas ♫ Tragédie - Hey Oh', status: 'busy', text: 'Thomas est Occupé : il prépare sa compil pour samedi.' },
+  {
+    nick: '♥ Mél@nie ♥ vive les vacances !!!',
+    status: 'online',
+    text: 'Mél@nie est en ligne… mais c’est Kev1n qui connaît la sortie.',
+  },
+  {
+    nick: '[DJ] Thomas ♫ Tragédie - Hey Oh',
+    status: 'busy',
+    text: 'Thomas est Occupé : il prépare sa compil pour samedi.',
+  },
 ];
 
 const OFFLINE = ['Maman', 'Juju ^^', 'Seb [CS] le boss', 'Mme Martin (techno)'];
@@ -103,7 +111,7 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
     });
     ctx.timeout(close, 7000);
     while (toasts.children.length > 3) toasts.lastElementChild.remove();
-    return el;
+    return close;
   }
 
   // ——— Historique de la conversation ———
@@ -151,7 +159,9 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
 
   function typing(on) {
     typingNow = on;
-    setStatusBar(on ? `${icon('pencil', 13)}<span>${emotify(nick(), 13)} est en train d’écrire un message…</span>` : undefined);
+    setStatusBar(
+      on ? `${icon('pencil', 13)}<span>${emotify(nick(), 13)} est en train d’écrire un message…</span>` : undefined,
+    );
     chat?.el.classList.toggle('is-typing', on);
   }
 
@@ -161,7 +171,8 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
     const away = state === 'away';
     return `<div class="xp-im xp-chat">
       <div class="xp-im-tools" role="toolbar" aria-label="Actions">${TOOLS.map(
-        ([ic, label], i) => `<button type="button" class="xp-im-tool" data-tool="${i}" title="${esc(label)}">${icon(ic, 26)}<span>${esc(label)}</span></button>`,
+        ([ic, label], i) =>
+          `<button type="button" class="xp-im-tool" data-tool="${i}" title="${esc(label)}">${icon(ic, 26)}<span>${esc(label)}</span></button>`,
       ).join('')}</div>
       <div class="xp-im-to"><span class="xp-im-to-label">À :</span>${statusIcon(away ? 'away' : 'online', 13)}
         <span class="xp-im-to-nick">${emotify(nick(), 14)}</span><span class="xp-im-to-st">(${LABEL[away ? 'away' : 'online']})</span></div>
@@ -194,24 +205,21 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
 
   function openChat({ minimized = false } = {}) {
     if (live(chat)) {
-      if (!minimized) {
-        chat.restore();
-        afterOpen();
-      }
+      if (!minimized) chat.restore();
       return chat;
     }
-    const w = Math.min(560, view.w - 16);
-    const h = Math.min(486, view.h - TASKBAR_H - 16);
+    const w = Math.min(600, view.w - 16);
+    const h = Math.min(520, view.h - TASKBAR_H - 16);
     chat = desk.open({
       id: 'chat',
       title: `${nick()} - Conversation`,
       icon: icon('messenger', 16),
-      x: Math.max(8, Math.round((view.w - w) / 2) - (view.w >= 1000 ? 110 : 0)),
-      y: Math.max(8, Math.round((view.h - TASKBAR_H - h) / 2) - 6),
+      x: Math.max(8, Math.round((view.w - w) / 2) - (view.w >= 1000 ? 126 : 0)),
+      y: Math.max(8, Math.round((view.h - TASKBAR_H - h) / 2) - (view.w >= 1000 ? 70 : 0)),
       w,
       h,
       maximized: small(),
-      menu: ['&Fichier', '&Edition', '&Actions', '&Outils', '&?'],
+      menu: ['&Fichier', '&Édition', '&Actions', '&Outils', '&?'],
       status: '',
       className: 'xp-im-win xp-chat-win',
       inactive: minimized,
@@ -221,6 +229,44 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
     setStatusBar();
     if (minimized) chat.minimize();
     bindChat(chat);
+    // Les menus déclenchent les mêmes boutons que les barres d'outils
+    const useTool = (i) => () => chat.body.querySelector(`[data-tool="${i}"]`)?.click();
+    const useFmt = (name) => () => chat.body.querySelector(`[data-fmt="${name}"]`)?.click();
+    shell.menus(chat, [
+      [
+        { label: 'Envoyer un fichier ou une photo…', run: useTool(1) },
+        '-',
+        { label: 'Fermer', run: () => chat?.close() },
+      ],
+      [
+        { label: 'Annuler', disabled: true },
+        '-',
+        { label: 'Couper', disabled: true },
+        { label: 'Copier', disabled: true },
+        { label: 'Coller', disabled: true },
+      ],
+      [
+        { label: 'Inviter un contact à cette conversation…', run: useTool(0) },
+        { label: 'Envoyer un Wizz', run: useFmt('wizz') },
+        '-',
+        { label: 'Démarrer une conversation vidéo', run: useTool(2) },
+        { label: 'Démarrer une conversation audio', run: useTool(3) },
+      ],
+      [
+        { label: 'Émoticônes…', run: useFmt('emo') },
+        { label: 'Couleur du texte…', run: useFmt('font') },
+      ],
+      [
+        {
+          label: 'À propos de la Messagerie',
+          run: () =>
+            shell.balloon(chat.titlebar, {
+              title: 'Messagerie 7.0',
+              text: 'Recréation pédagogique « dans l’esprit » des messageries instantanées des années 2000.',
+            }),
+        },
+      ],
+    ]);
     chat.on('restore', () => shell.flash(chat, false));
     chat.on('focus', () => {
       shell.flash(chat, false);
@@ -235,14 +281,22 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
   }
 
   let opened = false;
+  let closeNews = null;
   function afterOpen() {
+    closeNews?.();
     const history = historyEl();
     if (history) history.scrollTop = history.scrollHeight;
     if (!opened) {
       opened = true;
       ctx.progress();
     }
-    if (!ctx.touch && !waking) setTimeout(() => live(chat) && !chat.minimized && chat.body.querySelector('textarea')?.focus({ preventScroll: true }), 30);
+    // Comme à l'époque, la fenêtre activée donne la main à la zone de saisie
+    // (sauf au tactile : inutile d'ouvrir le clavier virtuel d'office)
+    if (ctx.touch || waking) return;
+    setTimeout(() => {
+      if (!live(chat) || chat.minimized || chat.el.contains(document.activeElement)) return;
+      chat.body.querySelector('textarea')?.focus({ preventScroll: true });
+    }, 30);
   }
 
   function bindChat(win) {
@@ -264,8 +318,14 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
       const btn = event.target.closest('[data-tool]');
       if (!btn) return;
       audio.click();
-      const [, label, text] = TOOLS[Number(btn.dataset.tool)];
+      const [id, label, text] = TOOLS[Number(btn.dataset.tool)];
       push({ type: 'info', text: state === 'away' ? text : `${label} : ~*~ Kev1n ~*~ préfère discuter !` });
+      // La webcam posée sur l'écran s'allume le temps de l'invitation
+      if (id === 'webcam') {
+        const cam = ctx.props.bezel.querySelector('.xp-webcam');
+        cam?.classList.add('is-on');
+        ctx.timeout(() => cam?.classList.remove('is-on'), 4000);
+      }
     });
     win.body.querySelector('.xp-im-format').addEventListener('click', (event) => {
       const btn = event.target.closest('[data-fmt]');
@@ -281,7 +341,11 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
       else {
         closePops();
         const what = { winks: 'votre clin d’œil', background: 'votre arrière-plan', voice: 'votre message vocal' }[fmt];
-        push({ type: 'info', text: state === 'away' ? `${NICK.away} est Absent : il ne verra pas ${what}.` : 'Plus tard : la sortie d’abord !' });
+        push({
+          type: 'info',
+          text:
+            state === 'away' ? `${NICK.away} est Absent : il ne verra pas ${what}.` : 'Plus tard : la sortie d’abord !',
+        });
       }
     });
     if (ctx.hints.level >= 2) win.el.classList.add('xp-hint-wizz');
@@ -307,10 +371,14 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
     pop.innerHTML =
       kind === 'font'
         ? `<p>Couleur du texte</p><div class="xp-im-swatches">${COLORS.map(
-            (c) => `<button type="button" style="--c:${c}" data-color="${c}" aria-label="Couleur ${c}"${c === color ? ' aria-pressed="true"' : ''}></button>`,
+            (c) =>
+              `<button type="button" style="--c:${c}" data-color="${c}" aria-label="Couleur ${c}"${c === color ? ' aria-pressed="true"' : ''}></button>`,
           ).join('')}</div>`
         : `<div class="xp-im-emos">${Object.entries(SMILEYS)
-            .map(([k, s]) => `<button type="button" data-emo="${k}" title="${esc(`${s.label}  ${s.code}`)}">${smiley(k, 22)}</button>`)
+            .map(
+              ([k, s]) =>
+                `<button type="button" data-emo="${k}" title="${esc(`${s.label}  ${s.code}`)}">${smiley(k, 22)}</button>`,
+            )
             .join('')}</div>`;
     const left = chat.body.querySelector('.xp-im-left');
     left.append(pop);
@@ -339,6 +407,7 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
   ctx.on(ui, 'pointerdown', (event) => {
     if (pop && !pop.contains(event.target) && !event.target.closest('[data-fmt="font"], [data-fmt="emo"]')) closePops();
   });
+  ctx.on(window, 'keydown', (event) => event.key === 'Escape' && closePops());
 
   // ——— Écrire : le contact reste absent ———
 
@@ -360,7 +429,12 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
     if (sent === 4 && !hinted) {
       hinted = true;
       ctx.timeout(() => {
-        if (state === 'away' && !waking) push({ type: 'info', kind: 'help', text: 'Astuce : un contact ne lit pas vos messages ? Attirez son attention… sa fenêtre pourrait même trembler.' });
+        if (state === 'away' && !waking)
+          push({
+            type: 'info',
+            kind: 'help',
+            text: 'Astuce : un contact ne lit pas vos messages ? Attirez son attention… sa fenêtre pourrait même trembler.',
+          });
       }, 2000);
     }
   }
@@ -384,18 +458,18 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
     waking = true;
     chat.el.classList.remove('xp-hint-wizz');
     lock(true);
-    await ctx.wait(1500);
+    await ctx.wait(1300);
     wake();
-    await ctx.wait(900);
+    await ctx.wait(700);
     for (const [delay, text] of WAKE) {
       typing(true);
       await ctx.wait(delay);
       typing(false);
       push({ type: 'msg', from: 'kev', nick: NICK.online, text });
-      await ctx.wait(650);
+      await ctx.wait(550);
     }
     ctx.note('Wizz', { key: 'xp-wizz', label: 'Réveille un contact absent' });
-    await ctx.wait(1500);
+    await ctx.wait(1400);
     ctx.complete();
   }
 
@@ -438,7 +512,10 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
   }
 
   function kevHtml() {
-    return contactHtml({ nick: nick(), status: state === 'away' ? 'away' : 'online' }, 'kev').replace('<li>', '<li class="xp-contact-kev">');
+    return contactHtml({ nick: nick(), status: state === 'away' ? 'away' : 'online' }, 'kev').replace(
+      '<li>',
+      '<li class="xp-contact-kev">',
+    );
   }
 
   function listHtml() {
@@ -475,13 +552,21 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
       list.body.querySelectorAll('.xp-contact.is-selected').forEach((b) => b.classList.remove('is-selected'));
       btn.classList.add('is-selected');
     });
-    onDoubleActivate(btn, () => {
-      const id = btn.dataset.contact;
-      audio.click();
-      if (id === 'kev') openChat();
-      else if (id.startsWith('off')) shell.balloon(btn, { title: 'Contact hors ligne', text: 'Ce contact est Hors ligne : il ne recevra pas votre message.' });
-      else shell.balloon(btn, { title: OTHERS[Number(id)].nick, text: OTHERS[Number(id)].text });
-    }, { signal: ctx.signal });
+    onDoubleActivate(
+      btn,
+      () => {
+        const id = btn.dataset.contact;
+        audio.click();
+        if (id === 'kev') openChat();
+        else if (id.startsWith('off'))
+          shell.balloon(btn, {
+            title: 'Contact hors ligne',
+            text: 'Ce contact est Hors ligne : il ne recevra pas votre message.',
+          });
+        else shell.balloon(btn, { title: OTHERS[Number(id)].nick, text: OTHERS[Number(id)].text });
+      },
+      { signal: ctx.signal },
+    );
   }
 
   function openContacts({ quiet = false } = {}) {
@@ -506,9 +591,28 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
       body: listHtml(),
     });
     list.body.querySelectorAll('.xp-contact').forEach(bindContact);
+    shell.menus(list, [
+      [{ label: 'Se déconnecter', disabled: true }, '-', { label: 'Fermer', run: () => list?.close() }],
+      [{ label: 'Ajouter un contact…', run: () => list.body.querySelector('.xp-list-add').click() }],
+      [{ label: 'Envoyer un message instantané…', run: () => openChat() }],
+      [{ label: 'Options…', disabled: true }],
+      [
+        {
+          label: 'À propos de la Messagerie',
+          run: () =>
+            shell.balloon(list.titlebar, {
+              title: 'Messagerie 7.0',
+              text: 'Recréation pédagogique « dans l’esprit » des messageries instantanées des années 2000.',
+            }),
+        },
+      ],
+    ]);
     list.body.querySelector('.xp-list-add').addEventListener('click', (event) => {
       audio.click();
-      shell.balloon(event.currentTarget, { title: 'Ajouter un contact', text: 'Votre liste est déjà bien remplie. Et puis, c’est Kev1n qui a la sortie !' });
+      shell.balloon(event.currentTarget, {
+        title: 'Ajouter un contact',
+        text: 'Votre liste est déjà bien remplie. Et puis, c’est Kev1n qui a la sortie !',
+      });
     });
     list.on('close', () => {
       list = null;
@@ -523,10 +627,15 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
     openChat({ minimized: true });
     shell.flash(chat, true);
     audio.ding();
-    toast({
+    closeNews = toast({
       html: `<b>${emotify(NICK.away, 14)}</b> dit :<br><span class="xp-toast-msg">${emotify(HISTORY.at(-1), 14)}</span>`,
       onOpen: () => openChat(),
     });
+    // Tant qu'on ne l'a pas ouverte, la conversation se rappelle à nous
+    ctx.interval(() => {
+      if (live(chat) && chat.minimized && shell.buttonFor(chat)?.classList.contains('is-flash'))
+        shell.flash(chat, true);
+    }, 16000);
   }
 
   // Indices : le bouton Wizz s'illumine, la fenêtre se rappelle à nous
@@ -555,5 +664,5 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
     toasts.remove();
   }
 
-  return { start, openChat, openContacts, onHint, relayout, destroy };
+  return { start, openChat, openContacts, onHint, relayout, destroy, chat: () => chat };
 }

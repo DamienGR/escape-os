@@ -204,7 +204,7 @@ export function createShell(mountEl, ctx, options = {}) {
 
   // ——— Boutons de la barre des tâches ———
 
-  const onTaskbar = (win) => win.spec.taskbar !== false && !win.el.classList.contains('wm-dialog');
+  const onTaskbar = (win) => win.spec.taskbar === true || (win.spec.taskbar !== false && !win.el.classList.contains('wm-dialog'));
 
   function syncTasks() {
     const wins = desk.windows.filter(onTaskbar);
@@ -808,7 +808,7 @@ export function createShell(mountEl, ctx, options = {}) {
         event.preventDefault();
         event.stopPropagation();
         if (spec.closable !== false) finish(buttons[cancelIndex]?.replace(/&/g, '') ?? null);
-      } else if (event.key === 'Enter' && event.target.closest('input:not([type=radio]):not([type=checkbox]), select')) {
+      } else if (event.key === 'Enter' && !event.target.closest('button, textarea, [role="treeitem"]')) {
         event.preventDefault();
         win.body.querySelector(`.w9x-dlg-buttons .wm-push[data-i="${defIndex}"]`)?.click();
       }

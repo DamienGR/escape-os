@@ -6,7 +6,7 @@ import { ICONS, GLYPHS, emblem, wallpaper } from './phone/art.js';
 import { h, play, calm, EASE, EASE_IN, fadeIn, fadeOut } from './phone/kit.js';
 import { photosApp } from './phone/photos.js';
 import { phoneApp } from './phone/dialer.js';
-import { MINI_APPS } from './phone/apps.js';
+import { MINI_APPS, SMS_THREAD } from './phone/apps.js';
 
 const GRID = [
   ['messages', 'Messages'],
@@ -36,22 +36,22 @@ const LABELS = Object.fromEntries([...GRID, ...DOCK]);
 
 // Applications sans écran : un message d'époque suffit.
 const ALERTS = {
-  camera: ['Appareil photo', '2 mégapixels, sans flash ni vidéo : c’était ça, la photo au téléphone en 2007.'],
+  camera: ['Appareil photo', '2 mégapixels, sans flash ni vidéo\u00a0: c’était ça, la photo au téléphone en 2007.'],
   videos: ['Vidéos', 'Aucune vidéo. Synchronisez votre téléphone avec votre ordinateur pour en ajouter.'],
-  stocks: ['Bourse', 'Cours indisponibles : le réseau EDGE est bien lent. La 3G n’arrivera qu’avec le modèle suivant, en 2008.'],
-  maps: ['Plans', 'Position introuvable : ce téléphone n’a pas de puce GPS. Elle n’arrivera qu’en 2008.'],
+  stocks: ['Bourse', 'Cours indisponibles\u00a0: le réseau EDGE est bien lent. La 3G n’arrivera qu’avec le modèle suivant, en 2008.'],
+  maps: ['Plans', 'Position introuvable\u00a0: ce téléphone n’a pas de puce GPS. Elle n’arrivera qu’en 2008.'],
   contacts: ['Contacts', 'Aucun contact. Le répertoire se remplit en synchronisant le téléphone avec un ordinateur.'],
   store: ['Boutique', 'La boutique de musique sans fil n’ouvrira qu’à l’automne 2007.'],
-  apps: ['Applis', 'Le magasin d’applications n’ouvrira qu’en juillet 2008. En attendant, ce téléphone n’a que ses applications d’origine !'],
-  games: ['Jeux', 'Aucun jeu installé : il faudra attendre le magasin d’applications, en 2008.'],
-  mail: ['Mail', 'Relève du courrier par le réseau EDGE… Un peu de patience : nous sommes en 2007 !'],
+  apps: ['Applis', 'Le magasin d’applications n’ouvrira qu’en juillet 2008. En attendant, ce téléphone n’a que ses applications d’origine\u00a0!'],
+  games: ['Jeux', 'Aucun jeu installé\u00a0: il faudra attendre le magasin d’applications, en 2008.'],
+  mail: ['Mail', 'Relève du courrier par le réseau EDGE… Un peu de patience\u00a0: nous sommes en 2007\u00a0!'],
 };
 
 // Ton de la barre d'état selon l'écran
 const TONES = { photos: 'clear', phone: 'black', clock: 'black', calc: 'black', weather: 'black', music: 'black' };
 
 const START = 9 * 60 + 42; // 9:42, le matin de la présentation
-const SMS = { from: 'Moi (2026)', text: 'Le chemin du retour est dans tes photos.' };
+const SMS = { from: 'Moi (2026)', text: SMS_THREAD.at(-1) };
 
 const iconButton = ([id, label], { dock = false } = {}) => `
   <button type="button" class="ph-icon" data-app="${id}" aria-label="${label}">
@@ -68,14 +68,24 @@ export default {
   era: 'Smartphone',
   year: 2007,
 
+  // Boutons latéraux du boîtier : veille, silence, volume (décor seulement)
+  decor(props) {
+    const hw = document.createElement('div');
+    hw.className = 'ph-hw';
+    hw.setAttribute('aria-hidden', 'true');
+    hw.innerHTML = '<i class="ph-hw-sleep"></i><i class="ph-hw-mute"></i><i class="ph-hw-up"></i><i class="ph-hw-down"></i>';
+    props.bezel.append(hw);
+  },
+
   mount(root, ctx) {
     const { audio } = ctx;
-    const state = { phase: 'boot', airplane: false, smsRead: false, smsShown: false, found: false };
-    let current = null; // application ouverte : { id, el, iconEl, api }
+    const state = { phase: 'boot', airplane: false, smsShown: false, smsRead: false, photosSeen: false, found: false };
+    let current = null; // application ouverte : { id, el, icon, api }
     let busy = false;
     let alertEl = null;
     let alertDone = null;
-    let lockTaps = 0;
+    let alertReturn = null;
+    let quickTimer = 0;
 
     root.innerHTML = `
       <div class="ph" data-phase="boot">
@@ -124,6 +134,18 @@ export default {
     const slideLabel = q('.ph-slide-label');
     const badge = q('.ph-badge');
 
+    // Le focus ne suit l'action qu'au clavier : pas d'anneau pour la souris ou le doigt.
+    let keyboard = false;
+    ctx.on(window, 'keydown', () => {
+      keyboard = true;
+    });
+    ctx.on(window, 'pointerdown', () => {
+      keyboard = false;
+    });
+    const focus = (el) => {
+      if (keyboard) el?.focus({ preventScroll: true });
+    };
+
     const setPhase = (phase) => {
       state.phase = phase;
       phone.dataset.phase = phase;
@@ -156,12 +178,15 @@ export default {
       const done = alertDone;
       alertEl = null;
       alertDone = null;
+      el.inert = true;
       play(el, fadeOut, { duration: 200 }).then(() => el.remove());
+      if (alertReturn?.isConnected) focus(alertReturn);
       done?.(value);
     }
 
     function alert(title, text, { buttons = ['OK'] } = {}) {
       closeAlert(null);
+      alertReturn = document.activeElement;
       const el = h(`<div class="ph-alert-veil">
         <div class="ph-alert" role="alertdialog" aria-modal="true" aria-labelledby="ph-alert-title" aria-describedby="ph-alert-text">
           <p class="ph-alert-title" id="ph-alert-title"></p>
@@ -187,7 +212,7 @@ export default {
         ],
         { duration: 420, easing: 'ease-out', calm: fadeIn },
       );
-      el.querySelector('.is-default').focus({ preventScroll: true });
+      focus(el.querySelector('.is-default'));
       return new Promise((resolve) => {
         alertDone = resolve;
         el.addEventListener('click', (event) => {
@@ -221,27 +246,27 @@ export default {
       play(lock, fadeIn, { duration: 500 });
       play(q('.ph-lock-top'), [{ transform: 'translateY(-24px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 600, delay: 80 });
       play(q('.ph-lock-bottom'), [{ transform: 'translateY(24px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 600, delay: 80 });
-      knob.focus({ preventScroll: true });
+      focus(knob);
     }
 
     // ——— Glisser pour déverrouiller ———
 
-    slider(rail, knob, {
+    const unlocker = slider(rail, knob, {
       signal: ctx.signal,
       onProgress: (p) => {
         slideLabel.style.opacity = String(Math.max(0, 1 - p * 2.6));
         knob.setAttribute('aria-valuenow', String(Math.round(p * 100)));
       },
-      onComplete: () => unlock(),
+      // Hors de l'écran verrouillé, la glissière revient au départ.
+      onComplete: () => (state.phase === 'lock' ? unlock() : unlocker.reset()),
     });
 
     // Un simple toucher ne fait rien… sauf rebondir la flèche, pour l'exemple.
     function nudgeKnob() {
       if (state.phase !== 'lock') return;
-      lockTaps += 1;
-      slideLabel.classList.remove('is-quick');
-      void slideLabel.offsetWidth;
       slideLabel.classList.add('is-quick');
+      ctx.clear(quickTimer);
+      quickTimer = ctx.timeout(() => slideLabel.classList.remove('is-quick'), 2400);
       if (calm()) return;
       knob.animate(
         [
@@ -281,7 +306,7 @@ export default {
       lock.hidden = true;
       anims.flat().forEach((a) => a?.cancel?.());
       setPhase('home');
-      home.querySelector('.ph-icon')?.focus({ preventScroll: true });
+      focus(home.querySelector('.ph-icon'));
       if (!state.smsShown) receiveSms().catch(() => {});
     }
 
@@ -365,6 +390,7 @@ export default {
       audio,
       state,
       alert,
+      focus,
       time,
       minutes,
       current: () => current?.id ?? null,
@@ -390,8 +416,16 @@ export default {
       const el = h(`<section class="ph-app ph-app-${id}" aria-label="${LABELS[id]}"></section>`);
       apps.append(el);
       current = { id, el, icon, api: null };
+      try {
+        current.api = build(el, kit, opts) ?? {};
+      } catch (error) {
+        console.error(error);
+        el.remove();
+        current = null;
+        busy = false;
+        return;
+      }
       setTone(TONES[id] ?? 'gray');
-      current.api = build(el, kit, opts) ?? {};
       if (id === 'photos' && !state.photosSeen) {
         state.photosSeen = true;
         ctx.progress();
@@ -407,7 +441,7 @@ export default {
       a.cancel();
       b.cancel();
       busy = false;
-      el.querySelector('button, [tabindex="0"]')?.focus({ preventScroll: true });
+      focus(current?.api?.initialFocus ?? [...el.querySelectorAll('button, [tabindex="0"]')].find((node) => node.offsetParent));
     }
 
     async function close() {
@@ -430,12 +464,29 @@ export default {
       b.cancel();
       current = null;
       busy = false;
-      icon.focus({ preventScroll: true });
+      focus(icon);
     }
+
+    // Clavier : flèches entre les icônes, Échap comme bouton principal
+    ctx.on(home, 'keydown', (event) => {
+      const icons = [...home.querySelectorAll('.ph-icon')];
+      const i = icons.indexOf(event.target.closest('.ph-icon'));
+      const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -4, ArrowDown: 4 }[event.key];
+      if (i < 0 || !step) return;
+      event.preventDefault();
+      icons[Math.min(icons.length - 1, Math.max(0, i + step))].focus();
+    });
+    ctx.on(window, 'keydown', (event) => {
+      if (event.key !== 'Escape' || !(root.contains(event.target) || event.target === document.body)) return;
+      if (alertEl) closeAlert(null);
+      else if (state.phase === 'home' && current) pressHome();
+    });
 
     // ——— Bouton principal ———
 
-    ctx.onHardware('home', () => {
+    ctx.onHardware('home', () => pressHome());
+
+    function pressHome() {
       audio.click();
       if (state.phase === 'lock') nudgeKnob();
       if (state.phase !== 'home') return;
@@ -448,7 +499,7 @@ export default {
       }
       if (current.api?.onHome?.() === false) return;
       close();
-    });
+    }
 
     // ——— Indices : l'icône utile se signale ———
 

@@ -19,7 +19,8 @@ const KEYS = [
   ['#', ''],
 ];
 
-const ERAS = { 1965: '1965', 1974: '1974', 1981: '1981', 1992: '1992', 1995: '1995', 1998: '1998', 2001: '2001', 2006: '2006' };
+// Les années déjà traversées : mauvaise direction
+const PAST = ['1965', '1974', '1981', '1992', '1995', '1998', '2001', '2006'];
 const EMERGENCY = ['15', '17', '18', '112', '114', '115', '119', '911', '999'];
 
 const NOT_ASSIGNED = 'Le numéro que vous avez demandé n’est pas attribué.';
@@ -27,9 +28,9 @@ const NOT_ASSIGNED = 'Le numéro que vous avez demandé n’est pas attribué.';
 // Réponse de l'opérateur selon le numéro composé
 function outcome(number) {
   if (number === '2026') return { ok: true };
-  if (EMERGENCY.includes(number)) return { text: 'Ceci est une simulation : aucun appel réel n’est passé.', tone: 'none', error: false };
-  if (number === '2007') return { text: 'Occupé… vous appelez votre propre époque !', tone: 'busy', error: true };
-  if (ERAS[number]) return { text: `Mauvaise direction : ce numéro mène en ${ERAS[number]}. Le présent est plus loin.`, tone: 'sit', error: true };
+  if (EMERGENCY.includes(number)) return { text: 'Ceci est une simulation\u00a0: aucun appel réel n’est passé.', tone: 'none', error: false };
+  if (number === '2007') return { text: 'Occupé… vous appelez votre propre époque\u00a0!', tone: 'busy', error: true };
+  if (PAST.includes(number)) return { text: `Mauvaise direction\u00a0: ce numéro mène en ${number}. Le présent est plus loin.`, tone: 'sit', error: true };
   return { text: NOT_ASSIGNED, tone: 'sit', error: true };
 }
 
@@ -59,6 +60,7 @@ export function phoneApp(host, kit) {
     out.textContent = digits;
     out.classList.toggle('is-long', digits.length > 9);
     delBtn.classList.toggle('is-visible', digits.length > 0);
+    delBtn.disabled = !digits;
   };
 
   const flash = (btn) => {
@@ -90,8 +92,10 @@ export function phoneApp(host, kit) {
   ctx.on(delBtn, 'click', erase);
   ctx.on(callBtn, 'click', () => dialNumber());
 
-  // Clavier physique : chiffres, Retour arrière, Entrée
-  ctx.on(window, 'keydown', (event) => {
+  // Clavier physique : chiffres, Retour arrière, Entrée (le temps que l'appli est ouverte)
+  const life = new AbortController();
+  ctx.signal.addEventListener('abort', () => life.abort(), { once: true });
+  const onKey = (event) => {
     if (call || kit.current() !== 'phone' || event.ctrlKey || event.metaKey || event.altKey) return;
     if (event.target.closest?.('input, textarea, [contenteditable]')) return;
     if (/^[0-9*#]$/.test(event.key)) {
@@ -104,7 +108,8 @@ export function phoneApp(host, kit) {
       event.preventDefault();
       dialNumber();
     }
-  });
+  };
+  window.addEventListener('keydown', onKey, { signal: life.signal });
 
   // ——— Appel ———
 
@@ -140,7 +145,7 @@ export function phoneApp(host, kit) {
     const screen = h(`<section class="ph-incall" role="dialog" aria-label="Appel du ${number}">
       <div class="ph-incall-top">
         <p class="ph-incall-name">${number}</p>
-        <p class="ph-incall-status" role="status">appel…</p>
+        <p class="ph-incall-status" role="status">appel en cours…</p>
       </div>
       <div class="ph-incall-grid" aria-hidden="true">
         ${[
@@ -164,7 +169,7 @@ export function phoneApp(host, kit) {
     const current = call;
     audio.tap();
     host.append(screen);
-    screen.querySelector('.ph-hangup').focus({ preventScroll: true });
+    kit.focus(screen.querySelector('.ph-hangup'));
     ctx.on(screen.querySelector('.ph-hangup'), 'click', () => hangUp());
     await play(screen, [{ transform: 'translateY(100%)' }, { transform: 'translateY(0)' }], { duration: 420, calm: fadeIn }).then((a) =>
       a.cancel(),
@@ -176,7 +181,7 @@ export function phoneApp(host, kit) {
       msg.hidden = false;
       msg.querySelector('p').textContent = text;
       screen.classList.add('has-msg');
-      play(msg, [{ opacity: 0, transform: 'scale(.94)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 300 });
+      play(msg, [{ opacity: 0, transform: 'scale(.94)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 320, delay: 180 });
     };
 
     try {
@@ -227,18 +232,20 @@ export function phoneApp(host, kit) {
     audio.tone({ freq: 480, at: 0.16, release: 0.12, vol: 0.04 });
     current.screen.querySelector('.ph-incall-status').textContent = 'appel terminé';
     current.screen.classList.add('is-ended');
-    await new Promise((resolve) => setTimeout(resolve, 650));
+    await ctx.wait(650).catch(() => {});
     await play(current.screen, [{ transform: 'translateY(0)' }, { transform: 'translateY(100%)' }], { duration: 380, calm: fadeOut });
     current.screen.remove();
     dial.inert = false;
     call = null;
     digits = '';
     render();
+    kit.focus(callBtn);
   }
 
   render();
 
   return {
+    initialFocus: callBtn,
     // Bouton principal pendant un appel : on raccroche (sauf quand 2026 décroche)
     onHome() {
       if (!call) return true;
@@ -251,6 +258,7 @@ export function phoneApp(host, kit) {
       flash(callBtn);
     },
     dispose() {
+      life.abort();
       call?.bus?.stop(0.05);
     },
   };

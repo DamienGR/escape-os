@@ -1,0 +1,1400 @@
+/* Écran 7 — Ubuntu 6.06 (2006) : bureau GNOME 2 dans l'esprit du thème Human,
+   brun et orangé. Panneaux beiges, barres de titre orangées aux coins arrondis,
+   terminal noir sur blanc, manchot dans un coin, et un cube façon compiz. */
+
+@import url('../ui/windows.css');
+@import url('../ui/terminal.css');
+
+.screen-ubuntu {
+  background: #120a06;
+}
+
+.ub {
+  --ub-mono: 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  --ub-sel-a: #f3a95c;
+  --ub-sel-b: #db7a2b;
+  --ub-gtk: #efebe5;
+  --ub-line: #a99c86;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: #2e2c28;
+  font: 12.5px / 1.3 var(--font-ubuntu);
+  background: radial-gradient(ellipse 80% 70% at 50% 42%, #2c1d14, #0d0705 72%);
+}
+
+.ub button {
+  cursor: default;
+}
+
+/* ——— Démarrage ——— */
+
+.ub-boot {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 44%, rgba(255, 140, 50, 0.16), transparent 70%),
+    radial-gradient(ellipse 90% 80% at 50% 45%, #4a2812, #241208 60%, #110803);
+  opacity: 0;
+  transition: opacity 0.45s ease-out;
+}
+
+.ub-boot.is-on {
+  opacity: 1;
+}
+
+.ub-boot.is-leaving {
+  opacity: 0;
+  transition-duration: 0.6s;
+}
+
+.ub-boot-center {
+  text-align: center;
+  color: #f4e7d6;
+}
+
+.ub-boot-emblem {
+  display: block;
+  width: 124px;
+  height: 124px;
+  margin: 0 auto;
+  filter: drop-shadow(0 0 22px rgba(255, 150, 60, 0.3));
+}
+
+.ub-boot-name {
+  margin: 10px 0 0;
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.ub-boot-name span {
+  font-weight: 400;
+  opacity: 0.66;
+}
+
+.ub-boot-bar {
+  width: 250px;
+  height: 7px;
+  margin: 28px auto 0;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.ub-boot-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #ffc27e, #e4741f);
+  box-shadow: 0 0 10px rgba(255, 150, 60, 0.6);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.5s ease-out;
+}
+
+.ub-boot-status {
+  min-height: 1.4em;
+  margin: 14px 0 0;
+  color: rgba(244, 231, 214, 0.5);
+  font-size: 13px;
+}
+
+/* Arrivée du bureau : panneaux qui glissent, fond qui s'allume */
+.ub-panel,
+.ub-desk,
+.ub-wallpaper {
+  transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.3, 1), opacity 0.6s ease-out;
+}
+
+.ub.is-booting .ub-panel-top {
+  transform: translateY(-100%);
+}
+
+.ub.is-booting .ub-panel-bottom {
+  transform: translateY(100%);
+}
+
+.ub.is-booting .ub-desk {
+  opacity: 0;
+}
+
+.ub.is-booting .ub-wallpaper {
+  opacity: 0.4;
+}
+
+.ub.is-arriving .ub-termwin {
+  animation: ub-win-in 0.35s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+@keyframes ub-win-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+/* ——— Le cube (le saut) ——— */
+
+.ub-world {
+  position: absolute;
+  inset: 0;
+  perspective: 1500px;
+  perspective-origin: 50% 46%;
+}
+
+.ub-cube {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 50% -512px;
+}
+
+.ub-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ub-face-next {
+  display: none;
+  background: radial-gradient(ellipse 70% 60% at 50% 45%, #1f2c3f, #080b12 72%);
+  transform-origin: 0 50%;
+  transform: translateX(100%) rotateY(90deg);
+  backface-visibility: hidden;
+}
+
+.ub.is-cubing .ub-cube {
+  transform-style: preserve-3d;
+  animation: ub-cube 1.8s cubic-bezier(0.55, 0, 0.25, 1) forwards;
+}
+
+.ub.is-cubing .ub-face-main {
+  backface-visibility: hidden;
+}
+
+.ub.is-cubing .ub-face-next {
+  display: block;
+}
+
+@keyframes ub-cube {
+  0% {
+    transform: none;
+  }
+  26% {
+    transform: translateZ(-460px);
+  }
+  78%,
+  100% {
+    transform: translateZ(-460px) rotateY(-90deg);
+  }
+}
+
+.ub-next-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 44%, rgba(140, 180, 255, 0.22), transparent 45%);
+}
+
+.ub-next-phone {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 150px;
+  height: 278px;
+  margin: -139px 0 0 -75px;
+  border: 3px solid rgba(235, 242, 255, 0.9);
+  border-radius: 26px;
+  box-shadow:
+    0 0 38px rgba(140, 180, 255, 0.45),
+    inset 0 0 28px rgba(140, 180, 255, 0.2);
+}
+
+.ub-next-phone i {
+  position: absolute;
+  left: 50%;
+  bottom: 13px;
+  width: 26px;
+  height: 26px;
+  margin-left: -13px;
+  border: 2px solid rgba(235, 242, 255, 0.75);
+  border-radius: 50%;
+}
+
+.ub-next-year {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 44%;
+  margin: 168px 0 0;
+  color: #e4ecff;
+  font: 300 46px var(--font-ui);
+  letter-spacing: 0.32em;
+  text-align: center;
+  text-indent: 0.32em;
+  text-shadow: 0 0 26px rgba(140, 180, 255, 0.6);
+}
+
+.ub.is-fading .ub-world {
+  opacity: 0;
+  transition: opacity 0.6s ease-in;
+}
+
+/* ——— Fond d'écran ——— */
+
+.ub-wallpaper {
+  position: absolute;
+  inset: 0;
+  background: #3a1d0c center / cover no-repeat;
+}
+
+/* ——— Panneaux ——— */
+
+.ub-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  height: 25px;
+  padding: 0 2px;
+  background: linear-gradient(180deg, #f7f4ef, #e6e0d6 52%, #d9d2c6);
+  color: #2e2c28;
+  font-size: 12.5px;
+  user-select: none;
+}
+
+.ub-panel-top {
+  top: 0;
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 1px 0 #a39782,
+    0 2px 5px rgba(0, 0, 0, 0.32);
+}
+
+.ub-panel-bottom {
+  bottom: 0;
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 -1px 0 #a39782,
+    0 -2px 5px rgba(0, 0, 0, 0.26);
+}
+
+.ub-panel button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+
+.ub-panel-menus {
+  display: flex;
+  height: 100%;
+}
+
+.ub-pm {
+  gap: 5px;
+  padding: 0 7px !important;
+}
+
+.ub-pm:hover,
+.ub-pm.is-open,
+.ub-pm:focus-visible {
+  outline: none;
+  background: linear-gradient(180deg, var(--ub-sel-a), var(--ub-sel-b));
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(120, 50, 0, 0.4);
+}
+
+.ub-pm-emblem {
+  width: 21px;
+  height: 21px;
+  margin: 0 -1px 0 -2px;
+}
+
+.ub-handle {
+  align-self: stretch;
+  flex: none;
+  width: 6px;
+  margin: 4px 3px;
+  background: radial-gradient(circle, rgba(70, 60, 45, 0.35) 0.9px, transparent 1.3px) 0 0 / 3px 3px;
+}
+
+.ub-launchers {
+  display: flex;
+  gap: 1px;
+}
+
+.ub-launch {
+  width: 29px;
+  border-radius: 3px;
+}
+
+.ub-launch:hover,
+.ub-launch:focus-visible,
+.ub-clock:hover,
+.ub-quit:hover,
+.ub-showdesk:hover,
+.ub-trash:hover {
+  outline: none;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(110, 95, 70, 0.25);
+}
+
+.ub-launch:active,
+.ub-showdesk:active,
+.ub-trash:active {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.ub-fill {
+  flex: 1;
+}
+
+.ub-tray {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 9px;
+}
+
+.ub-clock {
+  padding: 0 9px !important;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.ub-quit {
+  width: 28px;
+  margin-left: 2px;
+  border-radius: 3px;
+}
+
+.ub-showdesk {
+  width: 28px;
+  border-radius: 3px;
+}
+
+.ub-tasks {
+  display: flex;
+  flex: 1;
+  gap: 3px;
+  min-width: 0;
+  padding: 0 4px;
+}
+
+.ub-task {
+  flex: 0 1 196px;
+  justify-content: flex-start !important;
+  gap: 5px;
+  min-width: 0;
+  height: 21px !important;
+  padding: 0 7px !important;
+  border: 1px solid #b2a792 !important;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #fcfbf8, #e9e3d9) !important;
+  box-shadow: inset 0 1px 0 #fff;
+  text-align: left;
+}
+
+.ub-task:hover {
+  background: linear-gradient(180deg, #fff, #f0ebe2) !important;
+}
+
+.ub-task.is-active {
+  border-color: #9a8d77 !important;
+  background: linear-gradient(180deg, #cdc4b4, #ddd5c7) !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.28);
+}
+
+.ub-task.is-min .ub-task-label {
+  color: #81796c;
+}
+
+.ub-task-ico {
+  display: grid;
+  flex: none;
+}
+
+.ub-task-ico svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ub-task-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ub-workspaces {
+  display: flex;
+  gap: 1px;
+  padding: 0 6px;
+}
+
+.ub-ws {
+  position: relative;
+  width: 31px;
+  height: 19px !important;
+  border: 1px solid #887d6b !important;
+  background: linear-gradient(180deg, #b9b0a1, #cbc3b5) !important;
+}
+
+.ub-ws.is-active {
+  border-color: #8a4f1c !important;
+  background: linear-gradient(180deg, #e98f3f, #f2b06a) !important;
+}
+
+.ub-ws i {
+  position: absolute;
+  left: 6px;
+  top: 3px;
+  width: 16px;
+  height: 10px;
+  border: 1px solid #6e5c44;
+  border-top-width: 3px;
+  background: #fff;
+  opacity: 0;
+}
+
+.ub-ws.is-active i,
+.ub-ws[data-ws='1'] i {
+  opacity: 0.9;
+}
+
+.ub-face.is-other-ws .ub-ws[data-ws='1'] i {
+  opacity: 0.6;
+}
+
+.ub-trash {
+  width: 30px;
+  border-radius: 3px;
+}
+
+/* ——— Menus ——— */
+
+.ub-menus {
+  position: absolute;
+  inset: 0;
+  z-index: 9000;
+  pointer-events: none;
+}
+
+.ub-menu {
+  position: absolute;
+  min-width: 190px;
+  padding: 3px 0;
+  border: 1px solid #9b8f7a;
+  background: #f7f5f1;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.35);
+  pointer-events: auto;
+  animation: ub-menu-in 0.12s ease-out;
+}
+
+@keyframes ub-menu-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.ub-mi {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 25px;
+  padding: 0 24px 0 6px;
+  border: 0;
+  background: none;
+  color: #2e2c28;
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ub-mi-ico {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+}
+
+.ub-mi-ico svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ub-mi-tick {
+  font-weight: 700;
+}
+
+.ub-mi-label {
+  flex: 1;
+}
+
+.ub-mi-accel {
+  margin-left: 26px;
+  color: #8b8375;
+  font-size: 11.5px;
+}
+
+.ub-mi-arrow {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  border: 4px solid transparent;
+  border-left: 5px solid currentColor;
+  border-right: 0;
+  transform: translateY(-50%);
+}
+
+.ub-mi:hover:not(:disabled),
+.ub-mi:focus-visible,
+.ub-mi:focus:not(:disabled),
+.ub-mi.is-open {
+  outline: none;
+  background: linear-gradient(180deg, var(--ub-sel-a), var(--ub-sel-b));
+  color: #fff;
+}
+
+.ub-mi:hover .ub-mi-accel,
+.ub-mi:focus .ub-mi-accel {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ub-mi:disabled {
+  color: #a8a093;
+}
+
+.ub-msep {
+  margin: 3px 1px;
+  border: 0;
+  border-top: 1px solid #d3cbbd;
+  border-bottom: 1px solid #fff;
+}
+
+/* ——— Bureau, icônes ——— */
+
+.ub .ub-desk.wm-desktop {
+  inset: 25px 0 25px 0;
+}
+
+.ub-face.is-other-ws .ub-desk > .wm-win,
+.ub-face.is-other-ws .ub-task {
+  display: none;
+}
+
+.wm-theme-gnome {
+  color: #2e2c28;
+  font: 12.5px / 1.3 var(--font-ubuntu);
+}
+
+.wm-theme-gnome .wm-desk-icon {
+  width: 96px;
+  padding: 4px 2px;
+  border-radius: 5px;
+}
+
+.wm-theme-gnome .wm-desk-img {
+  width: 48px;
+  height: 48px;
+}
+
+.wm-theme-gnome .wm-desk-img svg {
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.4));
+}
+
+.wm-theme-gnome .wm-desk-label {
+  max-width: 94px;
+  margin-top: 3px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: #fff;
+  font-size: 12px;
+  line-height: 15px;
+  text-shadow: 0 1px 2px #000, 0 0 4px rgba(0, 0, 0, 0.7);
+}
+
+.wm-theme-gnome .wm-desk-icon.selected .wm-desk-label,
+.wm-theme-gnome .wm-desk-icon:focus-visible .wm-desk-label {
+  background: linear-gradient(180deg, var(--ub-sel-a), var(--ub-sel-b));
+  text-shadow: 0 1px 0 rgba(110, 45, 0, 0.5);
+}
+
+.wm-theme-gnome .wm-desk-icon.selected .wm-desk-img svg {
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.4)) sepia(0.5) saturate(1.6) brightness(0.9);
+}
+
+/* Pense-bête (applet Notes) */
+.ub-note {
+  position: absolute;
+  right: 22px;
+  top: 16px;
+  z-index: 1;
+  width: 196px;
+  border: 1px solid #c2ad42;
+  background: linear-gradient(180deg, #fff8b4, #f8e97f);
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.4);
+  color: #3b3415;
+  transform: rotate(0.6deg);
+}
+
+.ub-note header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 19px;
+  padding: 0 6px;
+  border-bottom: 1px solid #c9b448;
+  background: linear-gradient(180deg, #f6e488, #e8d05a);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ub-note header i {
+  width: 9px;
+  height: 9px;
+  background:
+    linear-gradient(45deg, transparent 43%, #6e6020 43% 57%, transparent 57%),
+    linear-gradient(-45deg, transparent 43%, #6e6020 43% 57%, transparent 57%);
+}
+
+.ub-note p {
+  margin: 0;
+  padding: 9px 11px 11px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Le manchot */
+.ub-penguin {
+  position: absolute;
+  right: 22px;
+  bottom: 4px;
+  z-index: 1;
+  width: 74px;
+  height: 88px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.ub-peng-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.ub-peng-body {
+  transform-origin: 42px 92px;
+  animation: ub-sway 7s ease-in-out infinite;
+}
+
+.ub-peng-eyes {
+  transform-origin: 42px 21.5px;
+  animation: ub-blink 5.2s infinite;
+}
+
+.ub-penguin.is-hopping .ub-peng-body {
+  animation: ub-hop 0.55s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.ub-penguin:focus-visible {
+  outline: 2px dashed #ffd28a;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+@keyframes ub-sway {
+  0%,
+  100% {
+    transform: rotate(-1.6deg);
+  }
+  50% {
+    transform: rotate(1.6deg);
+  }
+}
+
+@keyframes ub-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+@keyframes ub-hop {
+  40% {
+    transform: translateY(-14px) rotate(-4deg);
+  }
+  70% {
+    transform: translateY(0) rotate(2deg);
+  }
+}
+
+.ub-bubble {
+  position: absolute;
+  right: 58px;
+  bottom: 78px;
+  width: 214px;
+  padding: 8px 11px;
+  border: 1px solid #8f8575;
+  border-radius: 10px;
+  background: #fffdf8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  color: #2e2c28;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: left;
+  animation: ub-pop 0.22s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+}
+
+.ub-bubble::after {
+  content: '';
+  position: absolute;
+  right: -7px;
+  bottom: 10px;
+  width: 12px;
+  height: 12px;
+  border: solid #8f8575;
+  border-width: 1px 1px 0 0;
+  background: #fffdf8;
+  transform: rotate(45deg) skew(10deg, 10deg);
+}
+
+@keyframes ub-pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+}
+
+/* ——— Fenêtres (Metacity, thème Human) ——— */
+
+.wm-theme-gnome .wm-win {
+  border: 1px solid #8f8576;
+  border-radius: 7px 7px 2px 2px;
+  background: var(--ub-gtk);
+  box-shadow:
+    0 9px 28px rgba(25, 10, 0, 0.45),
+    0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.wm-theme-gnome .wm-win.is-active {
+  border-color: #7c4718;
+}
+
+.wm-theme-gnome .wm-titlebar {
+  gap: 6px;
+  height: 25px;
+  padding: 0 3px 0 7px;
+  border-bottom: 1px solid #a2967f;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, #ebe6dd, #d2cabd);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  color: #6d6455;
+}
+
+.wm-theme-gnome .wm-win.is-active > .wm-titlebar {
+  border-bottom-color: #8c4914;
+  background: linear-gradient(180deg, #f7c98b 0%, #eea456 42%, #df8835 52%, #cd7428 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 238, 205, 0.75);
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(105, 42, 0, 0.75);
+}
+
+.wm-theme-gnome .wm-title {
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.wm-theme-gnome .wm-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.wm-theme-gnome .wm-ctrls {
+  gap: 2px;
+}
+
+.wm-theme-gnome .wm-btn {
+  position: relative;
+  width: 21px;
+  height: 18px;
+  border: 1px solid rgba(110, 95, 75, 0.35);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.12));
+  color: #7b7262;
+}
+
+.wm-theme-gnome .wm-win.is-active .wm-btn {
+  border-color: rgba(115, 50, 5, 0.55);
+  background: linear-gradient(180deg, rgba(255, 245, 225, 0.45), rgba(255, 255, 255, 0.06));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  color: #fff;
+}
+
+.wm-theme-gnome .wm-btn:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.3));
+}
+
+.wm-theme-gnome .wm-btn:active {
+  background: rgba(90, 35, 0, 0.25);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.wm-theme-gnome .wm-btn::before,
+.wm-theme-gnome .wm-btn::after {
+  content: '';
+  position: absolute;
+  filter: drop-shadow(0 1px 0 rgba(105, 42, 0, 0.55));
+}
+
+.wm-theme-gnome .wm-min::before {
+  left: 5px;
+  right: 5px;
+  bottom: 4px;
+  height: 3px;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.wm-theme-gnome .wm-max::before {
+  inset: 3px 5px;
+  border: 2px solid currentColor;
+  border-top-width: 3px;
+  border-radius: 1px;
+}
+
+.wm-theme-gnome .wm-win.is-max .wm-max::before {
+  inset: 5px 7px 3px 4px;
+}
+
+.wm-theme-gnome .wm-win.is-max .wm-max::after {
+  top: 2px;
+  right: 3px;
+  width: 7px;
+  height: 6px;
+  border: solid currentColor;
+  border-width: 2px 2px 0 0;
+}
+
+.wm-theme-gnome .wm-close::before,
+.wm-theme-gnome .wm-close::after {
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 2.6px;
+  margin: -1.3px 0 0 -6px;
+  border-radius: 1px;
+  background: currentColor;
+  transform: rotate(45deg);
+}
+
+.wm-theme-gnome .wm-close::after {
+  transform: rotate(-45deg);
+}
+
+.wm-theme-gnome .wm-menubar {
+  align-items: center;
+  height: 24px;
+  padding: 0 3px;
+  border-bottom: 1px solid #d0c7b8;
+  background: linear-gradient(180deg, #f6f3ee, #e9e4dc);
+}
+
+.wm-theme-gnome .wm-menu-item {
+  padding: 3px 8px;
+  border-radius: 3px;
+  outline: none;
+}
+
+.wm-theme-gnome .wm-menu-item:hover,
+.wm-theme-gnome .wm-menu-item:focus-visible,
+.wm-theme-gnome .wm-menu-item.is-open {
+  background: linear-gradient(180deg, var(--ub-sel-a), var(--ub-sel-b));
+  color: #fff;
+}
+
+.wm-theme-gnome .wm-status {
+  height: 22px;
+  padding: 3px 9px;
+  border-top: 1px solid #d3cabd;
+  background: var(--ub-gtk);
+  color: #4f493f;
+  font-size: 12px;
+  white-space: pre;
+}
+
+/* Boîtes de dialogue GTK */
+.wm-theme-gnome .wm-dialog > .wm-body {
+  background: var(--ub-gtk);
+}
+
+.wm-theme-gnome .wm-msg {
+  gap: 14px;
+  padding: 18px 18px 6px;
+}
+
+.wm-theme-gnome .wm-msg-icon svg {
+  display: block;
+  width: 48px;
+  height: 48px;
+}
+
+.wm-theme-gnome .wm-msg-text {
+  margin: 2px 0 0;
+  line-height: 1.45;
+}
+
+.wm-theme-gnome .wm-msg-buttons {
+  justify-content: flex-end;
+  padding: 10px 14px 14px;
+}
+
+.wm-theme-gnome .wm-push {
+  min-width: 88px;
+  height: 28px;
+  border: 1px solid #a3977f;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #fefdfb, #e7e0d4);
+  box-shadow: inset 0 1px 0 #fff;
+  color: #2e2c28;
+}
+
+.wm-theme-gnome .wm-push:hover {
+  background: linear-gradient(180deg, #fff, #f2ece2);
+}
+
+.wm-theme-gnome .wm-push:active {
+  background: linear-gradient(180deg, #ddd5c8, #ece6dc);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.wm-theme-gnome .wm-push:focus-visible,
+.wm-theme-gnome .wm-push.is-default {
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 0 0 2px rgba(230, 140, 60, 0.55);
+}
+
+/* ——— Terminal GNOME ——— */
+
+.ub-termwin > .wm-body {
+  background: #fff;
+}
+
+.ub-term {
+  position: absolute;
+  inset: 0 15px 0 0;
+}
+
+.ub-tty {
+  --term-pad-x: 3px;
+  --term-pad-y: 2px;
+  --term-lh: calc(var(--ut-fs, 14px) * 1.22);
+  --term-bg: #fff;
+  color: #000;
+  font: var(--ut-fs, 14px) / var(--term-lh) var(--ub-mono);
+  font-variant-ligatures: none;
+}
+
+.ub-tty .term-cursor {
+  min-width: 0.6em;
+}
+
+.ub-tty:not(.is-focused) .term-cursor {
+  background: transparent;
+  color: inherit;
+  box-shadow: inset 0 0 0 1px currentColor;
+  animation: none;
+}
+
+.ub-dir {
+  color: #2a55a8;
+  font-weight: 700;
+}
+
+.ub-bonus {
+  color: #c65a12;
+  font-weight: 700;
+}
+
+.ub-scrollbar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: 15px;
+  border-left: 1px solid #c3b9a6;
+  background: linear-gradient(90deg, #d9d2c5, #e9e4dc);
+}
+
+.ub-sb-btn {
+  position: relative;
+  flex: none;
+  height: 15px;
+  border-bottom: 1px solid #b6aa95;
+  background: linear-gradient(90deg, #fbfaf7, #e4ded2);
+}
+
+.ub-sb-down {
+  border-top: 1px solid #b6aa95;
+  border-bottom: 0;
+}
+
+.ub-sb-btn::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 5px;
+  border: 4px solid transparent;
+  border-top: 0;
+  border-bottom: 4px solid #5a5347;
+}
+
+.ub-sb-down::before {
+  top: 5px;
+  border-top: 4px solid #5a5347;
+  border-bottom: 0;
+}
+
+.ub-sb-track {
+  position: relative;
+  flex: 1;
+}
+
+.ub-sb-thumb {
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  top: 0;
+  border: 1px solid #a8987c;
+  border-radius: 3px;
+  background:
+    linear-gradient(180deg, transparent calc(50% - 4px), #b8a88e calc(50% - 4px) calc(50% - 3px), transparent calc(50% - 3px) calc(50% - 1px), #b8a88e calc(50% - 1px) 50%, transparent 50% calc(50% + 2px), #b8a88e calc(50% + 2px) calc(50% + 3px), transparent calc(50% + 3px)),
+    linear-gradient(90deg, #fdfbf7, #e6ddcd);
+}
+
+/* Bulle d'aide du mot de passe (démon de notification) */
+.ub-notify {
+  position: absolute;
+  z-index: 5;
+  width: 340px;
+  padding: 10px 13px 11px 46px;
+  border: 1px solid #8e8473;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #fffefa, #f5f0e4);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+  color: #2e2c28;
+  font: 12.5px / 1.42 var(--font-ubuntu);
+  animation: ub-pop 0.25s cubic-bezier(0.2, 0.8, 0.3, 1.2);
+}
+
+.ub-notify[hidden] {
+  display: none;
+}
+
+.ub-notify b {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.ub-notify::before {
+  content: 'i';
+  position: absolute;
+  left: 12px;
+  top: 11px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #8fb6e8, #2d5f9e);
+  color: #fff;
+  font: italic 700 15px Georgia, serif;
+  box-shadow: inset 0 0 0 1px #20457a;
+}
+
+.ub-notify::after {
+  content: '';
+  position: absolute;
+  left: 30px;
+  top: -7px;
+  width: 12px;
+  height: 12px;
+  border: solid #8e8473;
+  border-width: 1px 0 0 1px;
+  background: #fffefa;
+  transform: rotate(45deg);
+}
+
+.ub-notify.is-above::after {
+  top: auto;
+  bottom: -7px;
+  border-width: 0 1px 1px 0;
+  background: #f5f0e4;
+}
+
+/* ——— Nautilus, gedit, aide ——— */
+
+.ub-nautilus > .wm-body,
+.ub-yelp > .wm-body {
+  background: #fff;
+}
+
+.ub-files {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px 10px;
+  height: 100%;
+  padding: 12px;
+  overflow: hidden;
+}
+
+.ub-file {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 96px;
+  padding: 4px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: #2e2c28;
+  font: inherit;
+}
+
+.ub-file span {
+  padding: 0 4px;
+  border-radius: 3px;
+  font-size: 12px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.ub-file.is-selected span,
+.ub-file:focus-visible span {
+  background: linear-gradient(180deg, var(--ub-sel-a), var(--ub-sel-b));
+  color: #fff;
+}
+
+.ub-file:focus-visible {
+  outline: none;
+}
+
+.ub-empty {
+  width: 100%;
+  margin: 0;
+  padding: 40px 20px;
+  color: #8b8375;
+  text-align: center;
+}
+
+.ub-gedit > .wm-body {
+  display: flex;
+  flex-direction: column;
+  background: var(--ub-gtk);
+}
+
+.ub-gedit-tabs {
+  display: flex;
+  align-items: flex-end;
+  flex: none;
+  height: 27px;
+  padding: 0 6px;
+  border-bottom: 1px solid #b8ad99;
+}
+
+.ub-gedit-tabs span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: -1px;
+  padding: 3px 12px 4px;
+  border: 1px solid #b8ad99;
+  border-bottom-color: #fff;
+  border-radius: 4px 4px 0 0;
+  background: #fff;
+  font-size: 12px;
+}
+
+.ub-gedit-text {
+  flex: 1;
+  width: 100%;
+  padding: 4px 7px;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: #fff;
+  color: #000;
+  font: 13px / 1.4 var(--ub-mono);
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.ub-help {
+  padding: 14px 20px 18px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.ub-help h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  color: #8a4a16;
+  font-size: 17px;
+}
+
+.ub-help p {
+  margin: 0 0 9px;
+}
+
+.ub-help code {
+  padding: 0 4px;
+  border: 1px solid #ddd4c5;
+  border-radius: 3px;
+  background: #f5f1ea;
+  font: 12px var(--ub-mono);
+}
+
+.ub-help-note {
+  margin-top: 14px !important;
+  color: #8b8375;
+  font-size: 12px;
+}
+
+/* Calendrier de l'horloge */
+.ub-calendar {
+  position: absolute;
+  top: 25px;
+  right: 30px;
+  z-index: 6000;
+  width: 214px;
+  padding: 6px 7px 8px;
+  border: 1px solid #9b8f7a;
+  background: #f7f5f1;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.35);
+  font-size: 12px;
+  animation: ub-menu-in 0.12s ease-out;
+}
+
+.ub-calendar header {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 6px 6px;
+}
+
+.ub-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  text-align: center;
+}
+
+.ub-cal-grid b {
+  color: #8b8375;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ub-cal-grid span {
+  padding: 2px 0;
+}
+
+.ub-cal-grid .is-today {
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--ub-sel-a), var(--ub-sel-b));
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ——— Post-it sur le cadre de l'écran ——— */
+
+.ub-postit {
+  position: absolute;
+  right: -10.5%;
+  top: 9%;
+  display: grid;
+  place-content: center;
+  gap: calc(var(--u) * 0.6);
+  width: calc(var(--u) * 14);
+  min-height: calc(var(--u) * 12);
+  padding: calc(var(--u) * 1.3);
+  background: linear-gradient(172deg, #fff8a8, #ffe866 85%, #f5d84a);
+  box-shadow: 0 calc(var(--u) * 0.7) calc(var(--u) * 1.6) rgba(0, 0, 0, 0.4);
+  color: #233a8b;
+  font: 700 calc(var(--u) * 1.5) / 1.2 'Segoe Print', 'Bradley Hand', 'Chalkboard SE', 'Comic Sans MS', 'Comic Neue', cursive;
+  text-align: center;
+  transform: rotate(4deg);
+  pointer-events: none;
+}
+
+.ub-postit::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 20%;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.ub-postit small {
+  font-size: 0.8em;
+  font-weight: 400;
+}
+
+.scene[data-compact='true'] .ub-postit {
+  display: none;
+}
+
+/* ——— Petit écran : le terminal prend toute la place ——— */
+
+.ub-large .ub-notify {
+  width: 76%;
+  padding: 18px 22px 20px 78px;
+  font-size: 26px;
+}
+
+.ub-large .ub-notify::before {
+  left: 20px;
+  top: 20px;
+  width: 42px;
+  height: 42px;
+  font-size: 26px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ub-peng-body,
+  .ub-peng-eyes,
+  .ub-penguin.is-hopping .ub-peng-body {
+    animation: none;
+  }
+}

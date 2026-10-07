@@ -30,9 +30,10 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 28%),
-    radial-gradient(ellipse 70% 55% at 50% 100%, rgba(150, 138, 110, 0.35), transparent 70%),
-    linear-gradient(180deg, #2f2c27, #3b3832 60%, #46423a);
+    linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 30%),
+    radial-gradient(ellipse 75% 60% at 50% 100%, rgba(170, 152, 112, 0.32), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255, 240, 210, 0.018) 0 2px, transparent 2px 7px),
+    linear-gradient(180deg, #2e2a24, #3d3830 60%, #4a443a);
 }
 
 /* ——— Le terminal, posé sur le papier ——— */
@@ -142,6 +143,27 @@
 
 .ux-term .term-row:nth-child(9n + 4) {
   translate: -0.35px 0;
+}
+
+/* Caractères frappés plus ou moins fort (voile de papier par-dessus l'encre) */
+.ux-term .term-row i {
+  font-style: normal;
+}
+
+.ux-term .term-row .ux-ink-1 {
+  color: rgba(246, 234, 181, 0.13);
+}
+
+.ux-term .term-row .ux-ink-2 {
+  color: rgba(246, 234, 181, 0.26);
+}
+
+.ux-term .term-row .ux-ink-3 {
+  color: rgba(246, 234, 181, 0.38);
+}
+
+.ux-term .term-row .ux-ink-bold {
+  -webkit-text-stroke: 0.22px rgba(20, 16, 12, 0.5);
 }
 
 /* Pas de curseur : c'est la tête d'impression qui indique la colonne */

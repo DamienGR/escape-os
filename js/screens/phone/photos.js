@@ -14,8 +14,6 @@ const BARS = { top: 64, bottom: 44 };
 
 export function photosApp(host, kit) {
   const { ctx, audio, state } = kit;
-  const { signal } = ctx;
-  let zoom = null;
   let zoomed = false;
 
   host.innerHTML = '<div class="ph-stack"></div>';
@@ -77,7 +75,7 @@ export function photosApp(host, kit) {
     ctx.progress();
   }
 
-  zoom = pinchZoom(view, target, { min: 1, max: MAX, onChange: check, signal });
+  const zoom = pinchZoom(view, target, { min: 1, max: MAX, onChange: check, signal: ctx.signal });
 
   // pinchZoom gère déjà le double tap au pointeur : on neutralise son écoute de
   // dblclick, qui annulerait aussitôt le zoom à la souris.
@@ -140,14 +138,10 @@ export function photosApp(host, kit) {
     stack.push(viewer);
   });
 
-  if (state.found) {
-    sign.classList.add('is-found');
-  }
-
   return {
-    // Indice 2 : les boutons de zoom se signalent
+    // Indices 1 et 2 : les boutons de zoom se signalent
     hint(level) {
-      if (level < 2 || stack.top !== viewer) return;
+      if (level > 2 || stack.top !== viewer) return;
       for (const btn of [btnIn, btnOut]) {
         btn.classList.remove('is-pulsing');
         void btn.offsetWidth;

@@ -187,7 +187,6 @@ export function listing(job) {
       '*** EXECUTION ***',
     ],
     result: RESULT,
-    end: `*** FIN DU TRAVAIL ${pad4(job)} ***`,
   };
 }
 

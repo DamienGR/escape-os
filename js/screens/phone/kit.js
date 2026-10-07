@@ -32,7 +32,7 @@ export function play(el, frames, { duration = 360, easing = EASE, delay = 0, fil
 export const fadeIn = [{ opacity: 0 }, { opacity: 1 }];
 export const fadeOut = [{ opacity: 1 }, { opacity: 0 }];
 
-// Barre de navigation : bleue (style par défaut), noire translucide, cuir (Notes)
+// Barre de navigation : bleue (par défaut), noire, translucide (Photos), cuir (Notes)
 export function nav({ title = '', back = '', style = 'blue', right = '' } = {}) {
   return `<header class="ph-nav ph-nav-${style}">
     ${back ? `<span class="ph-back-wrap"><button type="button" class="ph-back" data-back>${back}</button></span>` : ''}

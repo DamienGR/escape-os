@@ -20,7 +20,7 @@ const REMARKS = [
 ];
 
 // Coupe une ligne trop longue entre deux mots, de préférence après un point.
-export function wrap(text, cols) {
+function wrap(text, cols) {
   const out = [];
   let rest = text;
   while (rest.length > cols) {
@@ -88,9 +88,8 @@ export default {
         paper?.strike();
       },
       onNewline: () => carriage(),
-      onKeyDown: (event) => {
-        if (event.key === 'Enter' && !term.busy) carriage();
-      },
+      // Retour chariot à chaque Entrée, comme sur la machine.
+      onKeyDown: (event) => event.key === 'Enter' && carriage(),
       onLine: (raw) => run(raw),
     });
     paper = mountPaper(term, wrapEl, { reduced });

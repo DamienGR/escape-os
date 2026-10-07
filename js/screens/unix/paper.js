@@ -109,13 +109,8 @@ export function mountPaper(term, root, { reduced }) {
   };
 
   let lastCol = 0;
-  let left = 0;
-  let columns = 51;
-  const measure = () => {
-    left = textLeft();
-    columns = cols();
-  };
-  measure();
+  const left = textLeft();
+  const columns = cols();
 
   function column() {
     if (!line.hidden) return (promptEl.textContent + beforeEl.textContent).length;
@@ -133,9 +128,49 @@ export function mountPaper(term, root, { reduced }) {
     lastCol = col;
   }
 
+  // Frappe inégale : quelques caractères plus pâles ou plus appuyés, une fois la ligne finie.
+  function inkify(row) {
+    row.dataset.ink = '1';
+    if (row.classList.contains('ux-pile-row') || row.firstElementChild || !row.textContent.trim()) return;
+    const frag = document.createDocumentFragment();
+    let plain = '';
+    for (const ch of row.textContent) {
+      const r = Math.random();
+      if (ch === ' ' || r < 0.66) {
+        plain += ch;
+        continue;
+      }
+      if (plain) frag.append(plain);
+      plain = '';
+      const strike = document.createElement('i');
+      strike.className = r < 0.82 ? 'ux-ink-1' : r < 0.93 ? 'ux-ink-2' : r < 0.97 ? 'ux-ink-3' : 'ux-ink-bold';
+      strike.textContent = ch;
+      frag.append(strike);
+    }
+    if (plain) frag.append(plain);
+    row.textContent = '';
+    row.append(frag);
+  }
+
+  function inkRows() {
+    const rows = term.out.children;
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const row = rows[i];
+      if (i === rows.length - 1 && line.hidden) continue; // ligne en cours d'impression
+      if (row.dataset.ink) break;
+      inkify(row);
+    }
+  }
+
   let frame = 0;
   const schedule = () => {
-    if (!frame) frame = requestAnimationFrame(() => ((frame = 0), placeHead()));
+    if (!frame) {
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        placeHead();
+        inkRows();
+      });
+    }
   };
   const mo = new MutationObserver(schedule);
   mo.observe(term.el, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['hidden'] });
@@ -198,7 +233,6 @@ export function mountPaper(term, root, { reduced }) {
       const fold = el('div', `ux-fold ${up ? 'is-up' : 'is-down'}`);
       fold.style.cssText = [
         `--top:${top}px`,
-        `--h:${h}px`,
         `--r:${((Math.random() - 0.5) * 3.6).toFixed(2)}deg`,
         `--x:${((Math.random() - 0.5) * 16).toFixed(1)}px`,
         `--w:${(100 + Math.random() * 3).toFixed(1)}%`,
@@ -227,12 +261,9 @@ export function mountPaper(term, root, { reduced }) {
   }
 
   return {
-    feed,
-    head,
     strike,
     flight,
     pile,
-    measure,
     get cols() {
       return columns;
     },

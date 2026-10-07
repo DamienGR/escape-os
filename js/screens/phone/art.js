@@ -434,45 +434,65 @@ export function emblem() {
 
 // ——— Fond d'écran : gouttes de rosée sur un verre teinté ———
 
+// Grosses gouttes placées à la main dans la bande visible entre les barres
+const BIG_DROPS = [
+  [74, 168, 17],
+  [246, 206, 13],
+  [152, 296, 21],
+  [52, 318, 10],
+  [272, 326, 16],
+  [204, 140, 8],
+  [112, 222, 7.5],
+  [214, 258, 6],
+  [28, 236, 6.5],
+  [292, 128, 9],
+  [120, 360, 7],
+  [196, 372, 9],
+];
+
 export function wallpaper() {
   const id = ids('wp');
   const rnd = seeded(907);
-  const drops = [];
-  for (let tries = 0; drops.length < 58 && tries < 4000; tries++) {
-    const big = drops.length < 9;
-    const r = big ? 11 + rnd() * 11 : 1.6 + rnd() ** 2.4 * 10;
-    const x = -10 + rnd() * 340;
-    const y = 24 + rnd() * 450;
-    if (drops.some((d) => Math.hypot(d.x - x, d.y - y) < d.r + r + 3)) continue;
-    drops.push({ x, y, r, sx: 0.88 + rnd() * 0.24, rot: Math.round(rnd() * 360) });
+  const drops = BIG_DROPS.map(([x, y, r]) => ({ x, y, r, sx: 0.92 + rnd() * 0.16, rot: Math.round(rnd() * 360) }));
+  for (let tries = 0; drops.length < 74 && tries < 5000; tries++) {
+    const r = 1.4 + rnd() ** 2.6 * 8;
+    const x = -6 + rnd() * 332;
+    const y = 4 + rnd() * 472;
+    if (drops.some((d) => Math.hypot(d.x - x, d.y - y) < d.r + r + 2.5)) continue;
+    drops.push({ x, y, r, sx: 0.86 + rnd() * 0.28, rot: Math.round(rnd() * 360) });
   }
-  const bokeh = Array.from({ length: 9 }, () => ({
+  const tints = ['#c9fff2', '#a7f0ff', '#e6fff6', '#9fe7d8'];
+  const bokeh = Array.from({ length: 12 }, (_, i) => ({
     x: rnd() * 320,
     y: rnd() * 480,
-    r: 24 + rnd() * 60,
-    o: 0.05 + rnd() * 0.1,
+    r: 18 + rnd() * 54,
+    o: 0.1 + rnd() * 0.16,
+    c: i % tints.length,
   }));
-  const drop = ({ x, y, r, sx, rot }) => `<g transform="translate(${r1(x)} ${r1(y)}) rotate(${rot}) scale(${r1(sx)} 1) rotate(${-rot})">
-      <ellipse cx="${r1(r * 0.14)}" cy="${r1(r * 0.34)}" rx="${r1(r * 1.08)}" ry="${r1(r * 1.02)}" fill="url(#${id('sh')})"/>
+  const drop = ({ x, y, r, sx, rot }) => {
+    const big = r > 5.5;
+    return `<g transform="translate(${r1(x)} ${r1(y)}) rotate(${rot}) scale(${r1(sx)} 1) rotate(${-rot})">
+      <ellipse cx="${r1(r * 0.16)}" cy="${r1(r * 0.38)}" rx="${r1(r * 1.1)}" ry="${r1(r * 1.04)}" fill="url(#${id('sh')})"/>
       <circle r="${r1(r)}" fill="url(#${id('d')})"/>
-      <circle r="${r1(r)}" fill="url(#${id('c')})"/>
-      <circle r="${r1(r - 0.3)}" fill="none" stroke="#e8fffb" stroke-opacity=".22" stroke-width=".6"/>
-      <ellipse cx="${r1(-r * 0.36)}" cy="${r1(-r * 0.42)}" rx="${r1(r * 0.3)}" ry="${r1(r * 0.17)}" transform="rotate(-38 ${r1(-r * 0.36)} ${r1(-r * 0.42)})" fill="#fff" opacity=".9"/>
-      ${r > 6 ? `<circle cx="${r1(r * 0.42)}" cy="${r1(-r * 0.5)}" r="${r1(r * 0.07)}" fill="#fff" opacity=".7"/>` : ''}
+      ${big ? `<path d="M${r1(-r * 0.5)} ${r1(r * 0.74)}A${r1(r * 0.9)} ${r1(r * 0.9)} 0 0 0 ${r1(r * 0.84)} ${r1(r * 0.2)}" fill="none" stroke="#f2fffc" stroke-width="${r1(r * 0.1)}" stroke-linecap="round" opacity=".38"/>` : ''}
+      <circle r="${r1(r - 0.25)}" fill="none" stroke="#e8fffb" stroke-opacity=".26" stroke-width="${big ? 0.7 : 0.45}"/>
+      <ellipse cx="${r1(-r * 0.36)}" cy="${r1(-r * 0.42)}" rx="${r1(r * 0.3)}" ry="${r1(r * 0.17)}" transform="rotate(-38 ${r1(-r * 0.36)} ${r1(-r * 0.42)})" fill="#fff" opacity=".92"/>
     </g>`;
+  };
   return `<svg class="ph-wall-svg" viewBox="0 0 320 480" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
-      ${lg(id('bg'), [[0, '#0d4f5c'], [0.45, '#1b8077'], [0.75, '#156270'], [1, '#081f33']], [0, 0, 0.35, 1])}
-      ${rg(id('glow'), [[0, '#9df5dd', 0.55], [1, '#9df5dd', 0]], { cx: 0.5, cy: 0.5, r: 0.5 })}
-      ${rg(id('bk'), [[0, '#d9fff6', 0.9], [0.7, '#d9fff6', 0.35], [1, '#d9fff6', 0]])}
-      ${rg(id('sh'), [[0, '#021a1f', 0.55], [0.75, '#021a1f', 0.28], [1, '#021a1f', 0]])}
-      ${rg(id('d'), [[0, '#c9fff4', 0.62], [0.42, '#5fc7b6', 0.32], [0.82, '#0d4b52', 0.32], [1, '#032a33', 0.7]], { cx: 0.5, cy: 0.7, r: 0.62, fy: 0.85 })}
-      ${rg(id('c'), [[0, '#ffffff', 0], [0.78, '#ffffff', 0], [0.92, '#e9fffb', 0.35], [1, '#ffffff', 0]], { cx: 0.5, cy: 0.62, r: 0.5 })}
-      ${lg(id('v'), [[0, '#000', 0.35], [0.25, '#000', 0], [0.75, '#000', 0], [1, '#000', 0.45]])}
+      ${lg(id('bg'), [[0, '#0a4f5e'], [0.38, '#14877f'], [0.62, '#16717f'], [1, '#071d35']], [0, 0, 0.4, 1])}
+      ${rg(id('glow'), [[0, '#b4ffe6', 0.6], [0.5, '#6fe3cf', 0.18], [1, '#6fe3cf', 0]], { cx: 0.5, cy: 0.5, r: 0.5 })}
+      ${tints.map((c, i) => rg(id(`bk${i}`), [[0, c, 0.85], [0.6, c, 0.35], [0.9, c, 0.12], [1, c, 0]])).join('')}
+      ${rg(id('sh'), [[0, '#021a1f', 0.6], [0.72, '#021a1f', 0.3], [1, '#021a1f', 0]])}
+      ${rg(id('d'), [[0, '#e0fff8', 0.78], [0.42, '#78dccb', 0.36], [0.8, '#0d4b52', 0.3], [1, '#022a33', 0.78]], { cx: 0.56, cy: 0.74, r: 0.64, fy: 0.9 })}
+      ${lg(id('v'), [[0, '#000', 0.3], [0.22, '#000', 0], [0.72, '#000', 0], [1, '#000', 0.5]])}
+      ${lg(id('ray'), [[0, '#ffffff', 0], [0.5, '#ffffff', 0.09], [1, '#ffffff', 0]], [0, 0, 1, 0])}
     </defs>
     <rect width="320" height="480" fill="url(#${id('bg')})"/>
-    <ellipse cx="96" cy="190" rx="230" ry="190" fill="url(#${id('glow')})" opacity=".55"/>
-    ${bokeh.map((b) => `<circle cx="${r1(b.x)}" cy="${r1(b.y)}" r="${r1(b.r)}" fill="url(#${id('bk')})" opacity="${r1(b.o * 10) / 10}"/>`).join('')}
+    <ellipse cx="110" cy="200" rx="250" ry="200" fill="url(#${id('glow')})"/>
+    <path d="M-40 120 L120 -20 L200 -20 L20 220Z" fill="url(#${id('ray')})"/>
+    ${bokeh.map((b) => `<circle cx="${r1(b.x)}" cy="${r1(b.y)}" r="${r1(b.r)}" fill="url(#${id(`bk${b.c}`)})" opacity="${Math.round(b.o * 100) / 100}"/>`).join('')}
     ${drops.map(drop).join('')}
     <rect width="320" height="480" fill="url(#${id('v')})"/>
   </svg>`;

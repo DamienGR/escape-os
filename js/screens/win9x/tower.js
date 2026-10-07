@@ -9,18 +9,18 @@ import { pixelArt } from '../../ui/pixel.js';
 const SEGMENTS = { 0: 'abcdef', 1: 'bc', 2: 'abged', 3: 'abgcd', 4: 'fgbc', 5: 'afgcd', 6: 'afgedc', 7: 'abc', 8: 'abcdefg', 9: 'abcdfg', ' ': '' };
 
 export const sevenSeg = (text) =>
-  pixelArt([text.length * 9 - 1, 13], (p) => {
+  pixelArt([text.length * 11 - 2, 16], (p) => {
     [...text].forEach((ch, i) => {
       const on = SEGMENTS[ch] ?? '';
-      const x = i * 9;
-      const seg = (s, sx, sy, w, h) => p.rect(x + sx, sy, w, h, on.includes(s) ? '#ff3a26' : '#3a0b08');
-      seg('a', 1, 0, 6, 1);
-      seg('b', 7, 1, 1, 5);
-      seg('c', 7, 7, 1, 5);
-      seg('d', 1, 12, 6, 1);
-      seg('e', 0, 7, 1, 5);
-      seg('f', 0, 1, 1, 5);
-      seg('g', 1, 6, 6, 1);
+      const x = i * 11;
+      const seg = (s, sx, sy, w, h) => p.rect(x + sx, sy, w, h, on.includes(s) ? '#ff3a26' : '#2e0907');
+      seg('a', 2, 0, 5, 2);
+      seg('f', 0, 2, 2, 5);
+      seg('b', 7, 2, 2, 5);
+      seg('g', 2, 7, 5, 2);
+      seg('e', 0, 9, 2, 5);
+      seg('c', 7, 9, 2, 5);
+      seg('d', 2, 14, 5, 2);
     });
   });
 

@@ -15,11 +15,37 @@ const P = (X, s) => [r2(VP.x + s * (-25 + 145 * X)), r2(VP.y + 254 * s)];
 const poly = (pts) => pts.map(([x, y]) => `${x},${y}`).join(' ');
 const strip = (X0, X1, s0, s1) => poly([P(X0, s0), P(X1, s0), P(X1, s1), P(X0, s1)]);
 
+// Cumulus : des boules qui se chevauchent, ombrées par-dessous, halo léger
 function cloud(x, y, k, id) {
-  const c = (dx, dy, r) => `<circle cx="${r2(x + dx * k)}" cy="${r2(y + dy * k)}" r="${r2(r * k)}"/>`;
-  return `<g fill="url(#${id('cl')})">${c(-16, 2, 9)}${c(-6, -5, 12)}${c(8, -7, 10)}${c(18, 0, 8)}
-    <ellipse cx="${r2(x)}" cy="${r2(y + 5 * k)}" rx="${r2(28 * k)}" ry="${r2(6 * k)}"/></g>`;
+  const puffs = [
+    [-20, 3, 8],
+    [-11, -4, 11],
+    [0, -9, 13],
+    [12, -5, 11],
+    [22, 2, 8],
+    [-4, 2, 10],
+    [9, 3, 9],
+  ];
+  const c = ([dx, dy, r], fill) => `<circle cx="${r2(x + dx * k)}" cy="${r2(y + dy * k)}" r="${r2(r * k)}" fill="${fill}"/>`;
+  return `<g>
+    <ellipse cx="${r2(x)}" cy="${r2(y - 2 * k)}" rx="${r2(40 * k)}" ry="${r2(22 * k)}" fill="url(#${id('halo')})"/>
+    ${puffs.map((pf) => c([pf[0], pf[1] + 2.5, pf[2]], '#b9c8da')).join('')}
+    ${puffs.map((pf) => c(pf, `url(#${id('cl')})`)).join('')}
+  </g>`;
 }
+
+// Ligne de crête déchiquetée, générée une fois pour toutes
+function ridge(rnd, { base, amp, step, phase }) {
+  const pts = [];
+  for (let x = -12; x < 340; x += step * (0.55 + rnd() * 0.9)) {
+    const n = Math.sin(x / 43 + phase) * 0.5 + Math.sin(x / 17 + phase * 2) * 0.28 + (rnd() - 0.5) * 0.45;
+    pts.push([r2(x), r2(base - amp * (0.5 + n))]);
+  }
+  pts.push([340, base]);
+  return pts;
+}
+
+const ridgePath = (pts, bottom) => `M-12 ${bottom} ${pts.map(([x, y]) => `L${x} ${y}`).join(' ')} L340 ${bottom}Z`;
 
 function poplar(X, z, id, rnd) {
   const s = 1 / z;
@@ -71,7 +97,7 @@ export function photo({ className = 'ph-photo-svg', thumb = false } = {}) {
   const trees = [];
   for (const z of [2.6, 3.7, 5, 6.6, 8.6, 11.2, 14.5, 19, 25, 33]) trees.push(poplar(-1.62, z, id, rnd));
   const posts = [];
-  for (const z of [1.5, 3.2, 4.9, 6.6, 8.3, 10, 11.7, 13.4, 15.1, 16.8]) posts.push(post(1.18, z));
+  for (const z of [1.5, 3.2, 7.4, 9.1, 10.8, 12.5, 14.2, 15.9]) posts.push(post(1.18, z));
   for (const z of [1.9, 3.6, 5.3, 7, 8.7, 10.4]) posts.push(post(-1.18, z));
 
   const birds = [
@@ -82,6 +108,12 @@ export function photo({ className = 'ph-photo-svg', thumb = false } = {}) {
     .map(([x, y, k]) => `<path d="M${x - 3 * k} ${y - 1 * k} q${1.5 * k} ${-1.2 * k} ${3 * k} ${0.6 * k} q${1.5 * k} ${-1.8 * k} ${3 * k} ${-0.6 * k}" fill="none" stroke="#3a4250" stroke-width="${0.5 * k}" stroke-linecap="round"/>`)
     .join('');
 
+  // Deux chaînes de montagnes : la plus lointaine, enneigée et voilée de brume
+  const far = ridge(rnd, { base: 216, amp: 46, step: 13, phase: 1.1 });
+  const near = ridge(rnd, { base: 224, amp: 24, step: 11, phase: 2.4 });
+  const snowline = [];
+  for (let x = -12; x <= 340; x += 7 + rnd() * 6) snowline.push(`L${r2(x)} ${r2(191 + rnd() * 8)}`);
+
   const { x: sx, y: sy, w: sw, h: sh } = SIGN;
   const cx = sx + sw / 2;
 
@@ -89,8 +121,11 @@ export function photo({ className = 'ph-photo-svg', thumb = false } = {}) {
     <defs>
       ${lg(id('sky'), [[0, '#2a64b4'], [0.35, '#4f8ed6'], [0.72, '#a8cdea'], [0.93, '#e9eef0'], [1, '#f6e7cb']])}
       ${rg(id('sun'), [[0, '#fffdf0', 1], [0.08, '#fff6c8', 0.95], [0.3, '#ffe9a8', 0.35], [1, '#ffe9a8', 0]])}
-      ${lg(id('cl'), [[0, '#ffffff'], [0.7, '#f3f6fa'], [1, '#c9d6e4']])}
-      ${lg(id('mt'), [[0, '#88a3c2'], [1, '#bccddc']])}
+      ${rg(id('cl'), [[0, '#ffffff'], [0.62, '#fbfcfe'], [1, '#d9e3ee']], { cx: 0.45, cy: 0.35, r: 0.62 })}
+      ${rg(id('halo'), [[0, '#ffffff', 0.35], [1, '#ffffff', 0]])}
+      ${lg(id('mt'), [[0, '#9cb3cc'], [0.6, '#b3c5d8'], [1, '#c9d7e3']])}
+      ${lg(id('mt2'), [[0, '#7f9cb6'], [1, '#a9bfcf']])}
+      ${lg(id('shade'), [[0, '#ffffff', 0.12], [0.45, '#ffffff', 0], [1, '#2a3e5a', 0.22]], [0, 0, 1, 0])}
       ${lg(id('hill'), [[0, '#7da66a'], [1, '#93b58a']])}
       ${lg(id('gnd'), [[0, '#a4bf80'], [0.12, '#79a84e'], [0.5, '#5a9437'], [1, '#3b7522']])}
       ${lg(id('road'), [[0, '#aeb3b8'], [0.08, '#8c9096'], [0.4, '#63676d'], [1, '#3e4146']])}
@@ -105,8 +140,11 @@ export function photo({ className = 'ph-photo-svg', thumb = false } = {}) {
     ${cloud(222, 62, 1.3, id)}${cloud(108, 142, 0.9, id)}${cloud(286, 156, 0.75, id)}${cloud(30, 176, 0.6, id)}
     ${birds}
 
-    <path d="M-4 207 Q16 196 36 201 T74 191 T112 198 T150 186 T188 196 T226 184 T264 197 T300 189 T330 199 V240 H-4Z" fill="url(#${id('mt')})"/>
-    <path d="M150 186 q8 6 14 4 q-6 -2 -14 -4z M226 184 q7 6 13 4 q-6 -2 -13 -4z M74 191 q6 5 11 3z" fill="#f2f6fa" opacity=".8"/>
+    <clipPath id="${id('snow')}"><path d="M-12 0 L340 0 L340 195 ${snowline.reverse().join(' ')} Z"/></clipPath>
+    <path d="${ridgePath(far, 240)}" fill="url(#${id('mt')})"/>
+    <path d="${ridgePath(far, 240)}" fill="#f4f8fc" opacity=".9" clip-path="url(#${id('snow')})"/>
+    <path d="${ridgePath(far, 240)}" fill="url(#${id('shade')})"/>
+    <path d="${ridgePath(near, 240)}" fill="url(#${id('mt2')})"/>
     <path d="M-4 219 Q28 208 62 214 T126 211 T188 217 T250 208 T324 215 V240 H-4Z" fill="url(#${id('hill')})"/>
     <rect x="0" y="206" width="320" height="26" fill="url(#${id('haze')})"/>
 
@@ -136,6 +174,7 @@ export function photo({ className = 'ph-photo-svg', thumb = false } = {}) {
       <ellipse cx="${cx + 1.5}" cy="${sy + sh + 9.6}" rx="10" ry="1.1" fill="#203a14" opacity=".35"/>
       <rect x="${sx + 5.4}" y="${sy + sh - 1}" width="1.3" height="${10.6}" fill="#7d8186"/>
       <rect x="${sx + 19.3}" y="${sy + sh - 1}" width="1.3" height="${10.6}" fill="#7d8186"/>
+      <rect class="ph-sign-glow" x="${sx - 1.5}" y="${sy - 1.5}" width="${sw + 3}" height="${sh + 3}" rx="2.4" fill="none" stroke="#fff" stroke-width=".9"/>
       <rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" rx="1.4" fill="#0f7046"/>
       <rect x="${sx + 1.05}" y="${sy + 1.05}" width="${sw - 2.1}" height="${sh - 2.1}" rx=".8" fill="none" stroke="#f4f7f2" stroke-width=".65"/>
       <g class="ph-sign-far" fill="#f4f7f2" opacity=".75">

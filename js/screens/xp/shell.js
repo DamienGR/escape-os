@@ -2,6 +2,7 @@
 // boutons de fenêtres qui clignotent, zone de notification et horloge), menu
 // Démarrer, bulles d'information et fenêtres de l'Explorateur.
 
+import { onDoubleActivate } from '../../ui/windows.js';
 import { avatar, esc, icon } from './art.js';
 
 export const TASKBAR_H = 30;
@@ -55,16 +56,44 @@ const PLACES = {
     title: 'Poste de travail',
     icon: 'computer',
     tasks: [
-      ['Tâches système', [['control', 'Afficher les informations système'], ['run', 'Ajouter ou supprimer des programmes'], ['control', 'Modifier un paramètre']]],
-      ['Autres emplacements', [['network', 'Favoris réseau'], ['documents', 'Mes documents'], ['control', 'Panneau de configuration']]],
+      [
+        'Tâches système',
+        [
+          ['control', 'Afficher les informations système'],
+          ['run', 'Ajouter ou supprimer des programmes'],
+          ['control', 'Modifier un paramètre'],
+        ],
+      ],
+      [
+        'Autres emplacements',
+        [
+          ['network', 'Favoris réseau'],
+          ['documents', 'Mes documents'],
+          ['control', 'Panneau de configuration'],
+        ],
+      ],
     ],
     groups: [
-      ['Fichiers enregistrés sur cet ordinateur', [['folder', 'Documents partagés', 'Dossier de fichiers'], ['folder', 'Documents de Voyageur', 'Dossier de fichiers']]],
-      ['Disques durs', [['hdd', 'Disque local (C:)', 'Disque local', 'Encore lui ! Le C: du disque dur, hérité de 1981.']]],
+      [
+        'Fichiers enregistrés sur cet ordinateur',
+        [
+          ['folder', 'Documents partagés', 'Dossier de fichiers', 'Ce dossier est vide.'],
+          ['folder', 'Documents de Voyageur', 'Dossier de fichiers', 'documents'],
+        ],
+      ],
+      [
+        'Disques durs',
+        [['hdd', 'Disque local (C:)', 'Disque local', 'Encore lui ! Le C: du disque dur, hérité de 1981.']],
+      ],
       [
         'Périphériques utilisant des supports amovibles',
         [
-          ['floppy', 'Disquette 3½ (A:)', 'Disquette 3½ pouces', 'Le lecteur A: est vide. Les disquettes, c’était en 1981 !'],
+          [
+            'floppy',
+            'Disquette 3½ (A:)',
+            'Disquette 3½ pouces',
+            'Le lecteur A: est vide. Les disquettes, c’était en 1981 !',
+          ],
           ['cd', 'Lecteur CD (D:)', 'Lecteur CD', 'Insérez un disque dans le lecteur D:.'],
         ],
       ],
@@ -74,55 +103,130 @@ const PLACES = {
     title: 'Mes documents',
     icon: 'documents',
     tasks: [
-      ['Gestion des fichiers et dossiers', [['folder', 'Créer un nouveau dossier'], ['network', 'Publier ce dossier sur le Web'], ['folders', 'Partager ce dossier']]],
-      ['Autres emplacements', [['computer', 'Poste de travail'], ['network', 'Favoris réseau']]],
+      [
+        'Gestion des fichiers et dossiers',
+        [
+          ['folder', 'Créer un nouveau dossier'],
+          ['network', 'Publier ce dossier sur le Web'],
+          ['folders', 'Partager ce dossier'],
+        ],
+      ],
+      [
+        'Autres emplacements',
+        [
+          ['computer', 'Poste de travail'],
+          ['network', 'Favoris réseau'],
+        ],
+      ],
     ],
     groups: [
-      ['', [
-        ['music', 'Ma musique', 'Dossier de fichiers', 'music'],
-        ['pictures', 'Mes images', 'Dossier de fichiers', 'pictures'],
-        ['wordfile', 'exposé_dinosaures.doc', 'Document · 48 Ko', 'Un exposé de CM2. Rien à voir avec la sortie.'],
-        ['textfile', 'liste_de_noël.txt', 'Document texte · 1 Ko', '« Un baladeur MP3 de 256 Mo, une webcam, un modem ADSL… »'],
-      ]],
+      [
+        '',
+        [
+          ['music', 'Ma musique', 'Dossier de fichiers', 'music'],
+          ['pictures', 'Mes images', 'Dossier de fichiers', 'pictures'],
+          ['wordfile', 'exposé_dinosaures.doc', 'Document · 48 Ko', 'Un exposé de CM2. Rien à voir avec la sortie.'],
+          [
+            'textfile',
+            'liste_de_noël.txt',
+            'Document texte · 1 Ko',
+            '« Un baladeur MP3 de 256 Mo, une webcam, un modem ADSL… »',
+          ],
+        ],
+      ],
     ],
   },
   pictures: {
     title: 'Mes images',
     icon: 'pictures',
-    tasks: [['Tâches d’images', [['imagefile', 'Afficher sous forme de diaporama'], ['run', 'Commander des tirages en ligne']]]],
-    groups: [['', [
-      ['imagefile', 'vacances_2004.jpg', 'Image JPEG · 640 × 480', 'Une colline verte sous un ciel bleu. Original, non ?'],
-      ['imagefile', 'webcam_kev1n.jpg', 'Image JPEG · 320 × 240', 'Kev1n qui dort devant sa webcam. Ça promet…'],
-    ]]],
+    tasks: [
+      [
+        'Tâches d’images',
+        [
+          ['imagefile', 'Afficher sous forme de diaporama'],
+          ['run', 'Commander des tirages en ligne'],
+        ],
+      ],
+    ],
+    groups: [
+      [
+        '',
+        [
+          [
+            'imagefile',
+            'vacances_2004.jpg',
+            'Image JPEG · 640 × 480',
+            'Une colline verte sous un ciel bleu. Original, non ?',
+          ],
+          ['imagefile', 'webcam_kev1n.jpg', 'Image JPEG · 320 × 240', 'Kev1n qui dort devant sa webcam. Ça promet…'],
+        ],
+      ],
+    ],
   },
   music: {
     title: 'Ma musique',
     icon: 'music',
-    tasks: [['Tâches de musique', [['media', 'Lire tout'], ['globe', 'Acheter de la musique en ligne']]]],
-    groups: [['', [
-      ['mp3file', 'tube_de_l_été.mp3', 'Fichier MP3 · 3,4 Mo', 'Téléchargé à 5 Ko/s, toute une nuit.'],
-      ['mp3file', 'générique_dessin_animé.mp3', 'Fichier MP3 · 2,1 Mo', 'Un classique des mercredis après-midi.'],
-    ]]],
+    tasks: [
+      [
+        'Tâches de musique',
+        [
+          ['media', 'Lire tout'],
+          ['globe', 'Acheter de la musique en ligne'],
+        ],
+      ],
+    ],
+    groups: [
+      [
+        '',
+        [
+          ['mp3file', 'tube_de_l_été.mp3', 'Fichier MP3 · 3,4 Mo', 'Téléchargé à 5 Ko/s, toute une nuit.'],
+          ['mp3file', 'générique_dessin_animé.mp3', 'Fichier MP3 · 2,1 Mo', 'Un classique des mercredis après-midi.'],
+        ],
+      ],
+    ],
   },
   bin: {
     title: 'Corbeille',
     icon: 'bin',
-    tasks: [['Tâches de la Corbeille', [['bin', 'Vider la Corbeille'], ['back', 'Restaurer tous les éléments']]], ['Autres emplacements', [['documents', 'Mes documents'], ['computer', 'Poste de travail']]]],
-    groups: [['', [
-      ['textfile', 'sortie_1998.txt', 'Supprimé · 1 Ko', 'Ancienne sortie : www.saut-temporel.98. Périmée !'],
-      ['wordfile', 'devoir_maths_FINAL_v3.doc', 'Supprimé · 24 Ko', 'Version 3, vraiment finale. Enfin presque.'],
-      ['mp3file', 'sonnerie_grenouille.mp3', 'Supprimé · 96 Ko', 'Une sonnerie de portable très (trop) célèbre en 2005.'],
-    ]]],
+    tasks: [
+      [
+        'Tâches de la Corbeille',
+        [
+          ['bin', 'Vider la Corbeille'],
+          ['back', 'Restaurer tous les éléments'],
+        ],
+      ],
+      [
+        'Autres emplacements',
+        [
+          ['documents', 'Mes documents'],
+          ['computer', 'Poste de travail'],
+        ],
+      ],
+    ],
+    groups: [
+      [
+        '',
+        [
+          ['textfile', 'sortie_1998.txt', 'Supprimé · 1 Ko', 'Ancienne sortie : www.saut-temporel.98. Périmée !'],
+          ['wordfile', 'devoir_maths_FINAL_v3.doc', 'Supprimé · 24 Ko', 'Version 3, vraiment finale. Enfin presque.'],
+          [
+            'mp3file',
+            'sonnerie_grenouille.mp3',
+            'Supprimé · 96 Ko',
+            'Une sonnerie de portable très (trop) célèbre en 2005.',
+          ],
+        ],
+      ],
+    ],
   },
 };
 
-export function createShell({ ui, desk, ctx, view, actions = {} }) {
+export function createShell({ ui, desk, ctx, view, balloons, actions = {} }) {
   const { audio } = ctx;
-  const abort = new AbortController();
-  const { signal } = abort;
+  const balloon = balloons.show;
   const buttons = new Map();
   let menu = null;
-  let current = null;
   let minutes = 23 * 60 + 47;
 
   // ——— Barre des tâches ———
@@ -153,7 +257,8 @@ export function createShell({ ui, desk, ctx, view, actions = {} }) {
   const startBtn = bar.querySelector('.xp-start');
   const clockEl = bar.querySelector('.xp-clock');
 
-  const time = () => `${String(Math.floor(minutes / 60) % 24).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+  const time = () =>
+    `${String(Math.floor(minutes / 60) % 24).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
   const tick = () => {
     clockEl.textContent = time();
   };
@@ -231,7 +336,14 @@ export function createShell({ ui, desk, ctx, view, actions = {} }) {
     render();
   });
   desk.on('focus', () => render());
-  desk.on('restore', () => render());
+  // Une fenêtre qui remonte de la barre des tâches
+  desk.on('restore', (win) => {
+    win.el.classList.remove('xp-pop');
+    void win.el.offsetWidth;
+    win.el.classList.add('xp-pop');
+    ctx.timeout(() => win.el.classList.remove('xp-pop'), 260);
+    render();
+  });
   // Comme sous XP, réduire une fenêtre active la suivante
   desk.on('minimize', () => {
     const next = topWindow();
@@ -310,7 +422,11 @@ export function createShell({ ui, desk, ctx, view, actions = {} }) {
       closeMenu();
       if (id === 'im') actions.messenger?.();
       else if (PLACES[id]) explore(id);
-      else if (id === 'all') balloon(startBtn, { title: 'Tous les programmes', text: 'Accessoires, Jeux, Démarrage… et la Messagerie, toujours en ligne !' });
+      else if (id === 'all')
+        balloon(startBtn, {
+          title: 'Tous les programmes',
+          text: 'Accessoires, Jeux, Démarrage… et la Messagerie, toujours en ligne !',
+        });
       else quip(id, startBtn);
     });
     menu.addEventListener('keydown', (event) => {
@@ -338,57 +454,88 @@ export function createShell({ ui, desk, ctx, view, actions = {} }) {
   }
 
   // Fermeture au clic ailleurs
-  ui.addEventListener(
+  ctx.on(
+    ui,
     'pointerdown',
-    (event) => {
-      if (menu && !menu.contains(event.target) && !startBtn.contains(event.target)) closeMenu();
-      if (current && !current.contains(event.target) && !event.target.closest('[data-balloon-anchor]')) closeBalloon();
-    },
-    { signal, capture: true },
+    (event) => menu && !menu.contains(event.target) && !startBtn.contains(event.target) && closeMenu(),
+    { capture: true },
   );
-
-  // ——— Bulles d'information ———
-
-  function local(el) {
-    const r = el.getBoundingClientRect();
-    const u = ui.getBoundingClientRect();
-    const s = u.width / ui.offsetWidth || 1;
-    return { x: (r.left - u.left) / s, y: (r.top - u.top) / s, w: r.width / s, h: r.height / s };
-  }
-
-  function closeBalloon() {
-    current?.remove();
-    current = null;
-  }
-
-  function balloon(anchor, { title = '', text = '', kind = 'info', timeout = 6500 } = {}) {
-    closeBalloon();
-    const el = document.createElement('div');
-    el.className = 'xp-balloon';
-    el.setAttribute('role', 'status');
-    el.innerHTML = `<button type="button" class="xp-balloon-x" aria-label="Fermer la bulle"></button>
-      ${title ? `<p class="xp-balloon-title">${icon(kind, 16)}<b>${esc(title)}</b></p>` : ''}
-      <p class="xp-balloon-text">${esc(text)}</p>`;
-    ui.append(el);
-    const a = local(anchor);
-    const w = el.offsetWidth;
-    const h = el.offsetHeight;
-    const above = a.y - h - 14 > 2;
-    const x = clamp(a.x + a.w / 2 - 28, 4, view.w - w - 4);
-    el.style.left = `${x}px`;
-    el.style.top = `${above ? a.y - h - 12 : a.y + a.h + 12}px`;
-    el.style.setProperty('--tail', `${clamp(a.x + a.w / 2 - x, 14, w - 26)}px`);
-    el.classList.add(above ? 'is-above' : 'is-below');
-    el.querySelector('.xp-balloon-x').addEventListener('click', closeBalloon);
-    current = el;
-    const timer = ctx.timeout(() => current === el && closeBalloon(), timeout);
-    el.addEventListener('pointerenter', () => ctx.clear(timer), { once: true });
-    return el;
-  }
 
   function quip(id, anchor) {
     const [title, text] = QUIPS[id] ?? ['Information', 'Rien à signaler.'];
     balloon(anchor ?? startBtn, { title, text, kind: id === 'power' || id === 'logoff' ? 'warning' : 'info' });
+  }
+
+  // ——— Menus déroulants des barres de menus ———
+
+  let drop = null;
+
+  function closeDropdown() {
+    drop?.el.remove();
+    drop?.anchor.classList.remove('is-open');
+    drop = null;
+  }
+
+  // entries : [{ label, run, disabled }] ou '-' pour un séparateur
+  function dropdown(anchor, entries) {
+    const same = drop?.anchor === anchor;
+    closeDropdown();
+    if (same) return;
+    const el = document.createElement('div');
+    el.className = 'xp-dropdown';
+    el.setAttribute('role', 'menu');
+    el.innerHTML = entries
+      .map((e, i) =>
+        e === '-'
+          ? '<hr>'
+          : `<button type="button" role="menuitem" data-i="${i}"${e.disabled ? ' disabled' : ''}>${esc(e.label)}</button>`,
+      )
+      .join('');
+    ui.append(el);
+    const a = balloons.local(anchor);
+    el.style.left = `${clamp(a.x, 0, view.w - el.offsetWidth)}px`;
+    el.style.top = `${a.y + a.h}px`;
+    anchor.classList.add('is-open');
+    el.addEventListener('click', (event) => {
+      const btn = event.target.closest('[data-i]');
+      if (!btn) return;
+      audio.click();
+      closeDropdown();
+      entries[Number(btn.dataset.i)].run?.();
+    });
+    drop = { el, anchor };
+  }
+
+  ctx.on(
+    ui,
+    'pointerdown',
+    (event) => drop && !drop.el.contains(event.target) && !drop.anchor.contains(event.target) && closeDropdown(),
+    {
+      capture: true,
+    },
+  );
+
+  // Échap referme ce qui flotte : menu Démarrer, menu déroulant, bulle
+  ctx.on(window, 'keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    closeDropdown();
+    closeMenu();
+    balloons.close();
+  });
+
+  // Branche une liste de menus sur la barre de menus d'une fenêtre
+  function menus(win, lists) {
+    const items = [...win.el.querySelectorAll('.wm-menu-item')];
+    items.forEach((item, i) => {
+      if (!lists[i]) return;
+      item.addEventListener('click', () => {
+        audio.click();
+        win.focus();
+        dropdown(item, lists[i]);
+      });
+    });
+    win.on('close', () => drop && items.includes(drop.anchor) && closeDropdown());
+    win.on('minimize', () => drop && items.includes(drop.anchor) && closeDropdown());
   }
 
   // ——— Explorateur ———
@@ -415,14 +562,14 @@ export function createShell({ ui, desk, ctx, view, actions = {} }) {
       w,
       h,
       maximized: small,
-      menu: ['&Fichier', '&Edition', '&Affichage', 'F&avoris', '&Outils', '&?'],
+      menu: ['&Fichier', '&Édition', '&Affichage', 'F&avoris', '&Outils', '&?'],
       status: `${place.groups.reduce((n, [, list]) => n + list.length, 0)} objet(s)`,
       className: 'xp-ex-win',
       body: `<div class="xp-ex">
         <div class="xp-ex-tools">
           <button type="button" class="xp-ex-tool" disabled>${icon('back', 22)}<span>Précédente</span></button>
           <button type="button" class="xp-ex-tool" disabled aria-label="Suivante">${icon('forward', 22)}</button>
-          <button type="button" class="xp-ex-tool" aria-label="Dossier parent">${icon('up', 22)}</button>
+          <button type="button" class="xp-ex-tool" data-up aria-label="Dossier parent">${icon('up', 22)}</button>
           <i class="xp-ex-sep"></i>
           <button type="button" class="xp-ex-tool" data-quip="search">${icon('search', 22)}<span>Rechercher</span></button>
           <button type="button" class="xp-ex-tool">${icon('folders', 22)}<span>Dossiers</span></button>
@@ -435,18 +582,30 @@ export function createShell({ ui, desk, ctx, view, actions = {} }) {
         <div class="xp-ex-main">
           <aside class="xp-ex-side">${place.tasks
             .map(
-              ([title, links]) => `<section class="xp-ex-box"><h3>${esc(title)}<i class="xp-ex-chev" aria-hidden="true"></i></h3>
-                <ul>${links.map(([ic, label]) => `<li>${icon(ic, 16)}<span>${esc(label)}</span></li>`).join('')}</ul></section>`,
+              ([
+                title,
+                links,
+              ]) => `<section class="xp-ex-box"><h3>${esc(title)}<i class="xp-ex-chev" aria-hidden="true"></i></h3>
+                <ul>${links
+                  .map(
+                    ([ic, label]) =>
+                      `<li><button type="button" class="xp-ex-link" data-go="${ic}">${icon(ic, 16)}<span>${esc(label)}</span></button></li>`,
+                  )
+                  .join('')}</ul></section>`,
             )
             .join('')}</aside>
           <div class="xp-ex-files">${place.groups
             .map(
-              ([title, items]) => `${title ? `<h4>${esc(title)}</h4>` : ''}<ul class="xp-ex-grid">${items
-                .map(
-                  ([ic, name, detail, note], i) => `<li><button type="button" class="xp-ex-item" data-i="${i}" data-note="${esc(note ?? '')}">
+              ([title, items]) =>
+                `${title ? `<h4>${esc(title)}</h4>` : ''}<ul class="xp-ex-grid">${items
+                  .map(
+                    (
+                      [ic, name, detail, note],
+                      i,
+                    ) => `<li><button type="button" class="xp-ex-item" data-i="${i}" data-note="${esc(note ?? '')}">
                     ${icon(ic, 48)}<span><b>${esc(name)}</b><small>${esc(detail)}</small></span></button></li>`,
-                )
-                .join('')}</ul>`,
+                  )
+                  .join('')}</ul>`,
             )
             .join('')}</div>
         </div>
@@ -464,21 +623,35 @@ export function createShell({ ui, desk, ctx, view, actions = {} }) {
       });
       btn.addEventListener('focus', () => btn.classList.add('is-selected'));
       btn.addEventListener('blur', () => btn.classList.remove('is-selected'));
-      const open = () => {
-        const note = btn.dataset.note;
-        if (PLACES[note]) explore(note);
-        else if (note) balloon(btn, { title: btn.querySelector('b').textContent, text: note });
-      };
-      btn.addEventListener('dblclick', open);
-      btn.addEventListener('keydown', (event) => event.key === 'Enter' && open());
-      btn.addEventListener('pointerup', (event) => {
-        if (event.pointerType !== 'touch') return;
-        const now = performance.now();
-        if (now - (btn.lastTap ?? 0) < 420) open();
-        btn.lastTap = now;
-      });
+      onDoubleActivate(
+        btn,
+        () => {
+          const note = btn.dataset.note;
+          if (PLACES[note]) explore(note);
+          else if (note) balloon(btn, { title: btn.querySelector('b').textContent, text: note });
+        },
+        { signal: ctx.signal },
+      );
     });
-    win.body.querySelector('[data-quip="search"]').addEventListener('click', (event) => quip('search', event.currentTarget));
+    win.body
+      .querySelector('[data-quip="search"]')
+      .addEventListener('click', (event) => quip('search', event.currentTarget));
+    win.body.querySelector('[data-up]').addEventListener('click', () => {
+      audio.click();
+      explore(id === 'computer' ? 'documents' : 'computer');
+    });
+    win.body.querySelector('.xp-ex-side').addEventListener('click', (event) => {
+      const link = event.target.closest('[data-go]');
+      if (!link) return;
+      audio.click();
+      const go = link.dataset.go;
+      if (PLACES[go] && go !== id) explore(go);
+      else
+        balloon(link, {
+          title: link.textContent.trim(),
+          text: 'Cette tâche attendra : une conversation vous attend sur la messagerie.',
+        });
+    });
     return win;
   }
 
@@ -486,13 +659,14 @@ export function createShell({ ui, desk, ctx, view, actions = {} }) {
 
   function relayout() {
     closeMenu();
-    closeBalloon();
+    closeDropdown();
+    balloons.close();
   }
 
   function destroy() {
-    abort.abort();
     closeMenu();
-    closeBalloon();
+    closeDropdown();
+    balloons.close();
   }
 
   return {
@@ -504,7 +678,7 @@ export function createShell({ ui, desk, ctx, view, actions = {} }) {
     flash,
     buttonFor: (win) => buttons.get(win),
     balloon,
-    closeBalloon,
+    menus,
     explore,
     closeMenu,
     relayout,

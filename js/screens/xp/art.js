@@ -6,46 +6,250 @@
 
 const stops = (list) =>
   list.map(([o, c, a]) => `<stop offset="${o}" stop-color="${c}"${a == null ? '' : ` stop-opacity="${a}"`}/>`).join('');
-const lin = (id, list, x2 = 0, y2 = 1) => `<linearGradient id="xp-${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops(list)}</linearGradient>`;
+const lin = (id, list, x2 = 0, y2 = 1) =>
+  `<linearGradient id="xp-${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops(list)}</linearGradient>`;
 const rad = (id, list, cx = 0.5, cy = 0.5, r = 0.5) =>
   `<radialGradient id="xp-${id}" cx="${cx}" cy="${cy}" r="${r}">${stops(list)}</radialGradient>`;
 
 export const DEFS = `<svg class="xp-defs" aria-hidden="true" focusable="false" width="0" height="0"><defs>
-  ${lin('beige', [[0, '#fdfbf3'], [1, '#d2cab3']])}
-  ${lin('screen', [[0, '#8cc2ff'], [0.55, '#3f82ea'], [1, '#1c4db5']])}
-  ${lin('hill', [[0, '#a9de62'], [1, '#3a8f22']])}
-  ${lin('paper', [[0, '#ffffff'], [1, '#dde3eb']])}
-  ${lin('folder-back', [[0, '#f9da80'], [1, '#d9a032']])}
-  ${lin('folder-front', [[0, '#fff3bf'], [0.45, '#ffdb6e'], [1, '#efb23a']])}
-  ${lin('bubble-blue', [[0, '#a6d6ff'], [1, '#2b6fdc']])}
-  ${lin('bubble-green', [[0, '#cff79a'], [1, '#3ba52b']])}
-  ${lin('bin', [[0, '#b7cbc6'], [0.3, '#f7fbfa'], [0.62, '#d7e4e0'], [1, '#8fa8a3']], 1, 0)}
-  ${rad('globe', [[0, '#c4e9ff'], [0.45, '#3f95ec'], [1, '#113c96']], 0.38, 0.32, 0.7)}
-  ${lin('land', [[0, '#97e061'], [1, '#2c8a25']])}
-  ${lin('orange', [[0, '#ffd590'], [0.5, '#ff9b30'], [1, '#e0640c']])}
-  ${lin('red', [[0, '#ffa486'], [0.5, '#f05332'], [1, '#c02a12']])}
-  ${lin('green', [[0, '#c0f185'], [0.5, '#56ba3c'], [1, '#2a8922']])}
-  ${lin('blue', [[0, '#aed3ff'], [0.5, '#4b8df0'], [1, '#1f55c9']])}
-  ${lin('gold', [[0, '#fff6b4'], [1, '#efb000']])}
-  ${lin('gloss', [[0, '#fff', 0.9], [1, '#fff', 0]])}
-  ${lin('metal', [[0, '#ffffff'], [1, '#b4bbc5']])}
-  ${lin('dark', [[0, '#6a7080'], [1, '#14161c']])}
-  ${lin('disc', [[0, '#f4f7fb'], [0.35, '#c9d3e0'], [0.5, '#fbe9ff'], [0.65, '#cfe9f5'], [1, '#aab6c6']], 1, 1)}
-  ${rad('smiley', [[0, '#fffce6'], [0.42, '#ffe44f'], [1, '#f19f00']], 0.38, 0.3, 0.75)}
-  ${rad('angry', [[0, '#ffd9c9'], [0.45, '#ff7a52'], [1, '#d22e18']], 0.38, 0.3, 0.75)}
-  ${rad('heart', [[0, '#ffc0c9'], [0.45, '#f2384f'], [1, '#b30c23']], 0.35, 0.3, 0.75)}
-  ${rad('st-online', [[0, '#d8ffb0'], [0.5, '#5cc83a'], [1, '#2a8a1c']], 0.4, 0.3, 0.7)}
-  ${rad('st-away', [[0, '#ffe7b0'], [0.5, '#ffa62b'], [1, '#d96a00']], 0.4, 0.3, 0.7)}
-  ${rad('st-busy', [[0, '#ffc2b0'], [0.5, '#f0472b'], [1, '#b82210']], 0.4, 0.3, 0.7)}
-  ${rad('st-off', [[0, '#ffffff'], [0.5, '#d5dae0'], [1, '#9aa2ad']], 0.4, 0.3, 0.7)}
-  ${lin('av-water', [[0, '#e3f5ff'], [0.55, '#8fd0f8'], [1, '#3d98de']])}
-  ${rad('av-duck', [[0, '#fff8b8'], [0.5, '#ffd92e'], [1, '#f0a000']], 0.4, 0.3, 0.75)}
-  ${lin('av-beak', [[0, '#ffbb55'], [1, '#ee6400']])}
-  ${lin('av-night', [[0, '#b38dff'], [0.55, '#6a35d0'], [1, '#2c1478']])}
-  ${rad('av-spot', [[0, '#fff', 0.5], [1, '#fff', 0]])}
-  ${lin('av-wood', [[0, '#b0703f'], [1, '#5a3117']], 1, 0)}
-  ${lin('av-felt', [[0, '#c6efb9'], [0.5, '#5fbf72'], [1, '#22804a']])}
-  ${lin('av-knight', [[0, '#6b7180'], [0.55, '#24272f'], [1, '#08090c']], 1, 0.35)}
+  ${lin('beige', [
+    [0, '#fdfbf3'],
+    [1, '#d2cab3'],
+  ])}
+  ${lin('screen', [
+    [0, '#8cc2ff'],
+    [0.55, '#3f82ea'],
+    [1, '#1c4db5'],
+  ])}
+  ${lin('hill', [
+    [0, '#a9de62'],
+    [1, '#3a8f22'],
+  ])}
+  ${lin('paper', [
+    [0, '#ffffff'],
+    [1, '#dde3eb'],
+  ])}
+  ${lin('folder-back', [
+    [0, '#f9da80'],
+    [1, '#d9a032'],
+  ])}
+  ${lin('folder-front', [
+    [0, '#fff3bf'],
+    [0.45, '#ffdb6e'],
+    [1, '#efb23a'],
+  ])}
+  ${lin('bubble-blue', [
+    [0, '#a6d6ff'],
+    [1, '#2b6fdc'],
+  ])}
+  ${lin('bubble-green', [
+    [0, '#cff79a'],
+    [1, '#3ba52b'],
+  ])}
+  ${lin(
+    'bin',
+    [
+      [0, '#b7cbc6'],
+      [0.3, '#f7fbfa'],
+      [0.62, '#d7e4e0'],
+      [1, '#8fa8a3'],
+    ],
+    1,
+    0,
+  )}
+  ${rad(
+    'globe',
+    [
+      [0, '#c4e9ff'],
+      [0.45, '#3f95ec'],
+      [1, '#113c96'],
+    ],
+    0.38,
+    0.32,
+    0.7,
+  )}
+  ${lin('land', [
+    [0, '#97e061'],
+    [1, '#2c8a25'],
+  ])}
+  ${lin('orange', [
+    [0, '#ffd590'],
+    [0.5, '#ff9b30'],
+    [1, '#e0640c'],
+  ])}
+  ${lin('red', [
+    [0, '#ffa486'],
+    [0.5, '#f05332'],
+    [1, '#c02a12'],
+  ])}
+  ${lin('green', [
+    [0, '#c0f185'],
+    [0.5, '#56ba3c'],
+    [1, '#2a8922'],
+  ])}
+  ${lin('blue', [
+    [0, '#aed3ff'],
+    [0.5, '#4b8df0'],
+    [1, '#1f55c9'],
+  ])}
+  ${lin('gold', [
+    [0, '#fff6b4'],
+    [1, '#efb000'],
+  ])}
+  ${lin('gloss', [
+    [0, '#fff', 0.9],
+    [1, '#fff', 0],
+  ])}
+  ${lin('metal', [
+    [0, '#ffffff'],
+    [1, '#b4bbc5'],
+  ])}
+  ${lin('dark', [
+    [0, '#6a7080'],
+    [1, '#14161c'],
+  ])}
+  ${lin(
+    'disc',
+    [
+      [0, '#f4f7fb'],
+      [0.35, '#c9d3e0'],
+      [0.5, '#fbe9ff'],
+      [0.65, '#cfe9f5'],
+      [1, '#aab6c6'],
+    ],
+    1,
+    1,
+  )}
+  ${rad(
+    'smiley',
+    [
+      [0, '#fffce6'],
+      [0.42, '#ffe44f'],
+      [1, '#f19f00'],
+    ],
+    0.38,
+    0.3,
+    0.75,
+  )}
+  ${rad(
+    'angry',
+    [
+      [0, '#ffd9c9'],
+      [0.45, '#ff7a52'],
+      [1, '#d22e18'],
+    ],
+    0.38,
+    0.3,
+    0.75,
+  )}
+  ${rad(
+    'heart',
+    [
+      [0, '#ffc0c9'],
+      [0.45, '#f2384f'],
+      [1, '#b30c23'],
+    ],
+    0.35,
+    0.3,
+    0.75,
+  )}
+  ${rad(
+    'st-online',
+    [
+      [0, '#d8ffb0'],
+      [0.5, '#5cc83a'],
+      [1, '#2a8a1c'],
+    ],
+    0.4,
+    0.3,
+    0.7,
+  )}
+  ${rad(
+    'st-away',
+    [
+      [0, '#ffe7b0'],
+      [0.5, '#ffa62b'],
+      [1, '#d96a00'],
+    ],
+    0.4,
+    0.3,
+    0.7,
+  )}
+  ${rad(
+    'st-busy',
+    [
+      [0, '#ffc2b0'],
+      [0.5, '#f0472b'],
+      [1, '#b82210'],
+    ],
+    0.4,
+    0.3,
+    0.7,
+  )}
+  ${rad(
+    'st-off',
+    [
+      [0, '#ffffff'],
+      [0.5, '#d5dae0'],
+      [1, '#9aa2ad'],
+    ],
+    0.4,
+    0.3,
+    0.7,
+  )}
+  ${lin('av-water', [
+    [0, '#e3f5ff'],
+    [0.55, '#8fd0f8'],
+    [1, '#3d98de'],
+  ])}
+  ${rad(
+    'av-duck',
+    [
+      [0, '#fff8b8'],
+      [0.5, '#ffd92e'],
+      [1, '#f0a000'],
+    ],
+    0.4,
+    0.3,
+    0.75,
+  )}
+  ${lin('av-beak', [
+    [0, '#ffbb55'],
+    [1, '#ee6400'],
+  ])}
+  ${lin('av-night', [
+    [0, '#b38dff'],
+    [0.55, '#6a35d0'],
+    [1, '#2c1478'],
+  ])}
+  ${rad('av-spot', [
+    [0, '#fff', 0.5],
+    [1, '#fff', 0],
+  ])}
+  ${lin(
+    'av-wood',
+    [
+      [0, '#b0703f'],
+      [1, '#5a3117'],
+    ],
+    1,
+    0,
+  )}
+  ${lin('av-felt', [
+    [0, '#c6efb9'],
+    [0.5, '#5fbf72'],
+    [1, '#22804a'],
+  ])}
+  ${lin(
+    'av-knight',
+    [
+      [0, '#6b7180'],
+      [0.55, '#24272f'],
+      [1, '#08090c'],
+    ],
+    1,
+    0.35,
+  )}
   <radialGradient id="xp-av-burst" gradientUnits="userSpaceOnUse" cx="24" cy="33" r="14">${stops([
     [0, '#ffe08a'],
     [0.35, '#ffa12e'],
@@ -85,9 +289,7 @@ const ICONS = {
     <path d="M14.5 33.5h9l2 4.5h-13z" fill="url(#xp-beige)" stroke="#7d7764" stroke-linejoin="round"/>
     <rect x="8.5" y="38" width="21" height="4" rx="2" fill="url(#xp-beige)" stroke="#7d7764"/>`,
 
-  documents: folder(
-    sheet(-6, '<path d="M16 11h16M16 14.5h16M16 18h11" stroke="#9fb0c8" stroke-width="1.2"/>'),
-  ),
+  documents: folder(sheet(-6, '<path d="M16 11h16M16 14.5h16M16 18h11" stroke="#9fb0c8" stroke-width="1.2"/>')),
 
   pictures: folder(`<g transform="rotate(5 26 16)">
     <rect x="12.5" y="4.5" width="25" height="20" fill="#fff" stroke="#8d97a6"/>
@@ -96,7 +298,10 @@ const ICONS = {
     <circle cx="31" cy="10.5" r="2" fill="#fff6c4"/></g>`),
 
   music: folder(
-    sheet(-4, '<path d="M27 9.5v11.2a2.6 2.6 0 1 1-1.6-2.4V12.6l-6 1.5v8.1a2.6 2.6 0 1 1-1.6-2.4v-8.6z" fill="#2d5bb5"/>'),
+    sheet(
+      -4,
+      '<path d="M27 9.5v11.2a2.6 2.6 0 1 1-1.6-2.4V12.6l-6 1.5v8.1a2.6 2.6 0 1 1-1.6-2.4v-8.6z" fill="#2d5bb5"/>',
+    ),
   ),
 
   folder: folder(),
@@ -338,7 +543,7 @@ const ICONS = {
 const TOOLS = {
   font: `<text x="11" y="17" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="17" fill="#1d3f8f">A</text>
     <rect x="3" y="19" width="16" height="3" rx="1" fill="#e8262f"/>`,
-  background:`<rect x="2.5" y="4.5" width="19" height="15" rx="1.5" fill="#fff" stroke="#5a6779"/>
+  background: `<rect x="2.5" y="4.5" width="19" height="15" rx="1.5" fill="#fff" stroke="#5a6779"/>
     <rect x="4.5" y="6.5" width="15" height="11" fill="url(#xp-screen)"/>
     <path d="M4.5 15c3-2.2 6-2.4 9-1.1s4 .6 6-.6v4.2h-15z" fill="url(#xp-hill)"/>`,
   voice: `<rect x="8.5" y="2.5" width="7" height="12" rx="3.5" fill="url(#xp-metal)" stroke="#5b6472"/>
@@ -351,7 +556,8 @@ const FACE = (fill = 'smiley', stroke = '#a96300') =>
   `<circle cx="10" cy="10" r="8.6" fill="url(#xp-${fill})" stroke="${stroke}"/><ellipse cx="7.6" cy="5.4" rx="3.6" ry="1.9" fill="#fff" opacity=".6"/>`;
 const EYES = (ry = 1.6, rx = 1.05) =>
   `<g class="xp-a-blink"><ellipse cx="7.2" cy="8" rx="${rx}" ry="${ry}" fill="#3d2406"/><ellipse cx="12.8" cy="8" rx="${rx}" ry="${ry}" fill="#3d2406"/></g>`;
-const SMILE = '<path d="M5.7 11.4c2.3 3 6.3 3 8.6 0" fill="none" stroke="#6b3605" stroke-width="1.3" stroke-linecap="round"/>';
+const SMILE =
+  '<path d="M5.7 11.4c2.3 3 6.3 3 8.6 0" fill="none" stroke="#6b3605" stroke-width="1.3" stroke-linecap="round"/>';
 const BIG_MOUTH = `<path d="M4.8 10.9h10.4c0 3.3-2.5 5.5-5.2 5.5s-5.2-2.2-5.2-5.5z" fill="#7a2c00"/>
   <path d="M5.4 11.2h9.2c-.1.7-.3 1.3-.6 1.8H6c-.3-.5-.5-1.1-.6-1.8z" fill="#fff"/>
   <path d="M7.4 15.4c1.6.9 3.6.9 5.2 0-.8-.7-1.6-1-2.6-1s-1.8.3-2.6 1z" fill="#ff7c84"/>`;
@@ -538,6 +744,24 @@ const AVATARS = {
     <path d="M15.8 36.2h16" stroke="#fff" stroke-opacity=".3" stroke-width=".8"/>`,
 };
 
+// Webcam boule posée sur l'écran plat (accessoire du cadre, hors de l'écran)
+export const WEBCAM = `<svg class="xp-webcam-svg" viewBox="0 0 60 54" aria-hidden="true" focusable="false">
+  <defs>
+    <radialGradient id="xp-cam-shell" cx=".36" cy=".3" r=".75"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#e3e7ec"/><stop offset="1" stop-color="#9ba3ae"/></radialGradient>
+    <radialGradient id="xp-cam-lens" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#6c7fa6"/><stop offset=".5" stop-color="#1c2234"/><stop offset="1" stop-color="#06080d"/></radialGradient>
+    <linearGradient id="xp-cam-clip" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9dde2"/><stop offset="1" stop-color="#7d858f"/></linearGradient>
+  </defs>
+  <path d="M19 41h22l2 13H17z" fill="#5d646e"/>
+  <rect x="16" y="38" width="28" height="7" rx="3" fill="url(#xp-cam-clip)" stroke="#6b737d" stroke-width=".8"/>
+  <rect x="26.5" y="30" width="7" height="9" rx="2" fill="url(#xp-cam-clip)" stroke="#6b737d" stroke-width=".8"/>
+  <circle cx="30" cy="18" r="16" fill="url(#xp-cam-shell)" stroke="#858d98" stroke-width=".9"/>
+  <circle cx="30" cy="19" r="9" fill="#1b2130" stroke="#3a78e2" stroke-width="2.2"/>
+  <circle cx="30" cy="19" r="5" fill="url(#xp-cam-lens)"/>
+  <circle cx="27.8" cy="16.8" r="1.6" fill="#fff" opacity=".85"/>
+  <circle class="xp-webcam-led" cx="43" cy="9" r="1.7" fill="#3a414d"/>
+  <ellipse cx="24" cy="8" rx="7" ry="3.5" fill="#fff" opacity=".7"/>
+</svg>`;
+
 // ——— Fabriques ———
 
 export const icon = (name, size = 32, cls = '') =>
@@ -610,10 +834,50 @@ export function wallpaper() {
 <ellipse cx="420" cy="58" rx="210" ry="4.5" transform="rotate(-5 420 58)"/><ellipse cx="880" cy="214" rx="130" ry="3.5" transform="rotate(4 880 214)"/>
 <ellipse cx="70" cy="250" rx="110" ry="3.5" transform="rotate(-3 70 250)"/><ellipse cx="560" cy="250" rx="90" ry="3" transform="rotate(2 560 250)"/>
 </g>
-${cloud(212, 170, 118, [[-60, -8, 28], [-18, -26, 42], [32, -30, 38], [72, -12, 28], [-90, 0, 18]])}
-${cloud(646, 114, 138, [[-66, -6, 26], [-22, -24, 38], [28, -28, 36], [70, -12, 26], [104, -2, 16]], 0.95)}
-${cloud(892, 312, 70, [[-30, -4, 13], [-6, -13, 19], [20, -11, 16], [42, -2, 10]], 0.75)}
-${cloud(440, 302, 84, [[-34, -3, 11], [-8, -10, 16], [18, -9, 14], [44, -1, 9]], 0.6)}
+${cloud(212, 170, 118, [
+  [-60, -8, 28],
+  [-18, -26, 42],
+  [32, -30, 38],
+  [72, -12, 28],
+  [-90, 0, 18],
+])}
+${cloud(
+  646,
+  114,
+  138,
+  [
+    [-66, -6, 26],
+    [-22, -24, 38],
+    [28, -28, 36],
+    [70, -12, 26],
+    [104, -2, 16],
+  ],
+  0.95,
+)}
+${cloud(
+  892,
+  312,
+  70,
+  [
+    [-30, -4, 13],
+    [-6, -13, 19],
+    [20, -11, 16],
+    [42, -2, 10],
+  ],
+  0.75,
+)}
+${cloud(
+  440,
+  302,
+  84,
+  [
+    [-34, -3, 11],
+    [-8, -10, 16],
+    [18, -9, 14],
+    [44, -1, 9],
+  ],
+  0.6,
+)}
 <g filter="url(#streak)" fill="#fff" opacity=".5"><ellipse cx="110" cy="392" rx="170" ry="9"/><ellipse cx="700" cy="400" rx="120" ry="7"/></g>
 <path d="M-30 556C130 520 290 506 430 526s250 34 380 20 190-30 244-28V788H-30z" fill="url(#far)" filter="url(#haze)"/>
 <path d="M-20 600C90 562 210 552 320 572c90 16 150 44 210 76V788H-20z" fill="url(#mid)"/>

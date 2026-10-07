@@ -217,7 +217,7 @@ export function createShell({ startedAt = Date.now() } = {}) {
       const blocks = FILE_NAMES.reduce((sum, name) => sum + Math.ceil(byteSize(FILES[name]) / 512), 0);
       const long = names.map((name) => {
         if (name === '.' || name === '..') return `drwxr-xr-x  2 voyageur    64 15 juil 23:56 ${name}`;
-        const time = name === 'journal' ? '23:51' : '08:40';
+        const time = name === 'journal' ? FILES.journal.at(-1).slice(0, 5) : '08:40';
         return `-rw-r--r--  1 ken      ${pad(byteSize(FILES[name]), 5)} 15 juil ${time} ${name}`;
       });
       return ok([`total ${blocks}`, ...long]);
@@ -319,10 +319,11 @@ export function createShell({ startedAt = Date.now() } = {}) {
     ps: () => ok(['  PID TTY  TIME CMD', '   42   3  0:01 -sh', `  ${pad(70 + Math.floor((Date.now() - startedAt) / 9000) % 20, 3)}   3  0:00 ps`]),
 
     man(args) {
-      const name = (args[0] ?? '').toLowerCase();
-      if (!name) return fail('Quelle page ? Par exemple : man grep');
-      const page = MANUAL[name === 'cd' ? 'chdir' : name];
-      if (!page) return fail(`Pas de manuel pour ${name}.`);
+      const asked = (args[0] ?? '').toLowerCase();
+      if (!asked) return fail('Quelle page ? Par exemple : man grep');
+      const name = asked === 'cd' ? 'chdir' : asked;
+      const page = MANUAL[name];
+      if (!page) return fail(`Pas de manuel pour ${asked}.`);
       const [title, synopsis, ...description] = page;
       const head = `${name.toUpperCase()} (I)`;
       const gap = Math.max(2, Math.floor((46 - head.length * 2 - 7) / 2));

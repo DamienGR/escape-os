@@ -14,8 +14,8 @@ export const SIZES = {
   note: [204, 156],
   clock: [64, 64],
   calendar: [62, 84],
-  sign: [96, 30],
-  slip: [168, 92],
+  sign: [126, 26],
+  slip: [190, 98],
 };
 
 // Points de référence dans le repère du lecteur et de l'imprimante
@@ -26,19 +26,11 @@ export const PAPER_W = 176;
 
 // ——— Mises en page ———
 // Cartes : largeur dans le bac (tray) et par terre (floor).
-// floor : zone où tombent les centres des cartes éparpillées.
-// slots : positions normalisées (u, v) et rotations des cartes au sol.
-
-const SLOTS = [
-  [0.04, 0.06, -13],
-  [0.5, 0, 7],
-  [0.97, 0.1, -5],
-  [0.16, 0.55, 10],
-  [0.6, 0.47, -16],
-  [1, 0.66, 8],
-  [0.02, 1, 4],
-  [0.47, 0.98, -7],
-];
+// floor : zone où tombent les centres des cartes éparpillées ; drop : zone où
+// l'on peut reposer une carte. slots : positions normalisées (u, v), rotation et
+// ordre d'empilement des cartes au sol : les rangées proches recouvrent les plus
+// lointaines, et dans une rangée la carte de gauche passe dessus, pour ne jamais
+// cacher un numéro (il est au bout droit de chaque carte).
 
 export const LAYOUTS = {
   landscape: {
@@ -50,47 +42,66 @@ export const LAYOUTS = {
       tape1: { x: 22, y: 38 },
       tape2: { x: 136, y: 38 },
       cpu: { x: 256, y: 88 },
-      clock: { x: 474, y: 20 },
-      calendar: { x: 566, y: 14 },
-      sign: { x: 456, y: 96 },
-      note: { x: 448, y: 132, r: -2.2 },
+      sign: { x: 280, y: 40 },
+      clock: { x: 470, y: 22 },
+      calendar: { x: 560, y: 14 },
+      note: { x: 450, y: 112, r: -2.2 },
       printer: { x: 662, y: 116 },
       reader: { x: 896, y: 120 },
-      slip: { x: 592, y: 210, r: 3.5 },
+      slip: { x: 468, y: 198, r: 4 },
     },
     desk: { x: 690, y: 262, w: 450, h: 400 },
     tray: { x: 712, y: 272, pad: 15 },
-    card: { tray: 368, floor: 232 },
-    floor: { x0: 136, y0: 368, x1: 560, y1: 578 },
+    card: { tray: 368, floor: 212 },
+    floor: { x0: 118, y0: 364, x1: 572, y1: 578 },
+    drop: { x0: 108, y0: 340, x1: 584, y1: 600 },
+    slots: [
+      [0, 0.02, -14, 2],
+      [0.5, -0.04, 9, 1],
+      [1, 0.06, -6, 0],
+      [0.1, 0.52, 12, 4],
+      [0.58, 0.47, -17, 3],
+      [-0.02, 1, 5, 7],
+      [0.45, 1.02, -9, 6],
+      [0.98, 0.88, 15, 5],
+    ],
     camera: { width: 330, slot: 0.8 },
-    bubble: { x: 300, y: 300 },
+    bubble: { x: 318, y: 292 },
   },
   portrait: {
     key: 'portrait',
     w: 640,
-    h: 1160,
+    h: 1240,
     floorY: 384,
     parts: {
       note: { x: 20, y: 20, s: 1.28, r: -2 },
       clock: { x: 332, y: 22, s: 1.12 },
       calendar: { x: 418, y: 16, s: 1.12 },
-      sign: { x: 506, y: 32, s: 1.1, hidden: true },
       tape1: { x: 12, y: 196, s: 0.72 },
       printer: { x: 98, y: 214, s: 0.93 },
       reader: { x: 318, y: 134, s: 1.4 },
-      slip: { x: 196, y: 92, s: 1.32, r: 3 },
+      slip: { x: 26, y: 44, s: 1.66, r: 2.5 },
     },
     hide: ['tape2', 'cpu', 'sign'],
     desk: { x: 34, y: 372, w: 572, h: 478 },
     tray: { x: 64, y: 384, pad: 16 },
-    card: { tray: 480, floor: 272 },
-    floor: { x0: 146, y0: 930, x1: 494, y1: 1092 },
-    camera: { width: 236, slot: 0.84 },
-    bubble: { x: 320, y: 870 },
+    card: { tray: 480, floor: 300 },
+    floor: { x0: 162, y0: 912, x1: 466, y1: 1166 },
+    drop: { x0: 152, y0: 890, x1: 476, y1: 1176 },
+    slots: [
+      [0, 0, -9, 1],
+      [0.98, 0.04, 7, 0],
+      [0.04, 0.34, 11, 3],
+      [0.95, 0.31, -10, 2],
+      [-0.02, 0.66, -6, 5],
+      [0.98, 0.69, 9, 4],
+      [0.05, 1, 8, 7],
+      [0.94, 0.98, -7, 6],
+    ],
+    camera: { width: 192, slot: 0.84 },
+    bubble: { x: 320, y: 770 },
   },
 };
-
-for (const layout of Object.values(LAYOUTS)) layout.slots = SLOTS;
 
 // ——— Dessins ———
 
@@ -202,7 +213,7 @@ function cpu() {
 
 function printer() {
   return `<div class="cr-part cr-printer" data-part="printer">
-    <div class="cr-paper" aria-hidden="true"><div class="cr-paper-strip"><div class="cr-paper-lines"></div><svg class="cr-pencil" aria-hidden="true"><path/></svg></div></div>
+    <div class="cr-paper" aria-hidden="true"><div class="cr-paper-strip"><div class="cr-paper-lines"><svg class="cr-pencil"><path/></svg></div></div></div>
     <svg viewBox="0 0 224 184" aria-hidden="true">
       <ellipse cx="112" cy="180" rx="122" ry="6" fill="#000" opacity=".25"/>
       <rect x="6" y="56" width="212" height="120" rx="4" fill="url(#cr-cab)" stroke="#9a9688"/>
@@ -237,6 +248,10 @@ function reader() {
       <ellipse cx="107" cy="174" rx="116" ry="6" fill="#000" opacity=".25"/>
       <rect x="14" y="0" width="92" height="46" rx="3" fill="url(#cr-slate-dark)"/>
       <path d="M18 4h84" stroke="#fff" stroke-opacity=".14"/>
+      <path d="M24 9v30M34 9v30M44 9v30M54 9v30M64 9v30M74 9v30M84 9v30M94 9v30" stroke="#000" stroke-opacity=".16"/>
+      <rect x="20" y="14" width="80" height="22" rx="1.5" fill="#000" opacity=".18"/>
+      <rect x="14" y="2" width="5" height="44" rx="1.5" fill="url(#cr-chrome)"/>
+      <rect x="101" y="2" width="5" height="44" rx="1.5" fill="url(#cr-chrome)"/>
       <rect x="4" y="40" width="206" height="130" rx="4" fill="url(#cr-cab)" stroke="#9a9688"/>
       <rect x="122" y="18" width="80" height="28" rx="2" fill="#26323b"/>
       <rect class="cr-stack" x="129" y="44" width="66" height="0" fill="#f0e3c0" stroke="#c9b68a" stroke-width=".6"/>
@@ -264,7 +279,7 @@ function readerFront() {
       <text class="cr-tx cr-tx-xs cr-tx-w" x="60" y="36.5" text-anchor="middle">ALIMENTATION</text>
       <path d="M8 56h104" stroke="#9a9688"/>
     </svg>
-    <button class="cr-read" type="button" aria-describedby="cr-read-help"><span>LECTURE</span></button>
+    <button class="cr-read" type="button" aria-describedby="cr-read-help"><span>Lecture</span></button>
   </div>`;
 }
 
@@ -329,7 +344,7 @@ function note() {
   return `<div class="cr-part cr-note" data-part="note">
     <div class="cr-note-paper">
       <i class="cr-note-pin" aria-hidden="true"></i>
-      <p class="cr-note-head">Salle des machines · Exploitation<br>Travail nº 0042</p>
+      <p class="cr-note-head">Exploitation<br>Travail nº 0042</p>
       <span class="cr-stamp" aria-hidden="true">Rejeté</span>
       <p class="cr-note-msg">Votre programme a été rejeté&#8239;: cartes dans le désordre.</p>
       <p class="cr-note-sign">— L’opérateur</p>
@@ -384,6 +399,7 @@ export function roomDefs() {
         <stop offset="0" stop-color="#ff7a6a"/>
         <stop offset="1" stop-color="#a8261c"/>
       </radialGradient>
+      <filter id="cr-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.6"/></filter>
       <pattern id="cr-chain-pat" width="6" height="8" patternUnits="userSpaceOnUse">
         <rect width="6" height="8" fill="#2c3943"/>
         <rect x="1" y="1" width="3.4" height="6" rx=".8" fill="#9fb0bb"/>

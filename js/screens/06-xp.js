@@ -3,7 +3,8 @@
 
 import { createDesktop } from '../ui/windows.js';
 import { ARROW, HAND, HOURGLASS, svgCursor } from '../ui/pixel.js';
-import { DEFS, avatar, icon, wallpaper } from './xp/art.js';
+import { DEFS, WEBCAM, avatar, icon, wallpaper } from './xp/art.js';
+import { createBalloons } from './xp/balloon.js';
 import { TASKBAR_H, createShell } from './xp/shell.js';
 import { createMessenger } from './xp/messenger.js';
 
@@ -30,6 +31,14 @@ export default {
   id: 'xp',
   era: 'Windows XP',
   year: 2001,
+
+  // Une webcam boule posée sur l'écran plat, comme en 2005
+  decor(props) {
+    const cam = document.createElement('div');
+    cam.className = 'xp-webcam';
+    cam.innerHTML = WEBCAM;
+    props.bezel.append(cam);
+  },
 
   mount(root, ctx) {
     const { audio } = ctx;
@@ -88,6 +97,7 @@ export default {
 
     fit();
     ctx.onResize(fit);
+    const balloons = createBalloons({ ui, view, ctx });
 
     // ——— Démarrage ———
 
@@ -137,7 +147,10 @@ export default {
       const screen = ui.querySelector('.xp-welcome');
       const tiles = [...screen.querySelectorAll('.xp-user')];
       tiles.forEach((tile, i) => {
-        tile.addEventListener('click', () => (tile.dataset.user === 'voyageur' ? login(tile) : guest(tile)));
+        // detail = 0 : clic simulé par le clavier (Entrée, Espace)
+        tile.addEventListener('click', (event) =>
+          tile.dataset.user === 'voyageur' ? login(tile, event.detail === 0) : guest(tile),
+        );
         tile.addEventListener('keydown', (event) => {
           const step = { ArrowDown: 1, ArrowUp: -1 }[event.key];
           if (!step) return;
@@ -147,30 +160,13 @@ export default {
       });
       screen.querySelector('.xp-wl-off').addEventListener('click', (event) => {
         audio.click();
-        bubble(event.currentTarget, 'Arrêter l’ordinateur ?', 'Pas maintenant : le voyage dans le temps n’est pas terminé !');
+        balloons.show(event.currentTarget, {
+          title: 'Arrêter l’ordinateur ?',
+          text: 'Pas maintenant : le voyage dans le temps n’est pas terminé !',
+          kind: 'warning',
+        });
       });
       setTimeout(() => phase === 'welcome' && tiles[0].focus({ preventScroll: true }), 60);
-    }
-
-    // Bulle d'info de l'écran d'accueil (la coquille n'existe pas encore)
-    function bubble(anchor, title, text) {
-      ui.querySelector('.xp-balloon')?.remove();
-      const el = document.createElement('div');
-      el.className = 'xp-balloon is-below xp-balloon-welcome';
-      el.setAttribute('role', 'status');
-      el.innerHTML = `<p class="xp-balloon-title">${icon('info', 16)}<b>${title}</b></p><p class="xp-balloon-text">${text}</p>`;
-      ui.append(el);
-      const u = ui.getBoundingClientRect();
-      const r = anchor.getBoundingClientRect();
-      const s = u.width / ui.offsetWidth || 1;
-      const x = Math.min((r.left - u.left) / s + 20, view.w - el.offsetWidth - 8);
-      const above = (r.top - u.top) / s > view.h * 0.6;
-      el.classList.toggle('is-below', !above);
-      el.classList.toggle('is-above', above);
-      el.style.left = `${x}px`;
-      el.style.top = above ? `${(r.top - u.top) / s - el.offsetHeight - 10}px` : `${(r.bottom - u.top) / s + 8}px`;
-      el.style.setProperty('--tail', '24px');
-      ctx.timeout(() => el.remove(), 5000);
     }
 
     function guest(tile) {
@@ -178,15 +174,19 @@ export default {
       tile.classList.remove('is-denied');
       void tile.offsetWidth;
       tile.classList.add('is-denied');
-      bubble(tile, 'Compte Invité désactivé', 'Le voyageur temporel, c’est vous ! Cliquez sur « Voyageur ».');
+      balloons.show(tile.querySelector('.xp-user-pic'), {
+        title: 'Compte Invité désactivé',
+        text: 'Le voyageur temporel, c’est vous ! Cliquez sur « Voyageur ».',
+        place: 'below',
+      });
     }
 
-    async function login(tile) {
+    async function login(tile, keyboard = false) {
       if (phase !== 'welcome') return;
       phase = 'login';
       audio.click();
       ctx.progress();
-      ui.querySelector('.xp-balloon')?.remove();
+      balloons.close();
       const screen = ui.querySelector('.xp-welcome');
       screen.classList.add('is-busy');
       tile.classList.add('is-selected');
@@ -200,12 +200,12 @@ export default {
           <div class="xp-wl-bottom"></div>
         </div>`;
       await ctx.wait(1700, { skippable: true });
-      buildDesktop();
+      buildDesktop(keyboard);
     }
 
     // ——— Bureau ———
 
-    function buildDesktop() {
+    function buildDesktop(keyboard) {
       phase = 'desktop';
       ui.innerHTML = '<div class="xp-desktop"></div>';
       const deskEl = ui.querySelector('.xp-desktop');
@@ -215,7 +215,7 @@ export default {
         drag: 'live',
         workArea: () => ({ x: 0, y: 0, w: view.w, h: view.h - TASKBAR_H }),
       });
-      shell = createShell({ ui, desk, ctx, view, actions: { messenger: () => im?.openContacts() } });
+      shell = createShell({ ui, desk, ctx, view, balloons, actions: { messenger: () => im?.openContacts() } });
       im = createMessenger({ ui, desk, shell, ctx, view });
 
       const icons = [
@@ -239,7 +239,8 @@ export default {
       busy(false);
       ctx.hints.onReveal((level) => im?.onHint(level));
       ctx.timeout(() => im.start(), 1500);
-      ctx.timeout(() => shell.el.querySelector('.xp-task')?.focus({ preventScroll: true }), 1600);
+      // Au clavier, on se retrouve directement sur la fenêtre qui clignote
+      if (keyboard) ctx.timeout(() => shell.buttonFor(im.chat())?.focus({ preventScroll: true }), 1600);
     }
 
     boot().catch(() => {});

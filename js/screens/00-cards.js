@@ -23,7 +23,7 @@ export default {
   mount(root, ctx) {
     const { audio } = ctx;
     root.classList.add('cr');
-    root.innerHTML = `${roomDefs()}${cardDefs('cr')}
+    root.innerHTML = `${roomDefs()}${cardDefs('pc')}
       <div class="cr-room">
         ${roomMarkup()}
         <div class="cr-cards" role="group" aria-label="Cartes perforées"></div>
@@ -57,9 +57,9 @@ export default {
       el.dataset.seq = seqOf(rank);
       el.setAttribute('role', 'button');
       el.setAttribute('aria-label', `Carte ${seqOf(rank)} : ${line.trim().replace(/\s+/g, ' ')}`);
-      el.innerHTML = `<div class="pc-body">${cardSvg(rank, 'cr')}</div>`;
+      el.innerHTML = `<div class="pc-body">${cardSvg(rank, 'pc')}</div>`;
       layer.append(el);
-      return { rank, el, zone: 'floor', u: 0, v: 0, rot: 0, z: rank, pose: null };
+      return { rank, el, zone: 'floor', slot: -1, jitter: [0, 0, 0], u: 0, v: 0, rot: 0, z: rank, pose: null };
     });
     const cardOf = (el) => cards.find((card) => card.el === el);
 
@@ -136,7 +136,15 @@ export default {
       for (const anim of el.getAnimations()) anim.cancel();
       el.style.transform = poseCss(pose);
       if (!animate || !start || !moving || reduced()) return null;
-      return el.animate(frames(start, pose, lift), { duration, easing, delay, fill: 'backwards' });
+      const anim = el.animate(frames(start, pose, lift), { duration, easing, delay, fill: 'backwards' });
+      // Une carte en vol ne doit pas intercepter les clics destinés aux autres
+      if (lift) {
+        el.classList.add('is-flying');
+        const land = () => el.classList.remove('is-flying');
+        anim.addEventListener('finish', land);
+        anim.addEventListener('cancel', land);
+      }
+      return anim;
     }
 
     function layoutCards({ animate = true, duration = 300, gap = -1, except = null } = {}) {
@@ -166,6 +174,7 @@ export default {
       syncing = false;
       if (active && layer.contains(active) && document.activeElement !== active) active.focus({ preventScroll: true });
       for (const card of cards) {
+        card.el.dataset.zone = card.zone;
         card.el.setAttribute('aria-describedby', card.zone === 'tray' ? 'cr-help-tray' : 'cr-help-floor');
       }
     }
@@ -212,6 +221,7 @@ export default {
       trayEl.style.setProperty('--cw', `${CW}px`);
       trayEl.style.setProperty('--ch', `${CH}px`);
       trayEl.style.setProperty('--pad', `${pad}px`);
+      trayEl.style.setProperty('--d', `${D}px`);
       Object.assign(deskEl.style, { left: `${L.desk.x}px`, top: `${L.desk.y}px`, width: `${L.desk.w}px`, height: `${L.desk.h}px` });
       bubble.style.left = `${L.bubble.x}px`;
       bubble.style.top = `${L.bubble.y}px`;
@@ -222,37 +232,41 @@ export default {
       if (dragging) endDrag(dragging.card, null, true);
       for (const card of cards) {
         if (card.zone === 'reader') place(card, hopperPose(card.rank), { animate: false });
+        if (card.zone === 'floor' && card.slot >= 0) fromSlot(card);
       }
       layoutCards({ animate: false });
       if (camera) aim(false);
     }
 
     // ——— Éparpillement au sol ———
+    // Chaque carte tombée occupe une place (slot) de la mise en page, avec un
+    // léger désordre ; une carte reposée à la main garde sa position (slot -1).
+
+    function fromSlot(card) {
+      const [u, v, r] = L.slots[card.slot];
+      card.u = u + card.jitter[0];
+      card.v = v + card.jitter[1];
+      card.rot = r + card.jitter[2];
+    }
 
     function scatter(list) {
-      const slots = L.slots.map((slot, i) => ({ slot, i })).sort(() => Math.random() - 0.5);
+      const order = L.slots.map((_, i) => i).sort(() => Math.random() - 0.5);
       list.forEach((card, k) => {
-        const { slot } = slots[k % slots.length];
-        card.u = clamp(slot[0] + rand(-0.04, 0.04), -0.02, 1.02);
-        card.v = clamp(slot[1] + rand(-0.05, 0.05), -0.03, 1.03);
-        card.rot = slot[2] + rand(-5, 5);
-        card.z = slots[k % slots.length].i;
+        card.slot = order[k % order.length];
+        card.jitter = [rand(-0.035, 0.035), rand(-0.045, 0.045), rand(-5, 5)];
+        card.z = L.slots[card.slot][3];
+        fromSlot(card);
       });
     }
 
     // Place libre pour une carte reposée par terre au clavier
     function freeSpot(card) {
-      let best = null;
-      for (const slot of L.slots) {
-        const d = Math.min(
-          ...cards.filter((c) => c.zone === 'floor' && c !== card).map((c) => Math.hypot(c.u - slot[0], (c.v - slot[1]) * 0.6)),
-          9,
-        );
-        if (!best || d > best.d) best = { slot, d };
-      }
-      card.u = best.slot[0] + rand(-0.03, 0.03);
-      card.v = best.slot[1] + rand(-0.03, 0.03);
-      card.rot = best.slot[2] + rand(-6, 6);
+      const taken = new Set(cards.filter((c) => c.zone === 'floor' && c !== card).map((c) => c.slot));
+      let slot = L.slots.findIndex((_, i) => !taken.has(i));
+      if (slot < 0) slot = Math.floor(Math.random() * L.slots.length);
+      card.slot = slot;
+      card.jitter = [rand(-0.03, 0.03), rand(-0.04, 0.04), rand(-6, 6)];
+      fromSlot(card);
     }
 
     // ——— Sons de papier ———
@@ -445,10 +459,11 @@ export default {
       } else {
         card.zone = 'floor';
         if (!cancelled) {
-          const f = L.drop ?? L.floor;
+          const f = L.drop;
           const box = L.floor;
-          const x = clamp(st.pose.x, f.x0 - 40, f.x1 + 40);
-          const y = clamp(st.pose.y, f.y0 - 30, f.y1 + 30);
+          const x = clamp(st.pose.x, f.x0, f.x1);
+          const y = clamp(st.pose.y, f.y0, f.y1);
+          card.slot = -1;
           card.u = (x - box.x0) / (box.x1 - box.x0);
           card.v = (y - box.y0) / (box.y1 - box.y0);
           card.rot = clamp(st.pose.r + rand(-14, 14), -30, 30);
@@ -672,7 +687,11 @@ export default {
           audio.beep(440, 0.1);
           await printSlip(slip(job, { kind: tray.length ? 'incomplete' : 'empty', count: tray.length }));
           ctx.error();
-          announce(`Lecture refusée : paquet incomplet, ${tray.length} carte${tray.length > 1 ? 's' : ''} sur 8.`);
+          announce(
+            tray.length
+              ? `Lecture refusée : paquet incomplet, ${tray.length} carte${tray.length > 1 ? 's' : ''} sur 8.`
+              : 'Lecture refusée : le bac est vide.',
+          );
           return;
         }
         const deck = tray.slice();
@@ -716,13 +735,17 @@ export default {
       for (let i = 0; i < count; i++) {
         const card = deck[i];
         const from = card.pose;
+        const to = { ...from, y: from.y + 18 * s };
+        for (const anim of card.el.getAnimations()) anim.cancel();
+        card.pose = to;
+        card.el.style.transform = poseCss(to);
+        card.el.style.opacity = '0';
         if (!reduced()) {
-          card.el.animate([{ transform: poseCss(from), opacity: 1 }, { transform: poseCss({ ...from, y: from.y + 18 * s }), opacity: 0 }], {
+          card.el.animate([{ transform: poseCss(from), opacity: 1 }, { transform: poseCss(to), opacity: 0 }], {
             duration: 110,
             easing: 'ease-in',
-            fill: 'forwards',
           });
-        } else card.el.style.opacity = '0';
+        }
         stack(i + 1);
         await ctx.wait(56);
       }
@@ -837,8 +860,12 @@ export default {
       aim(true);
       await ctx.wait(reduced() ? 100 : 1450);
       const out = listing(job);
-      const lh = 21.6;
       const strip = root.querySelector('.cr-paper-strip');
+      // Saut de page : le papier file jusqu'en haut de la feuille
+      strip.classList.add('is-feeding');
+      audio.noise({ type: 'bandpass', freq: 700, to: 2600, q: 1.1, attack: 0.03, release: 0.42, vol: 0.09 });
+      await ctx.wait(reduced() ? 50 : 520);
+      strip.classList.replace('is-feeding', 'is-fed');
       const print = async (lines, rate) => {
         printerLamp(true);
         root.classList.add('is-printing');
@@ -860,9 +887,9 @@ export default {
       await print([out.result], 4);
       const result = paperLines.lastElementChild;
       result.classList.add('cr-line-result');
-      await print([out.end, '', ''], 7);
+      await print(['', ''], 7);
       await ctx.wait(reduced() ? 100 : 350);
-      circle(result, lh);
+      circle(result);
       sfx.pencil();
       root.classList.remove('is-running');
       announce(`Dernière ligne du listing : ${out.result}.`);
@@ -873,25 +900,34 @@ export default {
       ctx.complete();
     }
 
-    // Le trait de crayon rouge de l'opérateur autour de la dernière ligne
+    // Le trait de crayon rouge de l'opérateur autour de la dernière ligne :
+    // une boucle tracée à main levée, qui dépasse un peu son point de départ.
     function circle(line) {
       const svg = root.querySelector('.cr-pencil');
-      const w = Math.min(line.scrollWidth, line.parentElement.clientWidth) + 34;
-      const h = line.offsetHeight + 18;
-      const top = line.offsetTop - 9;
+      const text = line.textContent.trimEnd().length * 12.9 * 0.5996;
+      const w = text + 56;
+      const h = line.offsetHeight + 12;
+      Object.assign(svg.style, { width: `${w}px`, height: `${h}px`, left: `${line.offsetLeft - 28}px`, top: `${line.offsetTop - 6}px` });
       svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-      Object.assign(svg.style, { width: `${w}px`, height: `${h}px`, top: `${top}px`, left: `${line.offsetLeft - 17}px` });
-      const rx = w / 2 - 4;
-      const ry = h / 2 - 3;
       const cx = w / 2;
       const cy = h / 2;
-      const path = svg.querySelector('path');
-      path.setAttribute(
-        'd',
-        `M${cx + rx * 0.62} ${cy - ry * 0.95}C${cx + rx * 1.08} ${cy - ry * 0.7} ${cx + rx * 1.02} ${cy + ry * 0.92} ${cx} ${cy + ry}` +
-          `C${cx - rx * 1.05} ${cy + ry * 1.05} ${cx - rx * 1.04} ${cy - ry * 0.96} ${cx - rx * 0.1} ${cy - ry * 1.02}` +
-          `C${cx + rx * 0.4} ${cy - ry * 1.05} ${cx + rx * 0.82} ${cy - ry * 0.86} ${cx + rx * 0.95} ${cy - ry * 0.52}`,
-      );
+      const pts = [];
+      const a0 = -2.2;
+      const span = Math.PI * 2 + 0.75;
+      for (let i = 0; i <= 28; i++) {
+        const t = i / 28;
+        const a = a0 + span * t;
+        const wobble = 1 + 0.035 * Math.sin(t * 9) - 0.06 * t;
+        pts.push([cx + Math.cos(a) * (w / 2 - 3) * wobble, cy + Math.sin(a) * (h / 2 - 2) * wobble - 1.5 * t]);
+      }
+      let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+      for (let i = 1; i < pts.length - 1; i++) {
+        const [x, y] = pts[i];
+        const [nx, ny] = pts[i + 1];
+        d += `Q${x.toFixed(1)} ${y.toFixed(1)} ${((x + nx) / 2).toFixed(1)} ${((y + ny) / 2).toFixed(1)}`;
+      }
+      d += `L${pts.at(-1)[0].toFixed(1)} ${pts.at(-1)[1].toFixed(1)}`;
+      svg.querySelector('path').setAttribute('d', d);
       svg.classList.add('on');
     }
 
@@ -910,13 +946,18 @@ export default {
       }, 160);
     }
 
+    // L'horloge donne l'heure réelle ; la trotteuse avance sans jamais repartir en arrière.
+    let seconds = new Date().getSeconds();
+    let sweep = seconds * 6;
     const tick = () => {
       const now = new Date();
       const m = now.getMinutes() + now.getSeconds() / 60;
       const h = (now.getHours() % 12) + m / 60;
+      sweep += ((now.getSeconds() - seconds + 60) % 60) * 6;
+      seconds = now.getSeconds();
       root.querySelector('.cr-hand-h').style.transform = `rotate(${h * 30}deg)`;
       root.querySelector('.cr-hand-m').style.transform = `rotate(${m * 6}deg)`;
-      root.querySelector('.cr-hand-s').style.transform = `rotate(${now.getSeconds() * 6}deg)`;
+      root.querySelector('.cr-hand-s').style.transform = `rotate(${sweep}deg)`;
     };
     tick();
     ctx.interval(tick, 1000);
@@ -926,8 +967,9 @@ export default {
       stopAmbience = audio.ambience();
     };
     startAmbience();
-    ctx.on(window, 'pointerdown', () => setTimeout(startAmbience, 50));
-    ctx.on(window, 'keydown', () => setTimeout(startAmbience, 50));
+    // Sans geste préalable (?screen=0), l'audio ne démarre qu'au premier clic.
+    ctx.on(window, 'pointerdown', () => ctx.timeout(startAmbience, 50));
+    ctx.on(window, 'keydown', () => ctx.timeout(startAmbience, 50));
 
     // ——— Indices : le numéro, puis le trait de feutre ———
 
