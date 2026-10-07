@@ -123,7 +123,8 @@ export const HINTS = {
     'Démarrer › Arrêter › Oui. Ensuite, l’ordinateur attend qu’on appuie sur le bouton de son boîtier.',
   ],
   win98: [
-    'Pour aller sur Internet, il faut d’abord se connecter : double-clique sur « Connexion à Internet ».',
+    ({ touch }) =>
+      `Pour aller sur Internet, il faut d’abord se connecter : ${touch ? 'touche deux fois de suite' : 'double-clique sur'} « Connexion à Internet ».`,
     'L’adresse est écrite sur la pochette du CD, à côté de l’écran.',
     'Une fois connecté, tape www.saut-temporel.98 dans la barre d’adresse du navigateur.',
   ],

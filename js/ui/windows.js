@@ -598,10 +598,16 @@ export function createDesktop(el, options = {}) {
     });
   }
 
+  // Les fenêtres encore ouvertes passent pour fermées : les minuteries des
+  // applications qui testent win.closed s'arrêtent d'elles-mêmes.
   function destroy() {
     abort.abort();
-    windows.slice().forEach((win) => win.el.remove());
-    windows.length = 0;
+    for (const win of windows.splice(0)) {
+      win.closed = true;
+      win.icon?.remove();
+      win.el.remove();
+    }
+    focused = null;
   }
 
   return {
