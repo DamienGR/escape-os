@@ -20,6 +20,7 @@ import {
   RESTART,
   FACTS,
   SHARE,
+  MAC,
   FALLBACKS,
 } from './agent/script.js';
 
@@ -56,6 +57,11 @@ function srOnly(text) {
 
 const STATUS = { idle: 'En ligne', thinking: 'Réfléchit…', typing: 'Écrit…' };
 
+// Le parcours principal : neuf époques, puis le présent. Une éventuelle salle
+// bonus n'entre ni dans la frise des gestes ni dans le bilan.
+const PATH = ['cards', 'unix', 'dos', 'win31', 'win95', 'win98', 'xp', 'ubuntu', 'phone', 'agent'];
+const ROUTE = PATH.map((id) => ERAS.find((era) => era.id === id)).filter(Boolean);
+
 const TEMPLATE = `
   <div class="ag-ambient" aria-hidden="true"></div>
   <div class="ag-scroll">
@@ -80,7 +86,7 @@ const TEMPLATE = `
       </label>
       <button class="ag-send" type="submit" aria-label="Envoyer" disabled>${svg('send')}</button>
     </form>
-    <p class="ag-note">Agent simulé : ses réponses sont écrites à l’avance, et rien ne quitte ton navigateur.</p>
+    <p class="ag-note">Agent simulé : réponses écrites à l’avance<span class="ag-note-more">, rien ne quitte ton navigateur</span>.</p>
   </div>
   <canvas class="ag-confetti" aria-hidden="true" hidden></canvas>`;
 
@@ -112,13 +118,21 @@ export default {
 
     // ——— Bilan, figé à l'arrivée : les indices demandés ici ne comptent pas ———
 
-    const per = ERAS.slice(0, -1).map((era) => ({ era, hints: 0, errors: 0, time: 0, done: false, ...state.stats[era.id] }));
+    const per = ROUTE.filter((era) => era.id !== 'agent').map((era) => ({
+      era,
+      hints: 0,
+      errors: 0,
+      time: 0,
+      done: false,
+      ...state.stats[era.id],
+    }));
     const hints = per.reduce((n, s) => n + s.hints, 0);
     const errors = per.reduce((n, s) => n + s.errors, 0);
     // Arrivé ici sans avoir fini une seule époque (lien direct) : non classé non plus.
     const visit = Boolean(state.visit) || !per.some((s) => s.done);
     const title = titleFor({ hints, visit });
     const score = { time: state.elapsed, duration: duration(state.elapsed), hints, errors, visit, title: title.name };
+    const annex = Boolean(state.stats.mac?.done);
 
     // ——— File de la conversation ———
     // Une réponse à la fois. Un nouveau message du joueur accélère celle en
@@ -199,7 +213,7 @@ export default {
       () => {
         if (gliding) return;
         pinned = atBottom();
-        if (pinned) jump.hidden = true;
+        jump.hidden = pinned;
       },
       { passive: true },
     );
@@ -212,7 +226,28 @@ export default {
     });
     const resizer = new ResizeObserver(() => follow());
     resizer.observe(scroller);
-    ctx.onResize(() => follow());
+
+    // Plus de cadre : l'écran touche le HUD. Si la scène l'a mesuré pendant son
+    // animation d'entrée (arrivée directe, mode visite), on rattrape l'écart ici.
+    const hud = document.getElementById('hud');
+    function clearHud() {
+      const box = root.getBoundingClientRect();
+      const bar = hud && !hud.hidden ? hud.getBoundingClientRect() : null;
+      let top = 0;
+      let bottom = 0;
+      if (bar?.height) {
+        if (bar.top < box.top + box.height / 2) top = Math.max(0, Math.round(bar.bottom - box.top));
+        else bottom = Math.max(0, Math.round(box.bottom - bar.top));
+      }
+      app.style.setProperty('--ag-top', `${top}px`);
+      app.style.setProperty('--ag-bottom', `${bottom}px`);
+    }
+    if (hud) ctx.on(hud, 'animationend', clearHud);
+    ctx.timeout(clearHud, 700);
+    ctx.onResize(() => {
+      clearHud();
+      follow();
+    });
 
     // ——— Tours de parole ———
 
@@ -263,14 +298,15 @@ export default {
     // Écrit les segments caractère par caractère. Le texte restant est déjà
     // posé, invisible : les lignes ne sautent pas pendant la frappe.
     function type(host, segs) {
+      if (signal.aborted) return Promise.reject(abortError());
       const parts = segs.map((seg) => {
-        const wrap = seg.kind === 'text' ? host : host.appendChild(document.createElement(seg.kind));
+        const wrap = seg.kind === 'text' ? null : host.appendChild(document.createElement(seg.kind));
         const shown = document.createTextNode('');
         const ghost = document.createElement('span');
         ghost.className = 'ag-ghost';
         ghost.textContent = seg.text;
-        wrap.append(shown, ghost);
-        return { text: seg.text, shown, ghost, count: 0 };
+        (wrap ?? host).append(shown, ghost);
+        return { text: seg.text, wrap, shown, ghost, count: 0 };
       });
       const total = parts.reduce((n, p) => n + p.text.length, 0);
       const caret = document.createElement('span');
@@ -279,6 +315,7 @@ export default {
         for (const p of parts) {
           p.shown.data = p.text;
           p.ghost.remove();
+          p.wrap?.classList.add('is-on');
         }
         caret.remove();
       };
@@ -289,7 +326,7 @@ export default {
       }
 
       // Cadence de frappe : plus rapide pour les longs paragraphes, pause après la ponctuation.
-      const cps = clamp(total / 2.2, 58, 110);
+      const cps = clamp(total / 2.2, 64, 110);
       const times = [];
       let t = 0;
       for (const p of parts) {
@@ -312,6 +349,8 @@ export default {
             p.count = n;
             p.shown.data = p.text.slice(0, n);
             p.ghost.textContent = p.text.slice(n);
+            // Une pastille de code n'apparaît qu'une fois la frappe arrivée jusqu'à elle
+            p.wrap?.classList.toggle('is-on', n > 0);
           }
           if (!current && n < p.text.length) current = p;
         }
@@ -369,7 +408,7 @@ export default {
       el.append(visual);
       body.append(el);
       setStatus('typing');
-      audio.tap();
+      if (!fast) audio.tap();
       await type(visual, segs);
     }
 
@@ -377,7 +416,7 @@ export default {
       const body = agentBody();
       el.classList.add('ag-enter');
       body.append(el);
-      audio.tap();
+      if (!fast) audio.tap();
       follow();
       await pause(settle);
     }
@@ -390,13 +429,13 @@ export default {
         else if (block.type === 'p' || block.type === 'h') {
           await write(block);
           await pause(block.type === 'h' ? 140 : 280);
-        } else if (block.type === 'frieze') await reveal(frieze(), 1150);
+        } else if (block.type === 'frieze') await reveal(frieze(), 950);
         else if (block.type === 'stats') {
           const el = stats();
           await reveal(el, 0);
-          if (!visit) audio.note();
+          if (!visit && !fast) audio.note();
           countUp(el);
-          await pause(1000);
+          await pause(850);
         } else if (block.type === 'actions') await reveal(actions(block), 150);
         else if (block.type === 'quote') await reveal(quote(block), 150);
       }
@@ -414,9 +453,9 @@ export default {
           <p class="ag-card-title">Le voyage en 9 gestes</p>
           <p class="ag-card-meta">de 1965 à 2026</p>
         </header>
-        <ol class="ag-steps">
-          ${ERAS.map(
-            (era, i) => `<li class="ag-step${i === ERAS.length - 1 ? ' is-now' : ''}" style="--i:${i}">
+        <ol class="ag-steps" style="--n:${ROUTE.length}">
+          ${ROUTE.map(
+            (era, i) => `<li class="ag-step${era.id === 'agent' ? ' is-now' : ''}" style="--i:${i}">
               <span class="ag-step-node">${svg(era.id)}</span>
               <span class="ag-step-label">
                 <span class="ag-step-year">${era.year}</span><span class="sr-only"> : </span>
@@ -443,7 +482,14 @@ export default {
             <p class="ag-title-name">${title.name}</p>
             <p class="ag-title-text">${fr(title.text)}</p>
           </div>
-          ${visit ? '<span class="ag-badge">Partie non classée</span>' : ''}
+          ${
+            visit || annex
+              ? `<div class="ag-badges">
+                  ${visit ? '<span class="ag-badge">Partie non classée</span>' : ''}
+                  ${annex ? '<span class="ag-badge is-bonus">Salle annexe découverte</span>' : ''}
+                </div>`
+              : ''
+          }
         </header>
         <dl class="ag-kpis">
           ${kpi('Temps total', formatTime(score.time), score.duration, 'time')}
@@ -479,7 +525,7 @@ export default {
             <span>Temps par époque</span>
             <span>Plus longue escale : <b>${top.era.year}</b> · ${duration(top.time)}</span>
           </figcaption>
-          <div class="ag-bars" role="group" aria-label="Temps passé à chaque époque">
+          <div class="ag-bars" role="group" aria-label="Temps passé à chaque époque" style="--n:${per.length}">
             ${per
               .map(
                 (s, i) => `<button type="button" class="ag-bar${s === top ? ' is-max' : ''}" style="--h:${(s.time / max).toFixed(3)};--i:${i}"
@@ -490,7 +536,7 @@ export default {
               )
               .join('')}
           </div>
-          <div class="ag-axis" aria-hidden="true">
+          <div class="ag-axis" aria-hidden="true" style="--n:${per.length}">
             ${per.map((s) => `<span><span class="ag-y-long">${s.era.year}</span><span class="ag-y-short">’${String(s.era.year).slice(2)}</span></span>`).join('')}
           </div>
         </figure>`;
@@ -688,6 +734,8 @@ export default {
           return converse(text, () => say(QUESTIONS[2].reply));
         case 'score':
           return converse(text, () => say(scoreReply(score)));
+        case 'mac':
+          return converse(text, () => say([annex ? MAC.found : MAC.hidden]));
         case 'wizz':
           return converse(text, () => say(rule.reply), { before: wizz });
         default:

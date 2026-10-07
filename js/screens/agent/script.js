@@ -5,10 +5,10 @@
 // Espaces insécables de la typographie française, posées au rendu.
 export const fr = (text) =>
   text
-    .replace(/ ([:;!?»])/g, ' $1')
-    .replace(/« /g, '« ')
-    .replace(/(\d) (h|min|s|ans|kbit\/s)(?![\p{L}\d])/gu, '$1 $2')
-    .replace(/(\d (?:h|min)) (\d)/g, '$1 $2');
+    .replace(/ ([:;!?»])/g, '\u00a0$1')
+    .replace(/« /g, '«\u00a0')
+    .replace(/(\d) (h|min|s|ans|kbit\/s)(?![\p{L}\d])/gu, '$1\u00a0$2')
+    .replace(/(\d\u00a0(?:h|min)) (\d)/g, '$1\u00a0$2');
 
 // `code` et **gras** → segments à taper un par un.
 export function segments(text) {
@@ -29,7 +29,7 @@ export const normalize = (text) =>
   text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/[’`]/g, "'")
     .replace(/\s+/g, ' ')
     .trim();
@@ -64,7 +64,7 @@ export const TITLES = {
   visitor: {
     name: 'Visiteur pressé',
     icon: 'visitor',
-    text: 'Des raccourcis temporels ont abrégé le voyage : partie non classée.',
+    text: 'Tu as pris des raccourcis temporels : fais le voyage complet pour décrocher un vrai titre.',
     unranked: true,
   },
 };
@@ -79,12 +79,12 @@ export function titleFor({ hints, visit }) {
 
 export function opening({ visit }) {
   return [
-    { type: 'think', ms: 1100 },
+    { type: 'think', ms: 1000 },
     { type: 'h', text: visit ? 'Bienvenue en 2026 !' : 'Bon retour en 2026 !' },
     visit
       ? 'Le mode visite t’a fait sauter quelques étapes : te voici déjà au bout du voyage. Le parcours complet, des cartes perforées à aujourd’hui, t’attend quand tu veux.'
       : 'À 9 h 41, une mise à jour a déraillé et l’horloge du système a filé jusqu’en 1965. Machine après machine, tu as remonté plus de soixante ans d’interfaces pour revenir au présent. Bravo !',
-    `${visit ? 'Le' : 'Ton'} voyage tient en neuf gestes, un par époque :`,
+    `${visit ? 'Le' : 'Ton'} voyage tient en neuf gestes :`,
     { type: 'frieze' },
     'Des cartes perforées à l’écran tactile, il fallait chaque fois apprendre la langue de la machine. Aujourd’hui, plus besoin de syntaxe : il suffit de demander.',
     { type: 'think', ms: 700 },
@@ -142,6 +142,14 @@ export const FACTS = {
   again: 'Rouvrir les fiches',
 };
 
+// La salle annexe (Macintosh, 1984), cachée sous DOS.
+export const MAC = {
+  found:
+    'Tu as même trouvé la salle annexe ! Le Macintosh de 1984 éjectait sa disquette quand on la glissait… dans la poubelle. Une bizarrerie restée célèbre.',
+  hidden:
+    'Le Macintosh de 1984 ? Il t’attend dans une salle annexe, cachée sous DOS : rejoue et essaie la commande `ANNEXE`. Pour éjecter sa disquette, on la glissait… dans la poubelle.',
+};
+
 export const SHARE = {
   shared: 'C’est envoyé ! Merci de faire voyager Escape OS.',
   cancelled: 'Pas de souci : ton score reste ici, si jamais tu changes d’avis.',
@@ -160,10 +168,15 @@ export function shareText({ duration, hints, errors, title, visit }) {
   );
 }
 
-export function scoreReply({ duration, hints, errors, title, visit }) {
-  return visit
-    ? [`Mode visite oblige, ta partie n’est pas classée. Ton chrono affiche tout de même ${duration} de voyage.`]
-    : [`Tu as bouclé le voyage en ${duration}, ${tally(hints, errors)}. Ton titre : **${title}**.`];
+export function scoreReply({ time, duration, hints, errors, title, visit }) {
+  if (visit) {
+    return [
+      time >= 60_000
+        ? `Mode visite oblige, ta partie n’est pas classée. Ton chrono affiche tout de même ${duration} de voyage.`
+        : 'Mode visite oblige, ta partie n’est pas classée : fais le voyage complet pour décrocher un titre.',
+    ];
+  }
+  return [`Tu as bouclé le voyage en ${duration}, ${tally(hints, errors)}. Ton titre : **${title}**.`];
 }
 
 // ——— Champ libre : quelques mots-clés, et l'époque d'où ils viennent ———
@@ -179,6 +192,7 @@ export const RULES = [
     test: /\b(qui es[ -]?tu|t'?es qui|tu es qui|(tu es|es[ -]tu) (une |un )?(ia|robot|humain|vrai)|ia|intelligence artificielle|llm|chatgpt|gpt|claude|robot)\b/,
   },
   { id: 'text', test: /\b(texte|invite|prompt)\b/ },
+  { id: 'mac', test: /\b(mac|macintosh|apple|poubelle|annexe|1984)\b/ },
   {
     id: 'pipe',
     test: /\||\b(cat|grep|pipe)\b/,

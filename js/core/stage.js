@@ -85,6 +85,10 @@ export function initStage(root) {
 
   els.home.addEventListener('click', () => emitHardware('home'));
   new ResizeObserver(() => layout()).observe(root);
+  // Le HUD glisse en place à son apparition : on remesure une fois posé.
+  document.getElementById('hud')?.addEventListener('animationend', (event) => {
+    if (event.target.id === 'hud') layout();
+  });
   window.addEventListener('orientationchange', () => setTimeout(layout, 120));
 
   // Le clavier du télétype s'enfonce sous les doigts du joueur.

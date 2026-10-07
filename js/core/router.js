@@ -85,6 +85,7 @@ function createContext(era, index) {
     onSuggest: () => hud.suggestHint(),
     onChange: () => hud.renderHints(),
     touch: isTouch,
+    quiet: !era.bonus && index === ERAS.length - 1,
   });
 
   // Un clic ou une touche accélère les séquences de démarrage.
