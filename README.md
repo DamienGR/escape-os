@@ -33,7 +33,7 @@ Puis ouvrir `http://localhost:8000`. Le jeu dure de 25 à 35 minutes, se joue à
 | 8 | 2007 | Smartphone | Glisser, pincer, composer un numéro |
 | 9 | 2026 | Agent IA | Plus besoin de syntaxe : il suffit de demander |
 
-Le détail de chaque écran est dans le [scénario](docs/scenario.md).
+Le détail de chaque écran est dans le [scénario](docs/scenario.md). Une salle annexe, hors parcours, se cache aussi quelque part sur le disque dur de 1981…
 
 ## Pour les curieux et les enseignants
 
