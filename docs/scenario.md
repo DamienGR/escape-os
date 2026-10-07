@@ -69,10 +69,10 @@ Le joueur doit relier deux commandes par un pipe pour extraire une seule ligne d
 
 - **Décor.** Un télétype imprime sur un rouleau de papier, caractère par caractère, avec le bruit de frappe. Invite : `$`.
 - **Situation.** Le rouleau affiche `$` et une seule consigne : « tapez ls ».
-- **Exploration.** `ls` liste deux fichiers : `journal` et `lisezmoi`. `cat lisezmoi` affiche : « Ici, chaque programme fait une seule chose. Pour chercher : grep. Pour relier : | ». `cat journal` déroule 500 lignes : le papier déborde et devient illisible (gag).
+- **Exploration.** `ls` liste deux fichiers : `journal` et `lisezmoi`. `cat lisezmoi` affiche : « Ici, chaque programme fait une seule chose. La sortie est notée dans le journal, quelque part parmi ses 500 lignes. Pour chercher : grep. Pour relier : | ». `cat journal` déroule 500 lignes : le papier déborde et devient illisible (gag), et l'opérateur grogne « Personne ne lit 500 lignes. Cherchez la sortie ! ».
 - **Action attendue.** `cat journal | grep sortie` (accepter aussi `grep sortie journal`). Le rouleau imprime une seule ligne : « sortie : la machine de 1981 vous attend. Mot à retenir : multics ».
 - **Carnet.** Le mot « multics » s'y ajoute : c'est le mot de passe de l'écran 7.
-- **Indices.** 1 : « Lis le fichier lisezmoi. » 2 : « grep cherche un mot ; le caractère | envoie le résultat d'une commande à la suivante. » 3 : la commande complète.
+- **Indices.** 1 : « Lis le fichier lisezmoi. » 2 : « Cherche le mot « sortie » dans le journal. grep cherche un mot ; le caractère | envoie le résultat d'une commande à la suivante. » 3 : la commande complète.
 - **Erreurs.** Une commande inconnue reçoit pour toute réponse « ? », clin d'œil à l'éditeur ed, connu pour cette sobriété.
 - **Ce qu'on apprend.** Unix naît en 1969 aux Bell Labs (Ken Thompson, Dennis Ritchie), avec le langage C. Le pipe arrive en 1973, sur une idée de Doug McIlroy. Son nom est un jeu de mots sur Multics, un système plus ancien ; macOS, Linux et Android héritent de ses idées.
 

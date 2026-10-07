@@ -104,7 +104,7 @@ export const HINTS = {
   ],
   unix: [
     'Lis le fichier lisezmoi : tape cat lisezmoi.',
-    'grep cherche un mot ; le caractère | envoie le résultat d’une commande à la suivante.',
+    'Cherche le mot « sortie » dans le journal. grep cherche un mot ; le caractère | envoie le résultat d’une commande à la suivante.',
     'Tape : cat journal | grep sortie',
   ],
   dos: [

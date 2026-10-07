@@ -15,8 +15,8 @@ const CHIPS = [
 ];
 
 const REMARKS = [
-  ['… 500 lignes plus loin, le papier déborde.', 'L’opérateur ramasse le rouleau en soupirant :', '« Personne ne lit 500 lignes. Cherchez ! »'],
-  ['… et le papier déborde encore.', 'L’opérateur vous fixe :', '« Je vous ai dit de chercher. »'],
+  ['… 500 lignes plus loin, le papier déborde.', 'L’opérateur ramasse le rouleau en soupirant :', '« Personne ne lit 500 lignes. Cherchez la sortie ! »'],
+  ['… et le papier déborde encore.', 'L’opérateur vous fixe :', '« Je vous ai dit de chercher la sortie. Avec grep. »'],
 ];
 
 // Coupe une ligne trop longue entre deux mots, de préférence après un point.

@@ -5,7 +5,12 @@ export const EXIT_LINE = 'sortie : la machine de 1981 vous attend. Mot à reteni
 export const EXIT_INDEX = 377;
 export const JOURNAL_SIZE = 500;
 
-export const README = ['Ici, chaque programme fait une seule chose.', 'Pour chercher : grep.', 'Pour relier : |'];
+export const README = [
+  'Ici, chaque programme fait une seule chose.',
+  'La sortie est notée dans le journal, quelque part parmi ses 500 lignes.',
+  'Pour chercher : grep.',
+  'Pour relier : |',
+];
 
 // Générateur pseudo-aléatoire (mulberry32) : même journal à chaque partie.
 function prng(seed) {
