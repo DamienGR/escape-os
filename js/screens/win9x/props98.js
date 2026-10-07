@@ -48,7 +48,8 @@ export function createCd(host, { onOpen, signal } = {}) {
 }
 
 // La pochette en grand, lisible même sur téléphone. Un clic ou Échap la repose.
-export function zoomCd({ signal, onClose } = {}) {
+export function zoomCd({ signal, touch = false, returnFocus = null } = {}) {
+  if (document.querySelector('.w98-cdzoom')) return null;
   const overlay = document.createElement('div');
   overlay.className = 'w98-cdzoom';
   overlay.setAttribute('role', 'dialog');
@@ -57,7 +58,7 @@ export function zoomCd({ signal, onClose } = {}) {
   overlay.innerHTML = `
     <div class="w98-cdzoom-card">
       <div class="w98-cd is-big">${cdHtml()}</div>
-      <p class="w98-cdzoom-hint">L’adresse est notée dans ton carnet. Touche pour reposer le CD.</p>
+      <p class="w98-cdzoom-hint">L’adresse est notée dans ton carnet. ${touch ? 'Touche' : 'Clique'} pour reposer le CD.</p>
     </div>`;
   (document.getElementById('overlays') ?? document.body).append(overlay);
   requestAnimationFrame(() => overlay.classList.add('is-open'));
@@ -66,7 +67,7 @@ export function zoomCd({ signal, onClose } = {}) {
     off.abort();
     overlay.classList.remove('is-open');
     setTimeout(() => overlay.remove(), 260);
-    onClose?.();
+    returnFocus?.focus({ preventScroll: true });
   };
   overlay.addEventListener('click', close, { signal: off.signal });
   window.addEventListener(

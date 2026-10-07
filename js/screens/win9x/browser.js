@@ -130,7 +130,7 @@ export function createBrowser(shell, ctx, opts = {}) {
   const { audio } = ctx;
   const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let win = null;
-  let history = [];
+  let pages = [];
   let index = -1;
   let token = 0;
   let loading = false;
@@ -148,10 +148,10 @@ export function createBrowser(shell, ctx, opts = {}) {
       id: 'browser',
       title: `${BLANK} - ${APP}`,
       icon: ICON16.browser,
-      x: 0,
-      y: 0,
-      w: 640,
-      h: 452,
+      x: 24,
+      y: 16,
+      w: 580,
+      h: 410,
       maximized: true,
       menu: ['&Fichier', '&Edition', '&Affichage', '&Aller à', 'Fa&voris', '&?'],
       className: 'w98-browser',
@@ -201,7 +201,7 @@ export function createBrowser(shell, ctx, opts = {}) {
       throbber: q('.w98-throbber'),
       icon: q('.w98-address-icon'),
     };
-    history = [];
+    pages = [];
     index = -1;
     current = normalizeUrl(BLANK);
     els.input.value = BLANK;
@@ -269,7 +269,7 @@ export function createBrowser(shell, ctx, opts = {}) {
       if (btn) btn.disabled = !on;
     };
     set('back', index > 0);
-    set('forward', index < history.length - 1);
+    set('forward', index < pages.length - 1);
     set('stop', loading);
   }
 
@@ -308,9 +308,9 @@ export function createBrowser(shell, ctx, opts = {}) {
     const target = normalizeUrl(raw);
     if (!target) return;
     if (push) {
-      history = history.slice(0, index + 1);
-      history.push(raw);
-      index = history.length - 1;
+      pages = pages.slice(0, index + 1);
+      pages.push(raw);
+      index = pages.length - 1;
     }
     els.input.value = target.key.startsWith('about:') ? target.key : target.url;
     els.input.blur();
@@ -416,10 +416,10 @@ export function createBrowser(shell, ctx, opts = {}) {
   function command(cmd, btn) {
     if (cmd === 'back' && index > 0) {
       index -= 1;
-      navigate(history[index], { push: false });
-    } else if (cmd === 'forward' && index < history.length - 1) {
+      navigate(pages[index], { push: false });
+    } else if (cmd === 'forward' && index < pages.length - 1) {
       index += 1;
-      navigate(history[index], { push: false });
+      navigate(pages[index], { push: false });
     } else if (cmd === 'stop') stop();
     else if (cmd === 'refresh') {
       if (current) load(current);

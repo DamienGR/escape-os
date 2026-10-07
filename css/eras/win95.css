@@ -599,18 +599,9 @@
   visibility: hidden;
 }
 
-.w9x .wm-help {
-  margin-right: 2px;
-}
-
-.w9x .wm-help b {
-  font: 700 10px / 1 var(--font-win);
-}
-
 /* Couche système : au-dessus de la barre des tâches (arrêt, ouverture de session) */
 .w9x-sys {
   z-index: 6000;
-  background: none !important;
   pointer-events: none;
 }
 
@@ -699,6 +690,11 @@
     background: #000080;
     color: #fff;
   }
+}
+
+/* Une icône du bureau qui attire l'œil (indice) */
+.w9x .wm-desk-icon.is-flash .wm-desk-label {
+  animation: w9x-start-flash 0.5s steps(1) 5;
 }
 
 .w9x-tasks {
@@ -2736,9 +2732,9 @@
 /* Téléphone en portrait : l'unité centrale se pose sur le bureau, au premier
    plan à droite, plus bas et plus grande ; son bouton se vise au doigt. */
 .scene[data-compact='true'] .w9x-tower {
-  --t: calc(var(--u) * 0.6);
+  --t: calc(var(--u) * 0.78);
   left: auto;
-  right: calc(var(--u) * 8);
+  right: calc(var(--u) * 10);
   top: calc(var(--u) * 1);
   bottom: auto;
 }
@@ -2791,10 +2787,10 @@
   .w9x-clouds,
   .w9x-splash-bar,
   .w9x-caret,
-  .tw-flicker,
   .is-disk .tw-hdd-led,
   .w9x-monled.is-standby,
   .w9x-start.is-flash,
+  .w9x .wm-desk-icon.is-flash .wm-desk-label,
   .w9x-find.is-searching .w9x-find-anim {
     animation: none !important;
   }

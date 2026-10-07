@@ -488,7 +488,7 @@ export default {
       const added = ctx.note(CD_URL, { key: 'win98-url', label: 'Adresse sur le CD' });
       if (!cdSeen || added) ctx.progress();
       cdSeen = true;
-      zoomCd({ signal: ctx.signal });
+      zoomCd({ signal: ctx.signal, touch: ctx.touch, returnFocus: cd?.el });
     }
 
     // ——— Le scanner USB d'avril 1998 ———
@@ -611,8 +611,15 @@ export default {
       };
     }
 
+    // Indices : l'icône de connexion clignote, puis le CD se signale.
     ctx.hints.onReveal((level) => {
       if (level >= 2) cd?.nudge(true);
+      const icon = shell?.icons.find((entry) => entry.label === 'Connexion à Internet')?.el;
+      if (level === 1 && icon && net === 'offline') {
+        icon.classList.remove('is-flash');
+        void icon.offsetWidth;
+        icon.classList.add('is-flash');
+      }
     });
 
     machine.boot().catch(() => {});

@@ -42,19 +42,33 @@ const IBEAM = pixelArt([9, 16], (p) =>
   ]),
 );
 
-// Boutons radio et cases à cocher de l'époque, en pixel art
+// Boutons radio et cases à cocher de l'époque, en pixel art : anneau extérieur
+// gris et blanc, anneau intérieur noir et gris clair, lumière en haut à gauche.
+const RADIO_RINGS = [
+  // [ligne, [x de l'anneau extérieur], [x de l'anneau intérieur]]
+  [0, [4, 5, 6, 7], []],
+  [1, [2, 3, 8, 9], [4, 5, 6, 7]],
+  [2, [1, 10], [2, 3, 8, 9]],
+  [3, [1, 10], [2, 9]],
+  [4, [0, 11], [1, 10]],
+  [5, [0, 11], [1, 10]],
+  [6, [0, 11], [1, 10]],
+  [7, [0, 11], [1, 10]],
+  [8, [1, 10], [2, 9]],
+  [9, [1, 10], [2, 3, 8, 9]],
+  [10, [2, 3, 8, 9], [4, 5, 6, 7]],
+  [11, [4, 5, 6, 7], []],
+];
+
 const radio = (checked) =>
   pixelArt(12, (p) => {
-    const c = 5.5;
-    for (let y = 0; y < 12; y++) {
-      for (let x = 0; x < 12; x++) {
-        const d = Math.hypot(x - c, y - c);
-        const topLeft = x - c + (y - c) < 0;
-        if (d > 6.1) continue;
-        if (d > 5.1) p.px(x, y, topLeft ? 'D' : 'W');
-        else if (d > 4.1) p.px(x, y, topLeft ? 'K' : '#dfdfdf');
-        else p.px(x, y, 'W');
-      }
+    for (const [y, outer, inner] of RADIO_RINGS) {
+      const xs = [...outer, ...inner];
+      const lo = Math.min(...xs);
+      const hi = Math.max(...xs);
+      for (let x = lo; x <= hi; x++) p.px(x, y, 'W');
+      for (const x of outer) p.px(x, y, x + y < 11 ? 'D' : 'W');
+      for (const x of inner) p.px(x, y, x + y < 11 ? 'K' : '#dfdfdf');
     }
     if (checked) p.map(4, 4, ['.KK.', 'KKKK', 'KKKK', '.KK.']);
   });

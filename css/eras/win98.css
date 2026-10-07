@@ -1768,8 +1768,8 @@
 }
 
 .scene[data-compact='true'] .w9x-tower-98 {
-  --t: calc(var(--u) * 0.58);
-  right: calc(var(--u) * 9);
+  --t: calc(var(--u) * 0.66);
+  right: calc(var(--u) * 7);
   top: calc(var(--u) * 1);
 }
 
