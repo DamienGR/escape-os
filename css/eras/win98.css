@@ -792,6 +792,8 @@
 /* ——— La page perso de 1998 ——— */
 
 .st98 {
+  position: relative;
+  isolation: isolate;
   min-height: 100%;
   padding: 10px 14px 18px;
   background-color: #000040;
@@ -799,8 +801,12 @@
   font: 13px / 1.35 'Times New Roman', 'Liberation Serif', serif;
 }
 
-/* Le fond étoilé n'arrive qu'à la fin, comme une vraie image GIF */
-.st98.has-bg {
+/* Le fond étoilé n'arrive qu'à la fin, tracé de haut en bas comme un GIF */
+.st98::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background-image:
     radial-gradient(1px 1px at 12px 18px, #fff 99%, transparent),
     radial-gradient(1px 1px at 47px 9px, #ffff80 99%, transparent),
@@ -809,7 +815,12 @@
     radial-gradient(1px 1px at 8px 58px, #fff 99%, transparent),
     linear-gradient(180deg, #000040, #00002a);
   background-size: 64px 64px, 64px 64px, 64px 64px, 64px 64px, 64px 64px, 100% 100%;
-  animation: st98-raster 0.5s steps(5);
+  opacity: 0;
+}
+
+.st98.has-bg::before {
+  opacity: 1;
+  animation: st98-raster 0.6s steps(6);
 }
 
 @keyframes st98-raster {
@@ -1534,10 +1545,12 @@
   position: absolute;
   inset: 22%;
   border-radius: 50%;
-  background: radial-gradient(circle, transparent 0 18%, #ffd34a 19% 100%);
-  -webkit-mask-image: linear-gradient(180deg, #000 50%, transparent 50%);
-  mask-image: linear-gradient(180deg, #000 50%, transparent 50%);
-  opacity: 0.9;
+  background:
+    radial-gradient(circle, transparent 0 18%, rgba(255, 255, 255, 0.7) 19% 21%, transparent 22%),
+    conic-gradient(from 200deg, #5b1aa8, #c4285e, #ff7a1a, #5b1aa8);
+  -webkit-mask-image: radial-gradient(circle, transparent 0 17%, #000 18%);
+  mask-image: radial-gradient(circle, transparent 0 17%, #000 18%);
+  opacity: 0.92;
 }
 
 .cd-sleeve {
@@ -1572,7 +1585,7 @@
     radial-gradient(circle at 12% 70%, #fff 0 0.6%, transparent 0.8%),
     radial-gradient(circle at 86% 62%, #fff 0 0.5%, transparent 0.7%),
     radial-gradient(circle at 64% 12%, #fff 0 0.6%, transparent 0.8%),
-    radial-gradient(circle at 30% 44%, #ffe 0 0.4%, transparent 0.6%),
+    radial-gradient(circle at 44% 62%, #ffe 0 0.4%, transparent 0.6%),
     radial-gradient(circle at 92% 30%, #fff 0 0.4%, transparent 0.6%);
 }
 
@@ -1630,11 +1643,12 @@
   top: calc(var(--s) * 30);
   display: grid;
   place-items: center;
-  width: calc(var(--s) * 34);
-  height: calc(var(--s) * 34);
+  width: calc(var(--s) * 37);
+  height: calc(var(--s) * 37);
+  padding-bottom: calc(var(--s) * 1);
   background: radial-gradient(circle, #fff36b 0 50%, #ffcf1a 70%);
   color: #c4102c;
-  font: 900 calc(var(--s) * 4.6) / 1.05 Arial, 'Liberation Sans', sans-serif;
+  font: 900 calc(var(--s) * 4.2) / 1.05 Arial, 'Liberation Sans', sans-serif;
   text-align: center;
   transform: rotate(12deg);
 }

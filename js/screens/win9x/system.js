@@ -217,8 +217,8 @@ export function bsod(view, ctx, spec) {
       if (event.type === 'keydown' && ['Shift', 'Control', 'Alt', 'Meta', 'CapsLock'].includes(event.key)) return;
       event.preventDefault();
       event.stopPropagation();
-      view.hide();
       resolve(true);
+      view.hide();
     };
     signal.addEventListener('abort', () => resolve(false), { once: true });
     // Laisse retomber le geste qui a provoqué l'écran bleu.

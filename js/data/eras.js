@@ -13,7 +13,7 @@ export const ERAS = [
     system: 'Cartes perforées',
     device: 'room',
     res: [1120, 640],
-    portraitRes: [640, 1240],
+    portraitRes: [640, 1300],
     file: '00-cards.js',
     gesture: 'trier',
   },

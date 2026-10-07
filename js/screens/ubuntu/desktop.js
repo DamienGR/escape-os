@@ -9,8 +9,6 @@ import { JOURNAL } from '../unix/journal.js';
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
-const DAYS = ['dim.', 'lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.'];
-
 const PENGUIN_LINES = [
   'Salut ! Je ne suis pas Tux : je suis son cousin du pôle Sud.',
   'Ici, les logiciels s’installent depuis des dépôts. Pratique, non ?',

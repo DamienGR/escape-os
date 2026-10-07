@@ -2784,9 +2784,12 @@ button.xp-tray-ic:hover {
 /* ——————————————————————— Mouvement réduit ——————————————————————— */
 
 @media (prefers-reduced-motion: reduce) {
+  /* Les blocs ne défilent plus : ils pulsent doucement (simple fondu) */
   .xp-boot-run {
-    animation: xp-boot-calm 1.6s ease-in-out infinite;
     transform: translateX(45px);
+    animation: xp-boot-calm 1.6s ease-in-out infinite;
+    animation-duration: 1.6s !important;
+    animation-iteration-count: infinite !important;
   }
 
   .xp-task.is-blinking::before {

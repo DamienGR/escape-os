@@ -25,9 +25,9 @@ const HISTORY = [
 
 // Réveil : [délai de frappe en ms, message]
 const WAKE = [
-  [1100, "WAAAH !! tu m'as fé tomber de ma chaise avec ton wizz xD"],
-  [1700, "ok ok promis c promis : la sortie c'est 2006 !! ya 1 manchot ki t'attend là-bas ;)"],
-  [1000, 'et ressors ton mot de passe de 1974, il va servir... @+ (H)'],
+  [1000, "WAAAH !! tu m'as fé tomber de ma chaise avec ton wizz xD"],
+  [1500, "ok ok promis c promis : la sortie c'est 2006 !! ya 1 manchot ki t'attend là-bas ;)"],
+  [900, 'et ressors ton mot de passe de 1974, il va servir... @+ (H)'],
 ];
 
 const OTHERS = [
@@ -170,7 +170,7 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
   function chatHtml() {
     const away = state === 'away';
     return `<div class="xp-im xp-chat">
-      <div class="xp-im-tools" role="toolbar" aria-label="Actions">${TOOLS.map(
+      <div class="xp-im-tools" role="group" aria-label="Actions">${TOOLS.map(
         ([ic, label], i) =>
           `<button type="button" class="xp-im-tool" data-tool="${i}" title="${esc(label)}">${icon(ic, 26)}<span>${esc(label)}</span></button>`,
       ).join('')}</div>
@@ -181,7 +181,7 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
           <div class="xp-im-history" role="log" aria-live="polite" aria-label="Conversation" tabindex="0">${log
             .map((entry, i) => entryHtml(entry, log[i - 1]))
             .join('')}</div>
-          <div class="xp-im-format" role="toolbar" aria-label="Mise en forme">
+          <div class="xp-im-format" role="group" aria-label="Mise en forme">
             <button type="button" class="xp-im-fmt" data-fmt="font" title="Changer la couleur du texte" aria-label="Couleur du texte">${tool('font', 18)}</button>
             <button type="button" class="xp-im-fmt" data-fmt="emo" title="Émoticônes" aria-label="Émoticônes">${tool('emoticons', 18)}</button>
             <button type="button" class="xp-im-fmt" data-fmt="winks" title="Clins d’œil" aria-label="Clins d’œil">${tool('winks', 18)}</button>
@@ -458,15 +458,22 @@ export function createMessenger({ ui, desk, shell, ctx, view }) {
     waking = true;
     chat.el.classList.remove('xp-hint-wizz');
     lock(true);
-    await ctx.wait(1300);
+    await ctx.wait(1200);
     wake();
     await ctx.wait(700);
-    for (const [delay, text] of WAKE) {
+    for (const [i, [delay, text]] of WAKE.entries()) {
       typing(true);
       await ctx.wait(delay);
       typing(false);
       push({ type: 'msg', from: 'kev', nick: NICK.online, text });
       await ctx.wait(550);
+      // Un Wizz en retour, pour la forme
+      if (i === 0) {
+        push({ type: 'wizz', from: 'kev', nick: NICK.online });
+        shake(chat);
+        audio.wizz();
+        await ctx.wait(900);
+      }
     }
     ctx.note('Wizz', { key: 'xp-wizz', label: 'Réveille un contact absent' });
     await ctx.wait(1400);

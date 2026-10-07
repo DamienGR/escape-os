@@ -238,21 +238,33 @@ export default {
       requestAnimationFrame(stickBottom);
     }
 
-    // Sur petit écran, le texte grossit et la fenêtre s'agrandit.
+    // Le texte vise environ 11 px à l'écran : sur un petit écran, il grossit,
+    // la fenêtre s'agrandit, puis occupe tout le bureau (téléphone).
+    const GEOMETRY = { normal: { x: 122, y: 50, w: 664, h: 468 }, large: { x: 112, y: 20, w: 690, h: 566 } };
+
     function fit() {
       if (!termWin || termWin.closed) return;
       const scale = ctx.scale || 1;
-      const ideal = Math.round(Math.min(30, Math.max(14, 11.4 / scale)));
+      const ideal = Math.round(Math.min(30, Math.max(14, 11.2 / scale)));
       setFont(ideal);
-      const big = ideal > 20;
-      if (big && !termWin.maximized) {
-        termWin.toggleMax();
-        autoMax = true;
-      } else if (!big && autoMax && termWin.maximized) {
-        termWin.toggleMax();
-        autoMax = false;
+      const tier = ideal >= 20 ? 'max' : ideal >= 16 ? 'large' : 'normal';
+      if (tier === 'max') {
+        if (!termWin.maximized) {
+          termWin.toggleMax();
+          autoMax = true;
+        }
+      } else {
+        if (autoMax && termWin.maximized) {
+          termWin.toggleMax();
+          autoMax = false;
+        }
+        if (!termWin.maximized && !termWin.userMoved) {
+          const g = GEOMETRY[tier];
+          termWin.move(g.x, g.y);
+          termWin.resize(g.w, g.h);
+        }
       }
-      root.classList.toggle('ub-large', big);
+      root.classList.toggle('ub-large', tier === 'max');
     }
 
     const TERMINAL_MENUS = () => [
@@ -322,10 +334,7 @@ export default {
       termWin = desk.open({
         id: 'terminal',
         title: `voyageur@ubuntu: ${bash.label()}`,
-        x: 122,
-        y: 50,
-        w: 664,
-        h: 468,
+        ...GEOMETRY.normal,
         icon: mini('terminal', 16),
         menu: ['Fichier', 'Édition', 'Affichage', 'Terminal', 'Onglets', 'Aide'],
         className: 'ub-termwin',
@@ -353,6 +362,7 @@ export default {
       new MutationObserver(() => requestAnimationFrame(updateScrollbar)).observe(term.out, { childList: true });
       termWin.on('focus', () => !ctx.touch && mine.focus());
       termWin.on('maximize', () => requestAnimationFrame(stickBottom));
+      termWin.on('move', () => (win.userMoved = true));
       termWin.on('close', () => {
         mine.destroy();
         if (term === mine) {

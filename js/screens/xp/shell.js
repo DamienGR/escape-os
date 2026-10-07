@@ -233,7 +233,7 @@ export function createShell({ ui, desk, ctx, view, balloons, actions = {} }) {
 
   const bar = document.createElement('div');
   bar.className = 'xp-taskbar';
-  bar.setAttribute('role', 'toolbar');
+  bar.setAttribute('role', 'group');
   bar.setAttribute('aria-label', 'Barre des tâches');
   bar.innerHTML = `
     <button type="button" class="xp-start" aria-haspopup="menu" aria-expanded="false">

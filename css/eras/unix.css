@@ -204,11 +204,11 @@
   left: 0;
   right: 0;
   top: 0;
-  height: 11px;
-  background: linear-gradient(180deg, #8f8a80, #d9d5cc 45%, #77736a);
-  -webkit-mask: linear-gradient(#000 0 6px, transparent 6px), conic-gradient(from 135deg at 50% 0, #000 90deg, transparent 0) 0 6px / 6px 5px repeat-x;
-  mask: linear-gradient(#000 0 6px, transparent 6px), conic-gradient(from 135deg at 50% 0, #000 90deg, transparent 0) 0 6px / 6px 5px repeat-x;
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+  height: 14px;
+  background: linear-gradient(180deg, #5d5952, #a7a39b 30%, #f2efe8 52%, #a29d94 70%, #6e6a62);
+  -webkit-mask: linear-gradient(#000 0 8px, transparent 8px), conic-gradient(from 135deg at 50% 0, #000 90deg, transparent 0) 0 8px / 7px 6px repeat-x;
+  mask: linear-gradient(#000 0 8px, transparent 8px), conic-gradient(from 135deg at 50% 0, #000 90deg, transparent 0) 0 8px / 7px 6px repeat-x;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.55));
 }
 
 /* Le papier s'enroule autour du cylindre */

@@ -352,7 +352,6 @@ export function createBash(io, events) {
     // Installation : barre ASCII épinglée en bas, les lignes de dpkg s'insèrent au-dessus.
     await io.print('');
     const progress = io.lastRow();
-    progress.classList.add('ub-apt-bar');
     const width = Math.max(10, io.cols() - 24);
     const steps = [
       [12, 'Sélection du paquet sortie précédemment désélectionné.'],

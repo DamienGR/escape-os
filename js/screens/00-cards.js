@@ -5,7 +5,7 @@
 
 import { drag, localPoint } from '../ui/gestures.js';
 import { eraStats, save } from '../core/state.js';
-import { CARD_W, CARD_H, BAND, PROGRAM, seqOf, cardDefs, cardSvg, listing, slip } from './cards/hollerith.js';
+import { CARD_W, CARD_H, BAND, PROGRAM, seqOf, cardDefs, cardSvg, feltPath, listing, slip } from './cards/hollerith.js';
 import { LAYOUTS, SIZES, HOPPER, SLOT, roomDefs, roomMarkup, readerFront } from './cards/room.js';
 
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -207,10 +207,15 @@ export default {
         el.style.setProperty('--s', p.s ?? 1);
         el.style.setProperty('--r', `${p.r ?? 0}deg`);
       }
+      const band = L.band ?? BAND;
       CW = L.card.tray;
       CH = (CW * CARD_H) / CARD_W;
-      D = (BAND * CW) / CARD_W;
+      D = (band * CW) / CARD_W;
       FS = L.card.floor / CW;
+      // Le trait de feutre suit la hauteur des bandes de la mise en page
+      for (const card of cards) {
+        for (const path of card.el.querySelectorAll('.pc-felt')) path.setAttribute('d', feltPath(card.rank, band));
+      }
       const { x, y, pad } = L.tray;
       Object.assign(trayEl.style, {
         left: `${x}px`,
@@ -253,7 +258,8 @@ export default {
       const order = L.slots.map((_, i) => i).sort(() => Math.random() - 0.5);
       list.forEach((card, k) => {
         card.slot = order[k % order.length];
-        card.jitter = [rand(-0.035, 0.035), rand(-0.045, 0.045), rand(-5, 5)];
+        const [ju, jv, jr] = L.jitter;
+        card.jitter = [rand(-ju, ju), rand(-jv, jv), rand(-jr, jr)];
         card.z = L.slots[card.slot][3];
         fromSlot(card);
       });
@@ -856,16 +862,15 @@ export default {
       announce('Le paquet est lu. L’imprimante sort le listing.');
       await ctx.wait(reduced() ? 100 : 500);
       camera = true;
-      root.classList.add('is-zoomed');
       aim(true);
       await ctx.wait(reduced() ? 100 : 1450);
       const out = listing(job);
       const strip = root.querySelector('.cr-paper-strip');
       // Saut de page : le papier file jusqu'en haut de la feuille
-      strip.classList.add('is-feeding');
+      strip.classList.add('is-ejecting');
       audio.noise({ type: 'bandpass', freq: 700, to: 2600, q: 1.1, attack: 0.03, release: 0.42, vol: 0.09 });
       await ctx.wait(reduced() ? 50 : 520);
-      strip.classList.replace('is-feeding', 'is-fed');
+      strip.classList.replace('is-ejecting', 'is-fed');
       const print = async (lines, rate) => {
         printerLamp(true);
         root.classList.add('is-printing');

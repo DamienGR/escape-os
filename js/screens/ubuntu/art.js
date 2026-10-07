@@ -235,13 +235,6 @@ const ICONS = {
       <path d="M7 17h6" stroke="#55524b" stroke-width="1.6" stroke-linecap="round"/>`,
     ),
 
-  package: () =>
-    svg(
-      '0 0 16 16',
-      `<path d="M2 5l6-3 6 3v6.5l-6 3-6-3Z" fill="#d9a35e" stroke="#7d5323" stroke-linejoin="round"/>
-      <path d="M2 5l6 3 6-3M8 8v6.5" fill="none" stroke="#7d5323"/>
-      <path d="M5 3.5l6 3" stroke="#f4dcb2" stroke-width="1.2"/>`,
-    ),
 };
 
 // Petites icônes de menu (16 px) : formes simples, couleurs Tango.

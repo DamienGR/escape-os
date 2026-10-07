@@ -4,7 +4,7 @@
 
 export const CARD_W = 738;
 export const CARD_H = 325;
-// Hauteur de la bande visible de chaque carte dans le paquet en cascade
+// Hauteur par défaut de la bande visible de chaque carte dans le paquet en cascade
 export const BAND = 46;
 
 const PITCH = 8.7;
@@ -136,10 +136,10 @@ export function cardDefs(p) {
 const FELT_X = 30;
 const FELT_STEP = 54;
 
-export function feltPath(rank) {
-  const slope = FELT_STEP / BAND;
+export function feltPath(rank, band = BAND) {
+  const slope = FELT_STEP / band;
   const x0 = FELT_X + rank * FELT_STEP;
-  return `M${(x0 - 6 * slope).toFixed(1)} -6L${(x0 + FELT_STEP + 6 * slope).toFixed(1)} ${BAND + 6}`;
+  return `M${(x0 - 6 * slope).toFixed(1)} -6L${(x0 + FELT_STEP + 6 * slope).toFixed(1)} ${band + 6}`;
 }
 
 export function cardSvg(rank, p) {

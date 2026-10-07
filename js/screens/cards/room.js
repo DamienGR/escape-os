@@ -65,13 +65,14 @@ export const LAYOUTS = {
       [0.45, 1.02, -9, 6],
       [0.98, 0.88, 15, 5],
     ],
+    jitter: [0.035, 0.045, 5],
     camera: { width: 330, slot: 0.8 },
     bubble: { x: 318, y: 292 },
   },
   portrait: {
     key: 'portrait',
     w: 640,
-    h: 1240,
+    h: 1300,
     floorY: 384,
     parts: {
       note: { x: 20, y: 20, s: 1.28, r: -2 },
@@ -83,23 +84,26 @@ export const LAYOUTS = {
       slip: { x: 26, y: 44, s: 1.66, r: 2.5 },
     },
     hide: ['tape2', 'cpu', 'sign'],
-    desk: { x: 34, y: 372, w: 572, h: 478 },
-    tray: { x: 64, y: 384, pad: 16 },
-    card: { tray: 480, floor: 300 },
-    floor: { x0: 162, y0: 912, x1: 466, y1: 1166 },
-    drop: { x0: 152, y0: 890, x1: 476, y1: 1176 },
+    desk: { x: 38, y: 372, w: 564, h: 546 },
+    tray: { x: 68, y: 384, pad: 16 },
+    // Bandes plus hautes qu'en paysage : des cibles confortables au doigt
+    card: { tray: 472, floor: 300 },
+    band: 62,
+    floor: { x0: 162, y0: 986, x1: 466, y1: 1214 },
+    drop: { x0: 152, y0: 962, x1: 476, y1: 1230 },
     slots: [
-      [0, 0, -9, 1],
-      [0.98, 0.04, 7, 0],
-      [0.04, 0.34, 11, 3],
-      [0.95, 0.31, -10, 2],
-      [-0.02, 0.66, -6, 5],
-      [0.98, 0.69, 9, 4],
-      [0.05, 1, 8, 7],
-      [0.94, 0.98, -7, 6],
+      [0, 0, -7, 1],
+      [0.98, 0.03, 5, 0],
+      [0.04, 0.34, 8, 3],
+      [0.95, 0.32, -5, 2],
+      [-0.02, 0.66, -3, 5],
+      [0.98, 0.68, 7, 4],
+      [0.05, 1, 6, 7],
+      [0.94, 0.99, -3, 6],
     ],
+    jitter: [0.03, 0.025, 2.5],
     camera: { width: 192, slot: 0.84 },
-    bubble: { x: 320, y: 770 },
+    bubble: { x: 320, y: 806 },
   },
 };
 
@@ -231,8 +235,8 @@ function printer() {
       <rect x="14" y="70" width="196" height="34" rx="3" fill="url(#cr-slate-dark)"/>
       <text class="cr-tx cr-tx-w" x="22" y="84">IMPRIMANTE</text>
       <text class="cr-tx cr-tx-s" x="22" y="96">600 LIGNES / MINUTE</text>
-      ${lens('cr-lens-ready on', 122, 79, 38, 16, 'PRÊT')}
-      ${lens('cr-lens-print', 165, 79, 38, 16, 'IMPRESSION')}
+      ${lens('cr-lens-ready on', 116, 79, 36, 16, 'PRÊT')}
+      ${lens('cr-lens-print', 157, 79, 47, 16, 'IMPRESSION')}
       <rect x="28" y="112" width="168" height="50" rx="3" fill="#252c31"/>
       <rect x="40" y="128" width="144" height="34" fill="url(#cr-fanfold)"/>
       <path d="M40 128h144" stroke="#fff" stroke-opacity=".5"/>
