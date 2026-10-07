@@ -79,6 +79,14 @@ export const FACTS = {
       'Le doigt remplace la souris pour une grande partie des usages.',
     ],
   },
+  mac: {
+    title: 'Le Macintosh et la poubelle',
+    lines: [
+      'Janvier 1984 : le Macintosh popularise l’interface graphique et la souris auprès du grand public, après le Xerox Alto (1973) et le Lisa (1983).',
+      'Pour éjecter une disquette, on la glissait… dans la poubelle : une bizarrerie célèbre, qui inquiétait les débutants.',
+      'Sa barre de menus, ses icônes et ses fenêtres ont inspiré tous les systèmes graphiques qui ont suivi.',
+    ],
+  },
   agent: {
     title: 'De la syntaxe à l’intention',
     lines: [
@@ -140,6 +148,11 @@ export const HINTS = {
         : 'Pince le pavé tactile, utilise Ctrl + molette, ou les boutons + et − sur la photo.',
     'Compose 2026 dans l’app Téléphone.',
   ],
+  mac: [
+    'Il faut récupérer la disquette… mais la machine n’a aucun bouton d’éjection.',
+    'Sur ce Mac, on éjecte une disquette en la jetant… à la poubelle.',
+    'Glisse l’icône « Disquette » sur la Poubelle, en bas à droite.',
+  ],
   agent: [
     'Plus rien à trouver : savoure ton retour en 2026.',
     'Tu peux poser une question à l’agent, ou choisir une réponse proposée.',
@@ -157,5 +170,6 @@ export const SOLUTIONS = {
   xp: 'Ouvrir la session, ouvrir la messagerie, bouton Wizz.',
   ubuntu: 'sudo apt install sortie · multics · sortie',
   phone: 'Glisser pour déverrouiller › Photos › zoomer › Téléphone › 2026.',
+  mac: 'Glisser l’icône de la disquette sur la Poubelle.',
   agent: '—',
 };

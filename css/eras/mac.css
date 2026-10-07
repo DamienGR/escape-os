@@ -1,0 +1,385 @@
+/* Salle annexe — Macintosh (1984) : noir et blanc, 512 × 342, gris tramé,
+   barre de titre rayée, menus déroulants, disquette qui sort de la fente. */
+
+.screen-mac {
+  background: #000;
+}
+
+.mac84,
+.mac84 * {
+  cursor: var(--cursor, default);
+}
+
+.mac84 {
+  color: #000;
+  font: 700 12px / 1.2 'Chicago', 'Charcoal', var(--font-win);
+  -webkit-font-smoothing: none;
+}
+
+/* Trame grise 50 % : un pixel sur deux */
+.mac-boot,
+.mac-desk {
+  position: absolute;
+  inset: 0;
+  background-color: #fff;
+  background-image: conic-gradient(#000 25%, #fff 0 50%, #000 0 75%, #fff 0);
+  background-size: 2px 2px;
+  image-rendering: pixelated;
+}
+
+.mac-boot {
+  display: grid;
+  place-items: center;
+}
+
+.mac-happy .px {
+  width: 40px;
+  height: 40px;
+}
+
+.mac-welcome {
+  padding: 18px 26px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 4px #000;
+  font-size: 14px;
+}
+
+/* Coins arrondis du tube, en haut de l'écran */
+.mac-desk::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  border-radius: 6px 6px 0 0;
+  box-shadow: 0 0 0 6px #000;
+}
+
+.mac-menubar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  height: 20px;
+  padding: 0 8px;
+  border-bottom: 1px solid #000;
+  background: #fff;
+}
+
+.mac-menu {
+  height: 19px;
+  padding: 0 9px;
+  border: 0;
+  background: none;
+  font: inherit;
+}
+
+.mac-menu.open {
+  background: #000;
+  color: #fff;
+}
+
+.mac-emblem {
+  font-size: 14px;
+}
+
+.mac-dropdown {
+  position: absolute;
+  top: 19px;
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  min-width: 170px;
+  padding: 2px 0;
+  border: 1px solid #000;
+  background: #fff;
+  box-shadow: 1px 1px 0 #000;
+}
+
+.mac-dropdown button {
+  padding: 1px 14px;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+}
+
+.mac-dropdown button:disabled {
+  color: transparent;
+  background-image: conic-gradient(#000 25%, #fff 0 50%, #000 0 75%, #fff 0);
+  background-size: 2px 2px;
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.mac-dropdown button:not(:disabled):hover {
+  background: #000;
+  color: #fff;
+}
+
+.mac-dropdown hr {
+  width: 100%;
+  margin: 3px 0;
+  border: 0;
+  border-top: 1px dotted #000;
+}
+
+/* Icônes du bureau */
+.mac-icon {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 72px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  touch-action: none;
+}
+
+.mac-icon .px {
+  width: 32px;
+  height: 32px;
+}
+
+.mac-icon span,
+.mac-file span {
+  margin-top: 2px;
+  padding: 0 3px;
+  background: #fff;
+  font-size: 11px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.mac-icon.selected .px,
+.mac-icon.hot .px,
+.mac-file.selected .px {
+  filter: invert(1);
+}
+
+.mac-icon.selected span,
+.mac-icon.hot span,
+.mac-file.selected span {
+  background: #000;
+  color: #fff;
+}
+
+.mac-icon:focus-visible span {
+  outline: 1px dotted #000;
+}
+
+.mac-ghost {
+  position: absolute;
+  z-index: 60;
+  width: 36px;
+  height: 34px;
+  margin-left: 18px;
+  border: 1px dotted #000;
+  pointer-events: none;
+}
+
+/* Fenêtres : barre de titre rayée, case de fermeture à gauche */
+.mac-win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #000;
+  background: #fff;
+  box-shadow: 1px 1px 0 #000;
+}
+
+.mac-title {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  height: 19px;
+  border-bottom: 1px solid #000;
+  touch-action: none;
+}
+
+.mac-win.active .mac-title {
+  background: repeating-linear-gradient(180deg, #fff 0 3px, #000 3px 4px) 0 3px / 100% 12px no-repeat;
+  background-origin: content-box;
+  padding: 0 2px;
+}
+
+.mac-title span {
+  position: relative;
+  padding: 0 7px;
+  background: #fff;
+}
+
+.mac-close {
+  position: absolute;
+  left: 8px;
+  top: 4px;
+  z-index: 1;
+  width: 11px;
+  height: 11px;
+  padding: 0;
+  border: 1px solid #000;
+  background: #fff;
+  box-shadow: 0 0 0 1px #fff;
+}
+
+.mac-win:not(.active) .mac-close {
+  visibility: hidden;
+}
+
+.mac-close:active {
+  background: #000;
+}
+
+.mac-info {
+  display: flex;
+  justify-content: space-between;
+  flex: none;
+  padding: 2px 8px;
+  border-bottom: 1px solid #000;
+  box-shadow: 0 2px 0 -1px #fff, 0 2px 0 #000;
+  margin-bottom: 2px;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.mac-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mac-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 6px;
+  padding: 10px 8px;
+}
+
+.mac-file {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 74px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+}
+
+.mac-file .px {
+  width: 32px;
+  height: 32px;
+}
+
+.mac-text {
+  padding: 8px 10px;
+  font: 400 12px / 1.4 Geneva, Verdana, var(--font-win);
+}
+
+.mac-alert {
+  position: absolute;
+  left: 50%;
+  top: 110px;
+  z-index: 70;
+  width: 300px;
+  padding: 14px 16px 12px;
+  border: 1px solid #000;
+  background: #fff;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 4px #000;
+  transform: translateX(-50%);
+}
+
+.mac-alert p {
+  margin: 0 0 12px;
+  font-weight: 400;
+}
+
+.mac-alert button {
+  display: block;
+  min-width: 70px;
+  margin-left: auto;
+  padding: 3px 10px;
+  border: 1px solid #000;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 3px #000;
+  font: inherit;
+}
+
+.mac-alert button:active {
+  background: #000;
+  color: #fff;
+}
+
+/* La disquette physique, dans la fente du boîtier */
+.mac-floppy-wrap {
+  position: absolute;
+  right: 12%;
+  top: 69.4%;
+  width: 36%;
+  height: 38%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.mac-floppy {
+  position: absolute;
+  left: 8%;
+  top: 0;
+  width: 84%;
+  aspect-ratio: 0.94;
+  border-radius: 3%;
+  background: linear-gradient(160deg, #3d4a63, #232c3f);
+  box-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 2) rgba(0, 0, 0, 0.45);
+  transform: translateY(-102%);
+}
+
+.mac-floppy.out {
+  animation: mac-eject 0.9s cubic-bezier(0.2, 0.9, 0.25, 1.1) forwards;
+}
+
+@keyframes mac-eject {
+  to {
+    transform: translateY(-38%) rotate(-2.5deg);
+  }
+}
+
+.mac-floppy-shutter {
+  position: absolute;
+  left: 30%;
+  top: 0;
+  width: 42%;
+  height: 34%;
+  border-radius: 0 0 4% 4%;
+  background: linear-gradient(90deg, #c8ccd2, #f2f3f5 45%, #aeb3ba);
+}
+
+.mac-floppy-label {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 6%;
+  height: 46%;
+  display: grid;
+  place-items: center;
+  border-radius: 2%;
+  background: #f4f1e6;
+  color: #333;
+  font: 700 calc(var(--u) * 1.6) / 1 var(--font-ui);
+  font-style: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mac-floppy.out {
+    animation: none;
+    transform: translateY(-38%) rotate(-2.5deg);
+  }
+}

@@ -2,6 +2,7 @@
 // année courante, chrono, carnet, indices, son. Style 2026, une seule couleur d'accent.
 
 import { ERAS } from '../data/eras.js';
+import { BONUS } from '../data/bonus.js';
 import { FACTS } from '../data/facts.js';
 import { state, formatTime } from './state.js';
 import { audio } from './audio.js';
@@ -487,7 +488,7 @@ export function showFactsSheet() {
      </header>
      <p class="modal-intro">Mode classe : toutes les fiches « Le saviez-vous ? » sur une seule page, prête à imprimer.</p>
      <div class="sheet">
-       ${ERAS.map(
+       ${[...ERAS, ...Object.values(BONUS)].map(
          (era) => `<article class="sheet-item">
            <h3><span class="chip">${escapeHtml(era.label)}</span> ${escapeHtml(era.system)} — ${escapeHtml(FACTS[era.id].title)}</h3>
            <ul>${FACTS[era.id].lines.map((line) => `<li>${escapeHtml(line)}</li>`).join('')}</ul>

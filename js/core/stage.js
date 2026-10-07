@@ -10,6 +10,8 @@ const DEVICES = {
   crt: { bezel: [0.075, 0.085, 0.13, 0.085], below: 0.07, maxScale: 1.9 },
   flat: { bezel: [0.04, 0.04, 0.065, 0.04], below: 0.13, maxScale: 1.4 },
   phone: { bezel: [0.4, 0.11, 0.42, 0.11], below: 0, maxScale: 1.5 },
+  // Macintosh compact : écran noir et blanc 512 × 342 à l'échelle entière, pixels nets
+  mac: { bezel: [0.13, 0.16, 0.5, 0.16], below: 0.03, maxScale: 2, integerScale: true },
   none: { full: true },
 };
 
@@ -19,6 +21,7 @@ const COMPACT_BEZEL = {
   crt: [0.05, 0.05, 0.09, 0.05],
   flat: [0.025, 0.025, 0.045, 0.025],
   phone: [0.3, 0.07, 0.32, 0.07],
+  mac: [0.1, 0.1, 0.36, 0.1],
 };
 
 const KEY_ROWS = [
@@ -52,6 +55,7 @@ export function initStage(root) {
         <i class="deco deco-speaker"></i>
         <i class="deco deco-vents"></i>
         <i class="deco deco-roll"></i>
+        <i class="deco deco-slot"></i>
       </div>
       <button class="dev-home" type="button" aria-label="Bouton principal du téléphone"></button>
       <div class="glass" id="glass">
@@ -202,6 +206,7 @@ export function layout() {
     const wF = bl + 1 + br + (compact ? 0 : side + gap);
     const hF = bt + 1 / aspect + bb + below + (compact ? side * 0.62 + gap : 0);
     sw = Math.min(availW / wF, availH / hF, lw * dev.maxScale);
+    if (dev.integerScale && sw >= lw) sw = lw * Math.floor(sw / lw);
     sw = Math.floor(sw);
     sh = Math.round(sw / aspect);
 
@@ -228,7 +233,7 @@ export function layout() {
       place(els.keys, dx - sw * 0.02, dy + dh - sw * 0.01, dw + sw * 0.04, belowH);
       place(els.stand, dx + dw / 2, dy + dh, 0, 0);
     } else {
-      const standW = era.device === 'flat' ? dw * 0.36 : dw * 0.46;
+      const standW = era.device === 'flat' ? dw * 0.36 : era.device === 'mac' ? dw * 0.94 : dw * 0.46;
       place(els.stand, dx + (dw - standW) / 2, dy + dh - sw * 0.01, standW, belowH + sw * 0.01);
       place(els.keys, dx, dy + dh, dw, 0);
     }

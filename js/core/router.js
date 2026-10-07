@@ -2,6 +2,7 @@
 // le monte dans le cadre avec son contexte, et enchaîne fiche puis saut.
 
 import { ERAS } from '../data/eras.js';
+import { BONUS } from '../data/bonus.js';
 import { state, save, eraStats, addNote, hasNote } from './state.js';
 import { audio } from './audio.js';
 import * as stage from './stage.js';
@@ -119,7 +120,9 @@ function createContext(era, index) {
         return off;
       },
     },
-    complete: () => complete(index),
+    complete: () => (era.bonus ? completeBonus() : complete(index)),
+    // Détour vers une salle annexe (retour ensuite à l'époque courante)
+    bonus: (id) => visitBonus(id),
     progress: () => engine.progress(),
     error: () => engine.error(),
     note(text, { key, label } = {}) {
@@ -222,17 +225,20 @@ function unmount() {
   clearScreen();
 }
 
-function mount(index, mod) {
-  const era = ERAS[index];
+// bonus : salle annexe montée par-dessus l'époque `index`, sans toucher à la progression
+function mount(index, mod, { bonus = null } = {}) {
+  const era = bonus ?? ERAS[index];
   const els = stage.stageEls();
   unmount();
   clearScreen();
   els.screen.classList.add(`screen-${era.id}`);
   const { ctx, engine, dispose } = createContext(era, index);
-  state.screen = index;
-  state.reached = Math.max(state.reached, index);
-  if (index === ERAS.length - 1) state.finished = true;
-  save();
+  if (!bonus) {
+    state.screen = index;
+    state.reached = Math.max(state.reached, index);
+    if (index === ERAS.length - 1) state.finished = true;
+    save();
+  }
   hud.setEra(era, index);
   hud.setHints(engine);
   let cleanup;
@@ -248,8 +254,8 @@ function mount(index, mod) {
       error.message,
     )}</small></div>`;
   }
-  active = { index, era, ctx, engine, dispose, cleanup };
-  preloadNext(index);
+  active = { index, era, ctx, engine, dispose, cleanup, bonus: Boolean(bonus) };
+  if (!bonus) preloadNext(index);
   notify();
 }
 
@@ -310,8 +316,55 @@ async function complete(index) {
   await goTo(index + 1);
 }
 
+// ——— Salles annexes ———
+
+export async function visitBonus(id) {
+  const era = BONUS[id];
+  if (busy || !active || !era || active.bonus) return;
+  const index = active.index;
+  busy = true;
+  hud.lock(true);
+  hud.closePanels();
+  const prepare = load(era);
+  try {
+    await timeJump({
+      from: active.era,
+      to: era,
+      prepare,
+      unmount,
+      mount: async () => mount(index, await prepare, { bonus: era }),
+    });
+  } catch (error) {
+    console.error(error);
+    hud.toast('Impossible d’ouvrir la salle annexe.');
+  } finally {
+    busy = false;
+    hud.lock(false);
+    notify();
+  }
+}
+
+async function completeBonus() {
+  if (busy || !active?.bonus) return;
+  const { era, index } = active;
+  eraStats(era.id).done = true;
+  save();
+  active.engine.stop();
+  busy = true;
+  hud.lock(true);
+  hud.closePanels();
+  try {
+    await hud.showFact(era, ERAS[index]);
+  } finally {
+    busy = false;
+  }
+  await goTo(index);
+}
+
 export function completeActive() {
-  if (active) complete(active.index);
+  if (!active) return;
+  if (active.bonus) completeBonus();
+  else complete(active.index);
 }
 
 export function stopActive() {

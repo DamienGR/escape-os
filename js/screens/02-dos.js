@@ -60,7 +60,7 @@ const DIRS = {
     entries: [
       ['.', null, 0, '02/04/93', '18:22'],
       ['..', null, 0, '02/04/93', '18:22'],
-      ['LISEZMOI', 'TXT', 48, '02/04/93', '18:22'],
+      ['LISEZMOI', 'TXT', 168, '02/04/93', '18:22'],
     ],
   },
 };
@@ -71,7 +71,8 @@ const TEXTS = {
   'C:\\CONFIG.SYS': 'DEVICE=C:\\DOS\\HIMEM.SYS\nDOS=HIGH\nFILES=30\nBUFFERS=20',
   'C:\\WINDOWS\\LISEZMOI.TXT': 'Pour lancer Windows, tapez WIN.',
   'C:\\WINDOWS\\WIN.INI': '[windows]\nload=\nrun=SAUT.EXE ?\n\n[Desktop]\nWallpaper=(aucun)',
-  'C:\\JEUX\\LISEZMOI.TXT': 'Pas le temps de jouer : Windows vous attend !',
+  'C:\\JEUX\\LISEZMOI.TXT':
+    'Pas le temps de jouer : Windows vous attend !\n\nP.-S. : une salle annexe abrite une drôle de machine venue de Californie.\nPour y jeter un œil, tapez ANNEXE.',
 };
 
 const HELP = [
@@ -346,6 +347,14 @@ export default {
           return 'L’éditeur n’est pas sur cette disquette. Et puis, vous avez un voyage à poursuivre !';
         case 'win':
           return launchWindows();
+        case 'annexe':
+          // Commande cachée : détour par la salle annexe (Macintosh, 1984)
+          term.setBusy(true);
+          await term.print('Ouverture de la salle annexe...');
+          audio.floppy();
+          await ctx.wait(700);
+          ctx.bonus('mac');
+          return null;
         default:
           break;
       }
