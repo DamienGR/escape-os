@@ -176,9 +176,16 @@ export function lock(value) {
 }
 
 export function setEra(era, index) {
+  const changed = index !== currentIndex;
   currentIndex = index;
   els.year.textContent = era.label === String(era.year) ? era.year : era.label;
   els.system.textContent = era.system;
+  if (changed) {
+    const block = els.year.parentElement;
+    block.classList.remove('changed');
+    void block.offsetWidth;
+    block.classList.add('changed');
+  }
   els.btn.hint.classList.remove('suggest');
   updateTimeline();
 }
