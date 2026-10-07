@@ -20,9 +20,7 @@ export const SIZES = {
 
 // Points de référence dans le repère du lecteur et de l'imprimante
 export const HOPPER = { x: 60, y: 21, w: 82 }; // carte posée dans la trémie
-export const STACKER = { x: 132, y: 44, w: 60 }; // case de réception
 export const SLOT = { x: 112, y: 17 }; // fente de sortie du papier
-export const PAPER_W = 176;
 
 // ——— Mises en page ———
 // Cartes : largeur dans le bac (tray) et par terre (floor).
