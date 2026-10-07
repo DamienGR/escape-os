@@ -1355,11 +1355,11 @@ button.ph-row:active,
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
 }
 
-.is-connected .ph-incall-name {
+.ph-incall.is-connected .ph-incall-name {
   animation: ph-glow 1.4s ease-in-out infinite;
 }
 
-.is-connected::after {
+.ph-incall.is-connected::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -1430,7 +1430,7 @@ button.ph-row:active,
   filter: brightness(0.85);
 }
 
-.is-connected .ph-hangup {
+.ph-incall.is-connected .ph-hangup {
   opacity: 0.5;
 }
 
@@ -2479,7 +2479,7 @@ button.ph-row:active,
   }
 
   .ph-boot.is-lit .ph-emblem,
-  .is-connected::after {
+  .ph-incall.is-connected::after {
     animation: none;
   }
 }

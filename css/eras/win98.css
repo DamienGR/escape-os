@@ -1273,7 +1273,7 @@
   font-family: Arial, 'Liberation Sans', var(--font-ui);
 }
 
-.ph-hit {
+.w98-ph-hit {
   position: absolute;
   inset: calc(var(--p) * -1);
   z-index: 4;
@@ -1285,12 +1285,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.ph-hit:focus-visible {
+.w98-ph-hit:focus-visible {
   outline: 2px solid var(--accent-2);
   outline-offset: 2px;
 }
 
-.ph-base {
+.w98-ph-base {
   position: absolute;
   left: 0;
   right: 0;
@@ -1305,7 +1305,7 @@
 }
 
 /* Le berceau du combiné */
-.ph-base::before {
+.w98-ph-base::before {
   content: '';
   position: absolute;
   left: calc(var(--p) * 2.4);
@@ -1316,7 +1316,7 @@
   background: linear-gradient(180deg, #9e998b, #c8c3b5);
 }
 
-.ph-keys {
+.w98-ph-keys {
   position: absolute;
   left: 50%;
   top: calc(var(--p) * 1.6);
@@ -1330,7 +1330,7 @@
   transform: translateX(-50%);
 }
 
-.ph-keys i {
+.w98-ph-keys i {
   display: grid;
   place-items: center;
   height: calc(var(--p) * 1.2);
@@ -1344,7 +1344,7 @@
   line-height: 1;
 }
 
-.ph-led {
+.w98-ph-led {
   position: absolute;
   right: calc(var(--p) * 2);
   top: calc(var(--p) * 2.2);
@@ -1355,12 +1355,12 @@
   box-shadow: inset 0 0 0 calc(var(--p) * 0.1) rgba(0, 0, 0, 0.4);
 }
 
-.w98-phone.is-lifted .ph-led {
+.w98-phone.is-lifted .w98-ph-led {
   background: #ff3b26;
   box-shadow: 0 0 calc(var(--p) * 0.8) #ff3b26;
 }
 
-.ph-label {
+.w98-ph-label {
   position: absolute;
   left: calc(var(--p) * 1.6);
   bottom: calc(var(--p) * 1);
@@ -1371,7 +1371,7 @@
 }
 
 /* Le combiné, posé en travers */
-.ph-handset {
+.w98-ph-handset {
   position: absolute;
   left: calc(var(--p) * -0.6);
   right: calc(var(--p) * -0.6);
@@ -1384,7 +1384,7 @@
   transition: transform 0.35s var(--ease);
 }
 
-.ph-handset i {
+.w98-ph-handset i {
   position: absolute;
   bottom: calc(var(--p) * -0.6);
   width: calc(var(--p) * 5.4);
@@ -1393,15 +1393,15 @@
   background: linear-gradient(180deg, #d9d5ca, #b3ae9f);
 }
 
-.ph-handset i:first-child {
+.w98-ph-handset i:first-child {
   left: calc(var(--p) * 0.6);
 }
 
-.ph-handset i:last-child {
+.w98-ph-handset i:last-child {
   right: calc(var(--p) * 0.6);
 }
 
-.ph-cord {
+.w98-ph-cord {
   position: absolute;
   left: calc(var(--p) * -2.2);
   top: calc(var(--p) * 2.6);
@@ -1412,7 +1412,7 @@
   transition: transform 0.35s var(--ease);
 }
 
-.ph-cord path {
+.w98-ph-cord path {
   fill: none;
   stroke: #b5b0a2;
   stroke-width: 1.4;
@@ -1420,26 +1420,26 @@
   vector-effect: non-scaling-stroke;
 }
 
-.w98-phone.is-lifted .ph-handset {
+.w98-phone.is-lifted .w98-ph-handset {
   transform: translate(calc(var(--p) * -2), calc(var(--p) * -6)) rotate(-16deg);
-  animation: ph-wobble 0.5s ease-in-out 0.35s 3;
+  animation: w98-ph-wobble 0.5s ease-in-out 0.35s 3;
 }
 
-.w98-phone.is-lifted .ph-cord {
+.w98-phone.is-lifted .w98-ph-cord {
   transform: scaleY(1.55) translateX(calc(var(--p) * -0.6));
 }
 
-@keyframes ph-wobble {
+@keyframes w98-ph-wobble {
   50% {
     transform: translate(calc(var(--p) * -2), calc(var(--p) * -6.6)) rotate(-11deg);
   }
 }
 
-.w98-phone.is-ringing .ph-handset {
-  animation: ph-ring 0.12s linear infinite;
+.w98-phone.is-ringing .w98-ph-handset {
+  animation: w98-ph-ring 0.12s linear infinite;
 }
 
-@keyframes ph-ring {
+@keyframes w98-ph-ring {
   50% {
     transform: translate(0, calc(var(--p) * -0.4)) rotate(1.5deg);
   }
@@ -1789,8 +1789,8 @@
   .st98-mail,
   .st98-construction i,
   .w98-throbber.is-loading i,
-  .w98-phone.is-lifted .ph-handset,
-  .w98-phone.is-ringing .ph-handset,
+  .w98-phone.is-lifted .w98-ph-handset,
+  .w98-phone.is-ringing .w98-ph-handset,
   .w98-cd.is-nudge {
     animation: none !important;
   }

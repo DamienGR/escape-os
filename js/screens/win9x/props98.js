@@ -98,7 +98,7 @@ const coil = (() => {
     const y = 4 + i * 5;
     d += ` C 10 ${y + 1}, 10 ${y + 4}, 5 ${y + 5} C 0 ${y + 6}, 0 ${y + 2.5}, 5 ${y + 2.5}`;
   }
-  return `<svg class="ph-cord" viewBox="0 0 10 52" preserveAspectRatio="none" aria-hidden="true"><path d="${d}" /></svg>`;
+  return `<svg class="w98-ph-cord" viewBox="0 0 10 52" preserveAspectRatio="none" aria-hidden="true"><path d="${d}" /></svg>`;
 })();
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'];
@@ -107,19 +107,19 @@ export function createPhone(host, { onUse, signal } = {}) {
   const el = document.createElement('div');
   el.className = 'w98-phone';
   el.innerHTML = `
-    <button type="button" class="ph-hit" aria-label="Téléphone : décrocher le combiné"></button>
+    <button type="button" class="w98-ph-hit" aria-label="Téléphone : décrocher le combiné"></button>
     ${coil}
-    <span class="ph-base" aria-hidden="true">
-      <span class="ph-keys">${KEYS.map((k) => `<i>${k}</i>`).join('')}</span>
-      <span class="ph-led"></span>
-      <span class="ph-label">TÉLÉ 98</span>
+    <span class="w98-ph-base" aria-hidden="true">
+      <span class="w98-ph-keys">${KEYS.map((k) => `<i>${k}</i>`).join('')}</span>
+      <span class="w98-ph-led"></span>
+      <span class="w98-ph-label">TÉLÉ 98</span>
     </span>
-    <span class="ph-handset" aria-hidden="true"><i></i><i></i></span>
+    <span class="w98-ph-handset" aria-hidden="true"><i></i><i></i></span>
     <p class="w98-bubble" role="status" aria-live="polite" hidden></p>`;
   host.append(el);
   const bubble = el.querySelector('.w98-bubble');
   let bubbleTimer = 0;
-  el.querySelector('.ph-hit').addEventListener('click', () => onUse?.(), { signal });
+  el.querySelector('.w98-ph-hit').addEventListener('click', () => onUse?.(), { signal });
 
   return {
     el,
