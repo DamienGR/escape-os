@@ -213,7 +213,7 @@ export function layout() {
     const totalW = sw * wF;
     const totalH = sw * hF;
     // Sur téléphone, le matériel posé sur un bureau remonte : place pour le clavier virtuel.
-    const bias = compact && ['crt', 'flat', 'teletype'].includes(era.device) ? 0.2 : 0.5;
+    const bias = compact && ['crt', 'flat', 'teletype', 'mac'].includes(era.device) ? 0.2 : 0.5;
     const x0 = availX + (availW - totalW) / 2;
     const y0 = availY + (availH - totalH) * bias;
     const dx = x0;
@@ -255,6 +255,9 @@ export function layout() {
     place(els.desk, 0, deskY, W, Math.max(0, H - deskY));
 
     geometry = { compact, full: false, lw, lh, scale: sw / lw, portrait };
+    // Repères pour placer les détails du boîtier sous l'écran
+    scene.style.setProperty('--gb', `${sw * bt + sh}px`);
+    scene.style.setProperty('--bb', `${sw * bb}px`);
   }
 
   scene.style.setProperty('--u', `${sw / 100}px`);

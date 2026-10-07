@@ -619,7 +619,7 @@ body[data-era='cards'] .stage::before {
 .scene[data-device='mac'] .deco-slot {
   opacity: 1;
   right: 13%;
-  bottom: 31%;
+  top: calc(var(--gb) + var(--bb) * 0.2);
   width: 34%;
   height: calc(var(--u) * 1.5);
   border-radius: calc(var(--u) * 0.8);
@@ -639,7 +639,7 @@ body[data-era='cards'] .stage::before {
 .scene[data-device='mac'] .deco-badge {
   opacity: 1;
   left: 10%;
-  bottom: 31%;
+  top: calc(var(--gb) + var(--bb) * 0.2);
   color: #9a917b;
   font: 700 calc(var(--u) * 1.6) / 1 var(--font-ui);
   letter-spacing: 0.2em;

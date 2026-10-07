@@ -323,9 +323,9 @@
 .mac-floppy-wrap {
   position: absolute;
   right: 12%;
-  top: 69.4%;
+  top: calc(var(--gb) + var(--bb) * 0.2 + var(--u) * 0.8);
   width: 36%;
-  height: 38%;
+  height: calc(var(--bb) * 0.8);
   overflow: hidden;
   pointer-events: none;
 }
@@ -382,4 +382,11 @@
     animation: none;
     transform: translateY(-38%) rotate(-2.5deg);
   }
+}
+
+/* Échelle fractionnaire (téléphone) : la trame d'un pixel moirerait, on passe en gris uni */
+.scene[data-compact='true'] .mac-desk,
+.scene[data-compact='true'] .mac-boot {
+  background-image: none;
+  background-color: #8c8c8c;
 }
