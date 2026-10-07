@@ -2,7 +2,7 @@
 // Ctrl + molette), toucher deux fois ou utiliser les boutons +/− : à partir
 // d'environ 3×, le panneau se lit « Pour rentrer, appelez le 2026 ».
 
-import { pinchZoom, localPoint } from '../../ui/gestures.js';
+import { pinchZoom } from '../../ui/gestures.js';
 import { GLYPHS } from './art.js';
 import { photo, SIGN } from './photo.js';
 import { h, nav, createStack } from './kit.js';
@@ -77,19 +77,6 @@ export function photosApp(host, kit) {
 
   const zoom = pinchZoom(view, target, { min: 1, max: MAX, onChange: check, signal: ctx.signal });
 
-  // pinchZoom gère déjà le double tap au pointeur : on neutralise son écoute de
-  // dblclick, qui annulerait aussitôt le zoom à la souris.
-  ctx.on(viewer, 'dblclick', (event) => event.stopPropagation(), { capture: true });
-
-  // Safari sur Mac : le pincement du pavé tactile arrive en GestureEvent.
-  let gestureStart = 1;
-  ctx.on(view, 'gesturestart', () => {
-    gestureStart = zoom.zoom;
-  });
-  ctx.on(view, 'gesturechange', (event) => {
-    if (event.scale) zoom.zoomTo(gestureStart * event.scale, localPoint(view, event));
-  });
-
   // Ctrl + molette hors de la photo : pas de zoom de la page entière.
   ctx.on(
     viewer,
@@ -107,7 +94,7 @@ export function photosApp(host, kit) {
   ctx.on(btnIn, 'click', () => zoomBy(STEP));
   ctx.on(btnOut, 'click', () => zoomBy(1 / STEP));
 
-  // Clavier : + et − pour zoomer, flèches pour se déplacer (molette simulée).
+  // Clavier : + et − pour zoomer, flèches pour se déplacer.
   ctx.on(view, 'keydown', (event) => {
     if (['+', '='].includes(event.key)) zoomBy(STEP);
     else if (['-', '_'].includes(event.key)) zoomBy(1 / STEP);
@@ -115,16 +102,7 @@ export function photosApp(host, kit) {
     else {
       const d = { ArrowLeft: [-40, 0], ArrowRight: [40, 0], ArrowUp: [0, -40], ArrowDown: [0, 40] }[event.key];
       if (!d) return;
-      const rect = view.getBoundingClientRect();
-      view.dispatchEvent(
-        new WheelEvent('wheel', {
-          deltaX: d[0],
-          deltaY: d[1],
-          clientX: rect.left + rect.width / 2,
-          clientY: rect.top + rect.height / 2,
-          cancelable: true,
-        }),
-      );
+      zoom.panBy(d[0], d[1]);
     }
     event.preventDefault();
   });

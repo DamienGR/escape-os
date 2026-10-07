@@ -342,10 +342,12 @@ export function pinchZoom(viewport, target, { min = 1, max = 6, onChange, signal
   viewport.addEventListener('pointercancel', release, { signal });
 
   // Pincement du pavé tactile et Ctrl + molette : wheel avec ctrlKey
+  let safariGesture = null;
   viewport.addEventListener(
     'wheel',
     (event) => {
       event.preventDefault();
+      if (safariGesture) return;
       const point = localPoint(viewport, event);
       if (event.ctrlKey || event.metaKey) {
         zoomAt(z * Math.exp(-event.deltaY * 0.01), point);
@@ -358,15 +360,29 @@ export function pinchZoom(viewport, target, { min = 1, max = 6, onChange, signal
     { passive: false, signal },
   );
 
-  // Safari : bloquer le zoom natif de la page
-  for (const type of ['gesturestart', 'gesturechange']) {
-    viewport.addEventListener(type, (event) => event.preventDefault(), { signal });
-  }
-
+  // Safari sur Mac : le pincement du pavé tactile arrive en GestureEvent. Sur iOS,
+  // les deux doigts sont déjà suivis en Pointer Events : on n'applique pas deux fois.
   viewport.addEventListener(
-    'dblclick',
+    'gesturestart',
     (event) => {
-      zoomAt(z > 1.5 ? 1 : 3, localPoint(viewport, event), true);
+      event.preventDefault();
+      safariGesture = { z };
+    },
+    { signal },
+  );
+  viewport.addEventListener(
+    'gesturechange',
+    (event) => {
+      event.preventDefault();
+      if (safariGesture && pointers.size < 2 && event.scale) zoomAt(safariGesture.z * event.scale, localPoint(viewport, event));
+    },
+    { signal },
+  );
+  viewport.addEventListener(
+    'gestureend',
+    (event) => {
+      event.preventDefault();
+      safariGesture = null;
     },
     { signal },
   );
@@ -378,6 +394,11 @@ export function pinchZoom(viewport, target, { min = 1, max = 6, onChange, signal
     },
     zoomBy: (factor) => zoomAt(z * factor, center(), true),
     zoomTo: (next, point = center()) => zoomAt(next, point, true),
+    panBy: (dx, dy) => {
+      tx -= dx;
+      ty -= dy;
+      apply(true);
+    },
     reset: () => {
       z = 1;
       tx = 0;

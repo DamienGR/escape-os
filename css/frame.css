@@ -534,6 +534,11 @@ body[data-era='cards'] .stage::before {
 }
 
 /* Smartphone (2007) : verre noir, cerclage métallique, bouton unique */
+/* Un pincement sur le boîtier ne zoome pas toute la page */
+.scene[data-device='phone'] .dev-body {
+  touch-action: none;
+}
+
 .scene[data-device='phone'] .dev-body {
   border-radius: calc(var(--u) * 21);
   background-color: #0b0b0d;

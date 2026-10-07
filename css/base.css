@@ -1468,7 +1468,8 @@ button {
   }
 
   .debug-panel {
-    bottom: calc(var(--hud-h) + 16px);
+    top: 8px;
+    bottom: auto;
   }
 
   .title-kicker {
