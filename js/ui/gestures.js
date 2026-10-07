@@ -190,7 +190,9 @@ export function slider(track, knob, { onProgress, onComplete, threshold = 0.9, s
   const set = (x, animate = false) => {
     knob.style.transition = animate ? 'translate 0.35s cubic-bezier(.2,.9,.2,1.2)' : 'none';
     knob.style.translate = `${x}px 0`;
-    onProgress?.(max() ? x / max() : 0);
+    const ratio = max() ? x / max() : 0;
+    knob.setAttribute('aria-valuenow', String(Math.round(ratio * 100)));
+    onProgress?.(ratio);
   };
   const finish = () => {
     done = true;
@@ -211,6 +213,7 @@ export function slider(track, knob, { onProgress, onComplete, threshold = 0.9, s
   knob.setAttribute('role', 'slider');
   knob.setAttribute('aria-valuemin', '0');
   knob.setAttribute('aria-valuemax', '100');
+  knob.setAttribute('aria-valuenow', '0');
   knob.addEventListener(
     'keydown',
     (event) => {
