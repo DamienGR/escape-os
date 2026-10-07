@@ -242,9 +242,11 @@ export function createTerminal(container, options = {}) {
         recall(1);
       } else if (event.key === 'Tab') {
         event.preventDefault();
-      } else if (event.key.toLowerCase() === 'c' && event.ctrlKey && !busy) {
+      } else if (event.key.toLowerCase() === 'c' && event.ctrlKey && (!busy || asking)) {
+        // Ctrl+C abandonne la ligne, ou la question posée (sans révéler un mot de passe)
         event.preventDefault();
-        row(`${asking ? asking.prompt : promptText()}${input.value}^C`, 'term-echo');
+        const typed = asking?.echo === false ? '' : input.value;
+        row(`${asking ? asking.prompt : promptText()}${typed}^C`, 'term-echo');
         input.value = '';
         if (asking) {
           const { resolve } = asking;

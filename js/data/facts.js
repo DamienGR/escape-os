@@ -130,7 +130,7 @@ export const HINTS = {
   xp: [
     'Il ne lit pas ses messages… il faut attirer son attention.',
     'Cherche le bouton qui fait trembler la fenêtre.',
-    'Clique sur Wizz.',
+    ({ touch }) => (touch ? 'Touche le bouton Wizz, sous la conversation.' : 'Clique sur le bouton Wizz, sous la conversation.'),
   ],
   ubuntu: [
     'Tape sortie : le terminal te souffle la commande.',

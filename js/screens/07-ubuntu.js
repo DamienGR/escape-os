@@ -8,7 +8,6 @@ import { buildDesktop } from './ubuntu/desktop.js';
 import { emblem, mini } from './ubuntu/art.js';
 
 const CHIPS = [[], ['sortie'], ['sortie', 'sudo apt install sortie'], ['sudo apt install sortie', 'sortie']];
-const CANCEL = '\u0003';
 
 const BOOT_STEPS = [
   'Chargement du noyau Linux 2.6.15…',
@@ -199,11 +198,6 @@ export default {
       hideHelp();
       asking = false;
       setChips();
-      if (value === CANCEL) {
-        const echo = term?.out.lastElementChild;
-        if (echo) echo.textContent += '^C';
-        return null;
-      }
       return value;
     }
 
@@ -380,14 +374,7 @@ export default {
     // Tab complète, Ctrl+L efface, Ctrl+plus et Ctrl+moins zooment.
     function keys(event) {
       if (!term) return;
-      // Ctrl+C abandonne la saisie du mot de passe (le terminal partagé l'ignore
-      // pendant qu'une commande tourne) : on valide une marque d'abandon.
-      if (asking && event.ctrlKey && event.key.toLowerCase() === 'c') {
-        event.preventDefault();
-        term.input.value = CANCEL;
-        term.input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-        return;
-      }
+      // Ctrl+C pendant le mot de passe : le terminal partagé abandonne la question.
       if (asking) return;
       if (event.key === 'Tab') {
         const result = bash.complete(term.input.value);

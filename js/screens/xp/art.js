@@ -4,260 +4,64 @@
 
 // ——— Dégradés partagés (un seul <defs> pour tout l'écran) ———
 
-const stops = (list) =>
-  list.map(([o, c, a]) => `<stop offset="${o}" stop-color="${c}"${a == null ? '' : ` stop-opacity="${a}"`}/>`).join('');
-const lin = (id, list, x2 = 0, y2 = 1) =>
-  `<linearGradient id="xp-${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops(list)}</linearGradient>`;
-const rad = (id, list, cx = 0.5, cy = 0.5, r = 0.5) =>
-  `<radialGradient id="xp-${id}" cx="${cx}" cy="${cy}" r="${r}">${stops(list)}</radialGradient>`;
+// Arrêts notés « position couleur [opacité] », séparés par des virgules
+const stops = (spec) =>
+  spec
+    .split(',')
+    .map((stop) => {
+      const [o, c, a] = stop.trim().split(/\s+/);
+      return `<stop offset="${o}" stop-color="${c}"${a ? ` stop-opacity="${a}"` : ''}/>`;
+    })
+    .join('');
+const lin = (id, spec, x2 = 0, y2 = 1) =>
+  `<linearGradient id="xp-${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops(spec)}</linearGradient>`;
+const rad = (id, spec, cx = 0.5, cy = 0.5, r = 0.5) =>
+  `<radialGradient id="xp-${id}" cx="${cx}" cy="${cy}" r="${r}">${stops(spec)}</radialGradient>`;
 
-export const DEFS = `<svg class="xp-defs" aria-hidden="true" focusable="false" width="0" height="0"><defs>
-  ${lin('beige', [
-    [0, '#fdfbf3'],
-    [1, '#d2cab3'],
-  ])}
-  ${lin('screen', [
-    [0, '#8cc2ff'],
-    [0.55, '#3f82ea'],
-    [1, '#1c4db5'],
-  ])}
-  ${lin('hill', [
-    [0, '#a9de62'],
-    [1, '#3a8f22'],
-  ])}
-  ${lin('paper', [
-    [0, '#ffffff'],
-    [1, '#dde3eb'],
-  ])}
-  ${lin('folder-back', [
-    [0, '#f9da80'],
-    [1, '#d9a032'],
-  ])}
-  ${lin('folder-front', [
-    [0, '#fff3bf'],
-    [0.45, '#ffdb6e'],
-    [1, '#efb23a'],
-  ])}
-  ${lin('bubble-blue', [
-    [0, '#a6d6ff'],
-    [1, '#2b6fdc'],
-  ])}
-  ${lin('bubble-green', [
-    [0, '#cff79a'],
-    [1, '#3ba52b'],
-  ])}
-  ${lin(
-    'bin',
-    [
-      [0, '#b7cbc6'],
-      [0.3, '#f7fbfa'],
-      [0.62, '#d7e4e0'],
-      [1, '#8fa8a3'],
-    ],
-    1,
-    0,
-  )}
-  ${rad(
-    'globe',
-    [
-      [0, '#c4e9ff'],
-      [0.45, '#3f95ec'],
-      [1, '#113c96'],
-    ],
-    0.38,
-    0.32,
-    0.7,
-  )}
-  ${lin('land', [
-    [0, '#97e061'],
-    [1, '#2c8a25'],
-  ])}
-  ${lin('orange', [
-    [0, '#ffd590'],
-    [0.5, '#ff9b30'],
-    [1, '#e0640c'],
-  ])}
-  ${lin('red', [
-    [0, '#ffa486'],
-    [0.5, '#f05332'],
-    [1, '#c02a12'],
-  ])}
-  ${lin('green', [
-    [0, '#c0f185'],
-    [0.5, '#56ba3c'],
-    [1, '#2a8922'],
-  ])}
-  ${lin('blue', [
-    [0, '#aed3ff'],
-    [0.5, '#4b8df0'],
-    [1, '#1f55c9'],
-  ])}
-  ${lin('gold', [
-    [0, '#fff6b4'],
-    [1, '#efb000'],
-  ])}
-  ${lin('gloss', [
-    [0, '#fff', 0.9],
-    [1, '#fff', 0],
-  ])}
-  ${lin('metal', [
-    [0, '#ffffff'],
-    [1, '#b4bbc5'],
-  ])}
-  ${lin('dark', [
-    [0, '#6a7080'],
-    [1, '#14161c'],
-  ])}
-  ${lin(
-    'disc',
-    [
-      [0, '#f4f7fb'],
-      [0.35, '#c9d3e0'],
-      [0.5, '#fbe9ff'],
-      [0.65, '#cfe9f5'],
-      [1, '#aab6c6'],
-    ],
-    1,
-    1,
-  )}
-  ${rad(
-    'smiley',
-    [
-      [0, '#fffce6'],
-      [0.42, '#ffe44f'],
-      [1, '#f19f00'],
-    ],
-    0.38,
-    0.3,
-    0.75,
-  )}
-  ${rad(
-    'angry',
-    [
-      [0, '#ffd9c9'],
-      [0.45, '#ff7a52'],
-      [1, '#d22e18'],
-    ],
-    0.38,
-    0.3,
-    0.75,
-  )}
-  ${rad(
-    'heart',
-    [
-      [0, '#ffc0c9'],
-      [0.45, '#f2384f'],
-      [1, '#b30c23'],
-    ],
-    0.35,
-    0.3,
-    0.75,
-  )}
-  ${rad(
-    'st-online',
-    [
-      [0, '#d8ffb0'],
-      [0.5, '#5cc83a'],
-      [1, '#2a8a1c'],
-    ],
-    0.4,
-    0.3,
-    0.7,
-  )}
-  ${rad(
-    'st-away',
-    [
-      [0, '#ffe7b0'],
-      [0.5, '#ffa62b'],
-      [1, '#d96a00'],
-    ],
-    0.4,
-    0.3,
-    0.7,
-  )}
-  ${rad(
-    'st-busy',
-    [
-      [0, '#ffc2b0'],
-      [0.5, '#f0472b'],
-      [1, '#b82210'],
-    ],
-    0.4,
-    0.3,
-    0.7,
-  )}
-  ${rad(
-    'st-off',
-    [
-      [0, '#ffffff'],
-      [0.5, '#d5dae0'],
-      [1, '#9aa2ad'],
-    ],
-    0.4,
-    0.3,
-    0.7,
-  )}
-  ${lin('av-water', [
-    [0, '#e3f5ff'],
-    [0.55, '#8fd0f8'],
-    [1, '#3d98de'],
-  ])}
-  ${rad(
-    'av-duck',
-    [
-      [0, '#fff8b8'],
-      [0.5, '#ffd92e'],
-      [1, '#f0a000'],
-    ],
-    0.4,
-    0.3,
-    0.75,
-  )}
-  ${lin('av-beak', [
-    [0, '#ffbb55'],
-    [1, '#ee6400'],
-  ])}
-  ${lin('av-night', [
-    [0, '#b38dff'],
-    [0.55, '#6a35d0'],
-    [1, '#2c1478'],
-  ])}
-  ${rad('av-spot', [
-    [0, '#fff', 0.5],
-    [1, '#fff', 0],
-  ])}
-  ${lin(
-    'av-wood',
-    [
-      [0, '#b0703f'],
-      [1, '#5a3117'],
-    ],
-    1,
-    0,
-  )}
-  ${lin('av-felt', [
-    [0, '#c6efb9'],
-    [0.5, '#5fbf72'],
-    [1, '#22804a'],
-  ])}
-  ${lin(
-    'av-knight',
-    [
-      [0, '#6b7180'],
-      [0.55, '#24272f'],
-      [1, '#08090c'],
-    ],
-    1,
-    0.35,
-  )}
-  <radialGradient id="xp-av-burst" gradientUnits="userSpaceOnUse" cx="24" cy="33" r="14">${stops([
-    [0, '#ffe08a'],
-    [0.35, '#ffa12e'],
-    [0.72, '#cf3d0e'],
-    [1, '#5a1505'],
-  ])}</radialGradient>
-  <clipPath id="xp-orb-clip"><circle cx="24" cy="24" r="19"/></clipPath>
-</defs></svg>`;
+const GRADIENTS = [
+  lin('beige', '0 #fdfbf3, 1 #d2cab3'),
+  lin('screen', '0 #8cc2ff, .55 #3f82ea, 1 #1c4db5'),
+  lin('hill', '0 #a9de62, 1 #3a8f22'),
+  lin('paper', '0 #ffffff, 1 #dde3eb'),
+  lin('folder-back', '0 #f9da80, 1 #d9a032'),
+  lin('folder-front', '0 #fff3bf, .45 #ffdb6e, 1 #efb23a'),
+  lin('bubble-blue', '0 #a6d6ff, 1 #2b6fdc'),
+  lin('bubble-green', '0 #cff79a, 1 #3ba52b'),
+  lin('bin', '0 #b7cbc6, .3 #f7fbfa, .62 #d7e4e0, 1 #8fa8a3', 1, 0),
+  rad('globe', '0 #c4e9ff, .45 #3f95ec, 1 #113c96', 0.38, 0.32, 0.7),
+  lin('land', '0 #97e061, 1 #2c8a25'),
+  lin('orange', '0 #ffd590, .5 #ff9b30, 1 #e0640c'),
+  lin('red', '0 #ffa486, .5 #f05332, 1 #c02a12'),
+  lin('green', '0 #c0f185, .5 #56ba3c, 1 #2a8922'),
+  lin('blue', '0 #aed3ff, .5 #4b8df0, 1 #1f55c9'),
+  lin('gold', '0 #fff6b4, 1 #efb000'),
+  lin('gloss', '0 #fff .9, 1 #fff 0'),
+  lin('metal', '0 #ffffff, 1 #b4bbc5'),
+  lin('dark', '0 #6a7080, 1 #14161c'),
+  lin('disc', '0 #f4f7fb, .35 #c9d3e0, .5 #fbe9ff, .65 #cfe9f5, 1 #aab6c6', 1, 1),
+  rad('smiley', '0 #fffce6, .42 #ffe44f, 1 #f19f00', 0.38, 0.3, 0.75),
+  rad('angry', '0 #ffd9c9, .45 #ff7a52, 1 #d22e18', 0.38, 0.3, 0.75),
+  rad('heart', '0 #ffc0c9, .45 #f2384f, 1 #b30c23', 0.35, 0.3, 0.75),
+  rad('st-online', '0 #d8ffb0, .5 #5cc83a, 1 #2a8a1c', 0.4, 0.3, 0.7),
+  rad('st-away', '0 #ffe7b0, .5 #ffa62b, 1 #d96a00', 0.4, 0.3, 0.7),
+  rad('st-busy', '0 #ffc2b0, .5 #f0472b, 1 #b82210', 0.4, 0.3, 0.7),
+  rad('st-off', '0 #ffffff, .5 #d5dae0, 1 #9aa2ad', 0.4, 0.3, 0.7),
+  lin('av-water', '0 #e3f5ff, .55 #8fd0f8, 1 #3d98de'),
+  rad('av-duck', '0 #fff8b8, .5 #ffd92e, 1 #f0a000', 0.4, 0.3, 0.75),
+  lin('av-beak', '0 #ffbb55, 1 #ee6400'),
+  lin('av-night', '0 #b38dff, .55 #6a35d0, 1 #2c1478'),
+  rad('av-spot', '0 #fff .5, 1 #fff 0'),
+  lin('av-wood', '0 #b0703f, 1 #5a3117', 1, 0),
+  lin('av-felt', '0 #c6efb9, .5 #5fbf72, 1 #22804a'),
+  lin('av-knight', '0 #6b7180, .55 #24272f, 1 #08090c', 1, 0.35),
+  // La caisse de la guitare : un seul dégradé pour toutes ses formes
+  `<radialGradient id="xp-av-burst" gradientUnits="userSpaceOnUse" cx="24" cy="33" r="14">${stops(
+    '0 #ffe08a, .35 #ffa12e, .72 #cf3d0e, 1 #5a1505',
+  )}</radialGradient>`,
+  '<clipPath id="xp-orb-clip"><circle cx="24" cy="24" r="19"/></clipPath>',
+];
+
+export const DEFS = `<svg class="xp-defs" aria-hidden="true" focusable="false" width="0" height="0"><defs>${GRADIENTS.join('')}</defs></svg>`;
 
 // ——— Icônes (repère 48 × 48, affichées de 16 à 48 px) ———
 

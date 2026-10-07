@@ -91,7 +91,7 @@ const isPassword = (value) => (value ?? '').trim().toLowerCase() === PASSWORD;
 const n = (value) => value.toLocaleString('fr-FR').replace(/\u202f|\u00a0|\s/g, NB);
 
 export function createBash(io, events) {
-  const shell = { cwd: HOME, installed: false, sudo: false, launched: false };
+  const shell = { cwd: HOME, installed: false, sudo: false, lectured: false, launched: false };
 
   const label = () => (shell.cwd === HOME ? '~' : shell.cwd.startsWith(`${HOME}/`) ? `~${shell.cwd.slice(HOME.length)}` : shell.cwd);
   const prompt = () => `voyageur@ubuntu:${label()}$ `;
@@ -260,8 +260,42 @@ export function createBash(io, events) {
 
   // ——— sudo : le mot de passe ne s'affiche pas ———
 
+  // Coupe un paragraphe entre deux mots, à la largeur du terminal.
+  function fold(text, indent = '') {
+    const width = Math.max(20, io.cols() - indent.length - 1);
+    const lines = [];
+    let current = '';
+    for (const word of text.split(' ')) {
+      if (current && `${current} ${word}`.length > width) {
+        lines.push(indent + current);
+        current = word;
+      } else {
+        current = current ? `${current} ${word}` : word;
+      }
+    }
+    if (current) lines.push(indent + current);
+    return lines;
+  }
+
+  // Le sermon d'usage, à la première utilisation de sudo.
+  function lecture() {
+    return say(
+      '',
+      ...fold('Nous espérons que vous avez reçu de votre administrateur système local les consignes traditionnelles. Généralement, elles se concentrent sur ces trois éléments :'),
+      '',
+      ...fold('#1) Respectez la vie privée des autres.', '    '),
+      ...fold('#2) Réfléchissez avant d’utiliser le clavier.', '    '),
+      ...fold('#3) De grands pouvoirs confèrent de grandes responsabilités.', '    '),
+      '',
+    );
+  }
+
   async function authenticate() {
     if (shell.sudo) return true;
+    if (!shell.lectured) {
+      shell.lectured = true;
+      await lecture();
+    }
     for (let attempt = 1; attempt <= 3; attempt++) {
       const value = await events.askPassword('[sudo] Mot de passe de voyageur : ');
       if (value === null) return false;

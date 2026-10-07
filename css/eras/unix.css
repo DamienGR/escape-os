@@ -67,7 +67,6 @@
   box-shadow:
     -7px 0 9px -6px rgba(0, 0, 0, 0.7),
     7px 0 9px -6px rgba(0, 0, 0, 0.7);
-  will-change: transform;
 }
 
 /* Bord déchiré par l'utilisateur précédent */
