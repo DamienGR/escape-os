@@ -1,0 +1,772 @@
+/* Le cadre qui évolue : le matériel autour de l'écran est dessiné en CSS.
+   Salle machine, télétype, moniteur cathodique beige, écran plat, téléphone,
+   puis plus aucun cadre en 2026. Géométrie posée par core/stage.js ; pendant
+   le saut (.morphing), taille, rayons, couleurs et épaisseurs transitionnent. */
+
+.stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--page-bg);
+  transition: background-color 1.2s var(--ease);
+}
+
+.scene {
+  --u: 6px;
+  --morph: 1.15s;
+  --body-a: #ddd6c4;
+  --body-b: #c8bfa8;
+  --desk-a: transparent;
+  --desk-b: transparent;
+  position: absolute;
+  inset: 0;
+}
+
+.scene > * {
+  position: absolute;
+}
+
+.scene.morphing > *,
+.scene.morphing .deco {
+  transition:
+    left var(--morph) var(--ease-io),
+    top var(--morph) var(--ease-io),
+    width var(--morph) var(--ease-io),
+    height var(--morph) var(--ease-io),
+    border-radius var(--morph) var(--ease-io),
+    background-color var(--morph) var(--ease-io),
+    box-shadow var(--morph) var(--ease-io),
+    opacity 0.6s var(--ease);
+}
+
+/* ——— Ambiance de la pièce, selon l'époque ——— */
+
+body[data-era='cards'] {
+  --page-bg: #161b21;
+}
+
+body[data-era='unix'] {
+  --page-bg: #2b2018;
+}
+
+body[data-era='dos'] {
+  --page-bg: #1b1d22;
+}
+
+body[data-era='win31'] {
+  --page-bg: #1f2228;
+}
+
+body[data-era='win95'] {
+  --page-bg: #1b2629;
+}
+
+body[data-era='win98'] {
+  --page-bg: #1f2431;
+}
+
+body[data-era='xp'] {
+  --page-bg: #d9e1ea;
+}
+
+body[data-era='ubuntu'] {
+  --page-bg: #262022;
+}
+
+body[data-era='phone'] {
+  --page-bg: #101217;
+}
+
+body[data-era='agent'] {
+  --page-bg: #f4f3ef;
+}
+
+.stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease);
+}
+
+body[data-era='unix'] .stage::before {
+  opacity: 1;
+  background:
+    radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0, 0, 0, 0.55) 100%),
+    repeating-linear-gradient(90deg, rgba(255, 220, 170, 0.035) 0 2px, transparent 2px 9px, rgba(0, 0, 0, 0.18) 9px 10px, transparent 10px 71px);
+}
+
+body[data-era='dos'] .stage::before,
+body[data-era='win31'] .stage::before {
+  opacity: 1;
+  background: radial-gradient(ellipse 60% 70% at 18% 8%, rgba(255, 196, 120, 0.13), transparent 70%);
+}
+
+body[data-era='win95'] .stage::before,
+body[data-era='win98'] .stage::before {
+  opacity: 1;
+  background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(160, 220, 230, 0.08), transparent 70%);
+}
+
+body[data-era='xp'] .stage::before {
+  opacity: 1;
+  background: radial-gradient(ellipse 80% 60% at 70% 0%, rgba(255, 255, 255, 0.8), transparent 70%);
+}
+
+body[data-era='ubuntu'] .stage::before {
+  opacity: 1;
+  background: radial-gradient(ellipse 60% 60% at 50% 10%, rgba(255, 150, 80, 0.1), transparent 70%);
+}
+
+body[data-era='phone'] .stage::before {
+  opacity: 1;
+  background: radial-gradient(ellipse 45% 55% at 50% 45%, rgba(120, 140, 200, 0.16), transparent 70%);
+}
+
+body[data-era='cards'] .stage::before {
+  opacity: 1;
+  background: radial-gradient(ellipse 70% 70% at 50% 40%, rgba(150, 175, 190, 0.1), transparent 70%);
+}
+
+/* ——— Bureau sous le matériel ——— */
+
+.desk {
+  opacity: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 30%),
+    repeating-linear-gradient(92deg, rgba(0, 0, 0, 0.05) 0 3px, transparent 3px 11px),
+    linear-gradient(180deg, var(--desk-a), var(--desk-b));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.scene[data-device='crt'] .desk,
+.scene[data-device='flat'] .desk,
+.scene[data-device='teletype'] .desk {
+  opacity: 1;
+}
+
+.scene[data-era='dos'],
+.scene[data-era='win31'] {
+  --desk-a: #5a4332;
+  --desk-b: #2e2219;
+}
+
+.scene[data-era='win95'],
+.scene[data-era='win98'] {
+  --desk-a: #8c7a62;
+  --desk-b: #4d4234;
+}
+
+.scene[data-era='xp'] {
+  --desk-a: #f1efe9;
+  --desk-b: #c9c4b8;
+}
+
+.scene[data-era='ubuntu'] {
+  --desk-a: #3a2f2b;
+  --desk-b: #1c1614;
+}
+
+.scene[data-device='teletype'] .desk {
+  --desk-a: #4f4a3f;
+  --desk-b: #2a2620;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 40%),
+    repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.03) 0 25%, transparent 0 50%) 0 0 / 48px 48px,
+    linear-gradient(180deg, var(--desk-a), var(--desk-b));
+}
+
+/* ——— Corps de l'appareil ——— */
+
+.dev-body {
+  border-radius: calc(var(--u) * 2);
+  background-color: transparent;
+  box-shadow: 0 0 0 transparent;
+}
+
+.deco {
+  position: absolute;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s var(--ease);
+}
+
+/* Salle machine (années 60) : pas d'écran, seulement la pièce. */
+.scene[data-device='room'] .glass {
+  border-radius: calc(var(--u) * 1.4);
+  box-shadow: 0 calc(var(--u) * 3) calc(var(--u) * 8) rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* Télétype (1974) : capot mastic, fenêtre de papier, clavier à touches rondes. */
+.scene[data-device='teletype'] .dev-body {
+  border-radius: calc(var(--u) * 3.2) calc(var(--u) * 3.2) calc(var(--u) * 1.2) calc(var(--u) * 1.2);
+  background-color: #cbc4ae;
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.4), transparent 6%),
+    linear-gradient(180deg, #d8d1bc, #c3bba3 75%, #b2a98f);
+  box-shadow:
+    0 calc(var(--u) * 3) calc(var(--u) * 6) calc(var(--u) * -1) rgba(0, 0, 0, 0.6),
+    inset 0 calc(var(--u) * -0.6) calc(var(--u) * 1.4) rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.scene[data-device='teletype'] .glass {
+  border-radius: calc(var(--u) * 0.8);
+  box-shadow:
+    0 0 0 calc(var(--u) * 0.5) #7d7562,
+    0 0 0 calc(var(--u) * 1.1) #a59d86,
+    inset 0 0 calc(var(--u) * 3) rgba(0, 0, 0, 0.4);
+}
+
+.scene[data-device='teletype'] .deco-roll {
+  opacity: 1;
+  left: 12%;
+  right: 12%;
+  top: calc(var(--u) * -1.6);
+  height: calc(var(--u) * 3.4);
+  border-radius: calc(var(--u) * 1.7);
+  background: linear-gradient(180deg, #f6f1df, #e1d9bf 55%, #bfb597);
+  box-shadow: 0 calc(var(--u) * 0.4) calc(var(--u) * 0.8) rgba(0, 0, 0, 0.25);
+}
+
+.scene[data-device='teletype'] .deco-badge {
+  opacity: 1;
+  right: calc(var(--u) * 7);
+  bottom: calc(var(--u) * 1.2);
+  font: 700 calc(var(--u) * 1.5) / 1 var(--font-ui);
+  letter-spacing: 0.3em;
+  color: #8b836d;
+}
+
+.scene[data-device='teletype'] .deco-badge::after {
+  content: 'TÉLÉIMPRIMEUR · 110 BAUDS';
+}
+
+.dev-keys {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: calc(var(--u) * 0.9);
+  padding: calc(var(--u) * 1.6) calc(var(--u) * 4) calc(var(--u) * 2.4);
+  border-radius: calc(var(--u) * 1) calc(var(--u) * 1) calc(var(--u) * 3) calc(var(--u) * 3);
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.22), transparent calc(var(--u) * 1.2)),
+    linear-gradient(0deg, #9c937b, #b3ab92 calc(var(--u) * 1.4), transparent calc(var(--u) * 1.5)),
+    linear-gradient(180deg, #bdb59d, #cfc8b2 30%, #b7af96);
+  box-shadow: 0 calc(var(--u) * 2.5) calc(var(--u) * 5) calc(var(--u) * -1) rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.scene[data-device='teletype'] .dev-keys {
+  opacity: 1;
+}
+
+.key-row {
+  display: flex;
+  gap: calc(var(--u) * 1.1);
+}
+
+.key-row:nth-child(2) {
+  margin-left: calc(var(--u) * 2.5);
+}
+
+.key-row:nth-child(3) {
+  margin-left: calc(var(--u) * 4.5);
+}
+
+.key-row:nth-child(4) {
+  margin-left: calc(var(--u) * 2);
+}
+
+.key {
+  display: grid;
+  place-items: center;
+  width: calc(var(--u) * 3.9);
+  height: calc(var(--u) * 3.9);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #4a4741, #22201c 70%);
+  box-shadow: 0 calc(var(--u) * 0.45) 0 #6d6656, 0 calc(var(--u) * 0.7) calc(var(--u) * 0.8) rgba(0, 0, 0, 0.45);
+  color: #f1ecdc;
+  font: 700 calc(var(--u) * 1.5) / 1 var(--font-mono);
+  text-transform: uppercase;
+  transition: transform 0.08s;
+}
+
+.key-space {
+  width: calc(var(--u) * 34);
+  border-radius: calc(var(--u) * 2);
+}
+
+.key.pressed {
+  animation: key-press 0.18s ease-out;
+}
+
+@keyframes key-press {
+  30% {
+    transform: translateY(calc(var(--u) * 0.4));
+    box-shadow: 0 calc(var(--u) * 0.05) 0 #6d6656;
+  }
+}
+
+/* Moniteur cathodique beige (DOS à Windows 98) */
+.scene[data-device='crt'] {
+  --body-a: #e2dccb;
+  --body-b: #c9c0a9;
+}
+
+.scene[data-era='win95'],
+.scene[data-era='win98'] {
+  --body-a: #eae6db;
+  --body-b: #d2ccbd;
+}
+
+.scene[data-device='crt'] .dev-body {
+  border-radius: calc(var(--u) * 2.6);
+  background-color: var(--body-b);
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 4%),
+    linear-gradient(180deg, var(--body-a), var(--body-b) 80%, color-mix(in srgb, var(--body-b), #000 10%));
+  box-shadow:
+    0 calc(var(--u) * 3) calc(var(--u) * 7) calc(var(--u) * -1) rgba(0, 0, 0, 0.65),
+    inset 0 calc(var(--u) * -0.7) calc(var(--u) * 1.4) rgba(0, 0, 0, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+.scene[data-device='crt'] .glass {
+  border-radius: calc(var(--u) * 3) / calc(var(--u) * 3.6);
+  box-shadow:
+    0 0 0 calc(var(--u) * 0.7) #23211d,
+    0 0 0 calc(var(--u) * 2) color-mix(in srgb, var(--body-b), #000 14%),
+    0 0 0 calc(var(--u) * 2.2) rgba(255, 255, 255, 0.35);
+}
+
+.scene[data-device='crt'] .deco-badge {
+  opacity: 1;
+  left: calc(var(--u) * 10);
+  bottom: calc(var(--u) * 4.4);
+  padding: calc(var(--u) * 0.5) calc(var(--u) * 1.2);
+  border-radius: calc(var(--u) * 0.5);
+  background: linear-gradient(180deg, #5c574c, #3d3a33);
+  color: #ddd5bf;
+  font: 700 calc(var(--u) * 1.4) / 1 var(--font-ui);
+  letter-spacing: 0.24em;
+}
+
+.scene[data-device='crt'] .deco-badge::after {
+  content: 'VGA';
+}
+
+.scene[data-era='win95'] .deco-badge::after,
+.scene[data-era='win98'] .deco-badge::after {
+  content: 'SVGA 15';
+}
+
+.scene[data-device='crt'] .deco-led,
+.scene[data-device='flat'] .deco-led {
+  opacity: 1;
+  right: calc(var(--u) * 10);
+  bottom: calc(var(--u) * 5);
+  width: calc(var(--u) * 1.3);
+  height: calc(var(--u) * 1.3);
+  border-radius: 50%;
+  background: #4ee36b;
+  box-shadow: 0 0 calc(var(--u) * 1) #4ee36b, inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.jumping .scene .deco-led {
+  background: #f5a524;
+  box-shadow: 0 0 calc(var(--u) * 1) #f5a524;
+  animation: led-blink 0.4s steps(2) infinite;
+}
+
+@keyframes led-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.scene[data-device='crt'] .deco-knobs {
+  opacity: 1;
+  right: calc(var(--u) * 14);
+  bottom: calc(var(--u) * 4.4);
+  display: flex;
+  gap: calc(var(--u) * 1.2);
+}
+
+.deco-knobs b {
+  display: block;
+  width: calc(var(--u) * 2.2);
+  height: calc(var(--u) * 2.2);
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #f3efe4, #b4ab94 70%);
+  box-shadow: 0 calc(var(--u) * 0.2) calc(var(--u) * 0.4) rgba(0, 0, 0, 0.35);
+}
+
+.scene[data-device='crt'] .deco-vents {
+  opacity: 1;
+  left: 30%;
+  right: 30%;
+  bottom: calc(var(--u) * 1.6);
+  height: calc(var(--u) * 1.2);
+  background: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.16) 0 calc(var(--u) * 0.5), transparent calc(var(--u) * 0.5) calc(var(--u) * 1.4));
+  border-radius: calc(var(--u) * 0.6);
+}
+
+/* Pied du moniteur et de l'écran plat */
+.dev-stand {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dev-stand i {
+  position: absolute;
+  display: block;
+}
+
+.scene[data-device='crt'] .dev-stand {
+  opacity: 1;
+}
+
+.scene[data-device='crt'] .stand-neck {
+  left: 18%;
+  right: 18%;
+  top: 0;
+  height: 60%;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--body-b), #000 25%), var(--body-b));
+  clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+}
+
+.scene[data-device='crt'] .stand-foot {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 45%;
+  border-radius: calc(var(--u) * 1.2) calc(var(--u) * 1.2) calc(var(--u) * 0.6) calc(var(--u) * 0.6);
+  background: linear-gradient(180deg, var(--body-a), var(--body-b));
+  box-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 2) rgba(0, 0, 0, 0.5);
+}
+
+/* Écran plat (Windows XP, Ubuntu) */
+.scene[data-device='flat'] {
+  --body-a: #d9dce1;
+  --body-b: #a9aeb6;
+}
+
+.scene[data-era='ubuntu'] {
+  --body-a: #2b2b2e;
+  --body-b: #111113;
+}
+
+.scene[data-device='flat'] .dev-body {
+  border-radius: calc(var(--u) * 1.2);
+  background-color: var(--body-b);
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45), transparent 3%),
+    linear-gradient(180deg, var(--body-a), var(--body-b));
+  box-shadow:
+    0 calc(var(--u) * 2.5) calc(var(--u) * 6) calc(var(--u) * -1) rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.scene[data-era='ubuntu'] .dev-body {
+  background-image:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.16), transparent 30%),
+    linear-gradient(180deg, var(--body-a), var(--body-b));
+}
+
+.scene[data-device='flat'] .glass {
+  border-radius: calc(var(--u) * 0.25);
+  box-shadow: 0 0 0 calc(var(--u) * 0.35) #1b1c1f;
+}
+
+.scene[data-device='flat'] .deco-led {
+  right: calc(var(--u) * 3.4);
+  bottom: calc(var(--u) * 2);
+  width: calc(var(--u) * 0.9);
+  height: calc(var(--u) * 0.9);
+  background: #58a6ff;
+  box-shadow: 0 0 calc(var(--u) * 1.2) #58a6ff;
+}
+
+.scene[data-device='flat'] .deco-badge {
+  opacity: 0.7;
+  left: 50%;
+  bottom: calc(var(--u) * 2);
+  transform: translateX(-50%);
+  color: color-mix(in srgb, var(--body-b), #000 35%);
+  font: 700 calc(var(--u) * 1.2) / 1 var(--font-ui);
+  letter-spacing: 0.4em;
+}
+
+.scene[data-era='ubuntu'] .deco-badge {
+  color: #4a4a50;
+}
+
+.scene[data-device='flat'] .deco-badge::after {
+  content: 'LCD 17';
+}
+
+.scene[data-device='flat'] .dev-stand {
+  opacity: 1;
+}
+
+.scene[data-device='flat'] .stand-neck {
+  left: 38%;
+  right: 38%;
+  top: 0;
+  height: 75%;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--body-b), #000 20%), var(--body-a) 45%, var(--body-b));
+}
+
+.scene[data-device='flat'] .stand-foot {
+  left: 6%;
+  right: 6%;
+  bottom: 0;
+  height: 28%;
+  border-radius: 50% / 100% 100% 30% 30%;
+  background: linear-gradient(180deg, var(--body-a), var(--body-b));
+  box-shadow: 0 calc(var(--u) * 1) calc(var(--u) * 2.4) rgba(0, 0, 0, 0.4);
+}
+
+/* Smartphone (2007) : verre noir, cerclage métallique, bouton unique */
+/* Un pincement sur le boîtier ne zoome pas toute la page */
+.scene[data-device='phone'] .dev-body {
+  touch-action: none;
+}
+
+.scene[data-device='phone'] .dev-body {
+  border-radius: calc(var(--u) * 21);
+  background-color: #0b0b0d;
+  background-image:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.14), transparent 38%),
+    radial-gradient(ellipse at 50% 0%, #222226, #0b0b0d 60%);
+  box-shadow:
+    0 0 0 calc(var(--u) * 1.3) #c6c9ce,
+    0 0 0 calc(var(--u) * 1.6) #8a8d93,
+    0 calc(var(--u) * 6) calc(var(--u) * 14) calc(var(--u) * -2) rgba(0, 0, 0, 0.8);
+}
+
+.scene[data-device='phone'] .deco-speaker {
+  opacity: 1;
+  left: 50%;
+  top: calc(var(--u) * 17);
+  width: calc(var(--u) * 17);
+  height: calc(var(--u) * 2.4);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #2a2a2e;
+  box-shadow: inset 0 calc(var(--u) * 0.4) calc(var(--u) * 0.6) #000;
+}
+
+.scene[data-device='phone'] .glass {
+  border-radius: calc(var(--u) * 0.5);
+  box-shadow: 0 0 0 calc(var(--u) * 0.6) #000;
+}
+
+.dev-home {
+  z-index: 2;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 30%, #2a2a2e, #0d0d0f 70%);
+  box-shadow: inset 0 calc(var(--u) * 0.3) calc(var(--u) * 0.8) rgba(0, 0, 0, 0.9), 0 0 0 1px #2c2c30;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dev-home::after {
+  content: '';
+  position: absolute;
+  inset: 32%;
+  border: max(1px, calc(var(--u) * 0.45)) solid rgba(255, 255, 255, 0.5);
+  border-radius: 22%;
+}
+
+.dev-home:active {
+  background: #1a1a1d;
+}
+
+.scene[data-device='phone'] .dev-home {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Macintosh compact (1984, salle annexe) : boîtier beige tout-en-un, fente de disquette */
+.scene[data-device='mac'] .dev-body {
+  border-radius: calc(var(--u) * 3.4) calc(var(--u) * 3.4) calc(var(--u) * 2.2) calc(var(--u) * 2.2);
+  background-color: #ddd5c0;
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 3%),
+    linear-gradient(180deg, transparent 72%, rgba(0, 0, 0, 0.05) 72.3%, transparent 72.6%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.06), transparent 6%, transparent 94%, rgba(0, 0, 0, 0.08)),
+    linear-gradient(180deg, #e6dfcc, #d6cdb6 85%, #c7bda3);
+  box-shadow:
+    0 calc(var(--u) * 3) calc(var(--u) * 7) calc(var(--u) * -1) rgba(0, 0, 0, 0.6),
+    inset 0 calc(var(--u) * -0.8) calc(var(--u) * 1.4) rgba(0, 0, 0, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+.scene[data-device='mac'] .glass {
+  border-radius: calc(var(--u) * 2.4);
+  box-shadow:
+    0 0 0 calc(var(--u) * 1.6) #1d1c19,
+    0 0 0 calc(var(--u) * 4.2) #cfc6af,
+    0 0 0 calc(var(--u) * 4.4) rgba(0, 0, 0, 0.12),
+    inset 0 0 calc(var(--u) * 3) rgba(0, 0, 0, 0.5);
+}
+
+.scene[data-device='mac'] .deco-slot {
+  opacity: 1;
+  right: 13%;
+  top: calc(var(--gb) + var(--bb) * 0.2);
+  width: 34%;
+  height: calc(var(--u) * 1.5);
+  border-radius: calc(var(--u) * 0.8);
+  background: linear-gradient(180deg, #2a2723, #4b463d);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 calc(var(--u) * 0.3) calc(var(--u) * 0.4) #000;
+}
+
+.scene[data-device='mac'] .deco-vents {
+  opacity: 1;
+  left: 10%;
+  bottom: 10%;
+  width: 26%;
+  height: calc(var(--u) * 6);
+  background: repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.13) 0 calc(var(--u) * 0.45), transparent calc(var(--u) * 0.45) calc(var(--u) * 1.2));
+}
+
+.scene[data-device='mac'] .deco-badge {
+  opacity: 1;
+  left: 10%;
+  top: calc(var(--gb) + var(--bb) * 0.2);
+  color: #9a917b;
+  font: 700 calc(var(--u) * 1.6) / 1 var(--font-ui);
+  letter-spacing: 0.2em;
+}
+
+.scene[data-device='mac'] .deco-badge::after {
+  content: 'ORDINATEUR PERSONNEL';
+}
+
+.scene[data-device='mac'] .dev-stand {
+  opacity: 1;
+}
+
+.scene[data-device='mac'] .stand-foot {
+  left: 4%;
+  right: 4%;
+  bottom: 0;
+  height: 100%;
+  border-radius: 0 0 calc(var(--u) * 1.4) calc(var(--u) * 1.4);
+  background: linear-gradient(180deg, #a99f86, #c9bfa6);
+}
+
+.scene[data-device='mac'] .glass-fx {
+  z-index: 2;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse 70% 60% at 30% 18%, rgba(255, 255, 255, 0.06), transparent 60%),
+    radial-gradient(ellipse at 50% 50%, transparent 66%, rgba(0, 0, 0, 0.25) 100%);
+  box-shadow: inset 0 0 calc(var(--u) * 2.5) rgba(0, 0, 0, 0.55);
+}
+
+body[data-era='mac'] {
+  --page-bg: #1f1d1a;
+}
+
+.scene[data-era='mac'] {
+  --desk-a: #6a5846;
+  --desk-b: #362b20;
+}
+
+.scene[data-device='mac'] .desk {
+  opacity: 1;
+}
+
+/* 2026 : plus de cadre du tout */
+.scene[data-device='none'] .glass {
+  border-radius: 0;
+  background: transparent;
+}
+
+/* ——— Verre et écran ——— */
+
+.glass {
+  z-index: 1;
+  overflow: hidden;
+  background: #050505;
+  container-type: size;
+}
+
+.screen-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+}
+
+.screen {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  transform-origin: 0 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.screen-agent {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.glass-fx,
+.glass-power {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.glass-power {
+  opacity: 0;
+}
+
+/* ——— Accessoires d'époque ——— */
+
+.props {
+  pointer-events: none;
+}
+
+.props > * {
+  pointer-events: auto;
+}
+
+.props-bezel {
+  z-index: 3;
+}
+
+.props-side {
+  z-index: 2;
+}
+
+.props-side.enter > * {
+  animation: prop-in 0.9s var(--ease) both;
+}
+
+@keyframes prop-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.jumping .props > * {
+  opacity: 0;
+  transition: opacity 0.3s;
+}

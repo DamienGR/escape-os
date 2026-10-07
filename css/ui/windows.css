@@ -1,0 +1,492 @@
+/* Gestionnaire de fenêtres partagé : structure commune, puis thèmes Windows 3.1
+   et Windows 95/98. Les biseaux sont des box-shadow inset, comme à l'époque :
+   clair en haut à gauche, sombre en bas à droite. XP et Ubuntu ont leur thème
+   dans leur feuille d'époque. */
+
+.wm-desktop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.wm-win {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  min-width: 80px;
+  outline: none;
+}
+
+.wm-win.is-min {
+  display: none;
+}
+
+.wm-titlebar {
+  display: flex;
+  align-items: center;
+  flex: none;
+  user-select: none;
+  outline: none;
+}
+
+.wm-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wm-ctrls {
+  display: flex;
+  flex: none;
+}
+
+.wm-btn {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  cursor: default;
+}
+
+.wm-btn .px {
+  display: block;
+}
+
+.wm-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.wm-icon .px {
+  width: 16px;
+  height: 16px;
+}
+
+.wm-menubar {
+  display: flex;
+  flex: none;
+  user-select: none;
+}
+
+.wm-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.wm-status {
+  flex: none;
+}
+
+.wm-outline {
+  position: absolute;
+  z-index: 9999;
+  border: 3px solid #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+}
+
+.wm-blocker {
+  position: absolute;
+  inset: 0;
+}
+
+.wm-shake {
+  animation: wm-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes wm-shake {
+  10%,
+  90% {
+    translate: -2px 0;
+  }
+  20%,
+  80% {
+    translate: 4px 1px;
+  }
+  30%,
+  50%,
+  70% {
+    translate: -7px -1px;
+  }
+  40%,
+  60% {
+    translate: 7px 1px;
+  }
+}
+
+.wm-flash .wm-titlebar {
+  animation: wm-flash 0.36s steps(2) 2;
+}
+
+@keyframes wm-flash {
+  50% {
+    filter: invert(1);
+  }
+}
+
+.wm-desk-icon {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 72px;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  cursor: default;
+  outline: none;
+}
+
+.wm-desk-img {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+}
+
+.wm-desk-img .px {
+  width: 32px;
+  height: 32px;
+}
+
+.wm-desk-label {
+  max-width: 72px;
+  margin-top: 3px;
+  padding: 0 2px;
+  line-height: 13px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.wm-sysmenu {
+  position: absolute;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  padding: 2px 0;
+  background: #fff;
+  border: 1px solid #000;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6);
+  font: 12px var(--font-win);
+}
+
+.wm-sysmenu button {
+  padding: 2px 12px 2px 18px;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  white-space: pre;
+}
+
+.wm-sysmenu button:hover:not(:disabled) {
+  background: #000080;
+  color: #fff;
+}
+
+.wm-sysmenu button:disabled {
+  color: #808080;
+}
+
+.wm-sysmenu hr {
+  width: 100%;
+  margin: 2px 0;
+  border: 0;
+  border-top: 1px solid #000;
+}
+
+.wm-msg {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px 16px 8px;
+}
+
+.wm-msg-icon .px {
+  width: 32px;
+  height: 32px;
+}
+
+.wm-msg-text {
+  margin: 4px 0 0;
+  line-height: 1.35;
+}
+
+.wm-msg-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px 14px;
+}
+
+.wm-push {
+  min-width: 72px;
+  height: 23px;
+  padding: 0 10px;
+  font: inherit;
+  cursor: default;
+}
+
+/* ————————————————————— Windows 3.1 ————————————————————— */
+
+.wm-theme-win31 {
+  font: 12px / 1.2 var(--font-win);
+  color: #000;
+}
+
+.wm-theme-win31 .wm-win {
+  padding: 4px;
+  border: 1px solid #000;
+  background: #c0c0c0;
+  box-shadow: inset 0 0 0 3px #c0c0c0, inset 0 0 0 4px #000;
+}
+
+/* Petites encoches de redimensionnement aux coins du cadre */
+.wm-theme-win31 .wm-win::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  background:
+    linear-gradient(#000, #000) 21px 0 / 1px 5px no-repeat,
+    linear-gradient(#000, #000) calc(100% - 21px) 0 / 1px 5px no-repeat,
+    linear-gradient(#000, #000) 21px 100% / 1px 5px no-repeat,
+    linear-gradient(#000, #000) calc(100% - 21px) 100% / 1px 5px no-repeat,
+    linear-gradient(#000, #000) 0 21px / 5px 1px no-repeat,
+    linear-gradient(#000, #000) 100% 21px / 5px 1px no-repeat,
+    linear-gradient(#000, #000) 0 calc(100% - 21px) / 5px 1px no-repeat,
+    linear-gradient(#000, #000) 100% calc(100% - 21px) / 5px 1px no-repeat;
+}
+
+.wm-theme-win31 .wm-titlebar {
+  height: 19px;
+  border-bottom: 1px solid #000;
+  background: #fff;
+  color: #000;
+}
+
+.wm-theme-win31 .wm-win.is-active > .wm-titlebar {
+  background: #000080;
+  color: #fff;
+}
+
+.wm-theme-win31 .wm-title {
+  padding: 0 4px;
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+}
+
+.wm-theme-win31 .wm-btn {
+  width: 18px;
+  height: 18px;
+  background: #c0c0c0;
+  box-shadow: inset -1px -1px #808080, inset -2px -2px #808080, inset 1px 1px #fff, inset 2px 2px #fff;
+}
+
+.wm-theme-win31 .wm-btn:active {
+  box-shadow: inset 1px 1px #808080, inset 2px 2px #808080;
+}
+
+.wm-theme-win31 .wm-sys {
+  border-right: 1px solid #000;
+  box-shadow: none;
+}
+
+.wm-theme-win31 .wm-sys:active {
+  box-shadow: none;
+  background: #808080;
+}
+
+.wm-theme-win31 .wm-ctrls .wm-btn {
+  border-left: 1px solid #000;
+}
+
+.wm-theme-win31 .wm-menubar {
+  height: 19px;
+  align-items: center;
+  border-bottom: 1px solid #000;
+  background: #fff;
+  font-size: 12px;
+}
+
+.wm-theme-win31 .wm-menu-item {
+  padding: 0 7px;
+}
+
+.wm-theme-win31 .wm-body {
+  background: #fff;
+}
+
+.wm-theme-win31 .wm-desk-label {
+  color: #000;
+  font-size: 11px;
+}
+
+.wm-theme-win31 .wm-desk-icon.selected .wm-desk-label,
+.wm-theme-win31 .wm-desk-icon:focus-visible .wm-desk-label {
+  background: #000080;
+  color: #fff;
+}
+
+.wm-theme-win31 .wm-dialog .wm-body {
+  background: #fff;
+}
+
+.wm-theme-win31 .wm-push {
+  border: 1px solid #000;
+  border-radius: 3px;
+  background: #c0c0c0;
+  box-shadow: inset -1px -1px #808080, inset -2px -2px #808080, inset 1px 1px #fff, inset 2px 2px #fff;
+}
+
+.wm-theme-win31 .wm-push.is-default {
+  border-width: 2px;
+}
+
+.wm-theme-win31 .wm-push:active {
+  box-shadow: inset 1px 1px #808080;
+}
+
+/* ————————————————————— Windows 95 / 98 ————————————————————— */
+
+.wm-theme-win9x {
+  font: 11px / 1.25 var(--font-win);
+  color: #000;
+}
+
+.wm-theme-win9x .wm-win {
+  padding: 3px;
+  background: #c0c0c0;
+  box-shadow: inset -1px -1px #000, inset 1px 1px #dfdfdf, inset -2px -2px #808080, inset 2px 2px #fff;
+}
+
+.wm-theme-win9x .wm-titlebar {
+  gap: 3px;
+  height: 18px;
+  padding: 0 2px 0 3px;
+  background: #808080;
+  color: #c0c0c0;
+  font-weight: 700;
+}
+
+.wm-theme-win9x .wm-win.is-active > .wm-titlebar {
+  background: #000080;
+  color: #fff;
+}
+
+.wm-variant-98 .wm-titlebar {
+  background: linear-gradient(90deg, #808080, #b5b5b5);
+}
+
+.wm-variant-98 .wm-win.is-active > .wm-titlebar {
+  background: linear-gradient(90deg, #000080, #1084d0);
+}
+
+.wm-theme-win9x .wm-ctrls {
+  gap: 0;
+}
+
+.wm-theme-win9x .wm-btn {
+  width: 16px;
+  height: 14px;
+  background: #c0c0c0;
+  box-shadow: inset -1px -1px #000, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+
+.wm-theme-win9x .wm-btn:active {
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #000, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+}
+
+.wm-theme-win9x .wm-btn:active .px {
+  translate: 1px 1px;
+}
+
+.wm-theme-win9x .wm-close {
+  margin-left: 2px;
+}
+
+.wm-theme-win9x .wm-menubar {
+  height: 19px;
+  align-items: center;
+  padding: 0 2px;
+}
+
+.wm-theme-win9x .wm-menu-item {
+  padding: 1px 6px;
+}
+
+.wm-theme-win9x .wm-menu-item:hover {
+  box-shadow: inset -1px -1px #808080, inset 1px 1px #fff;
+}
+
+.wm-theme-win9x .wm-status {
+  height: 20px;
+  margin-top: 2px;
+  padding: 3px 4px 0;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080;
+  font-size: 11px;
+}
+
+.wm-theme-win9x .wm-desk-label {
+  color: #fff;
+  font-size: 11px;
+}
+
+.wm-theme-win9x .wm-desk-icon.selected .wm-desk-img .px {
+  filter: brightness(0.55) sepia(1) hue-rotate(185deg) saturate(5);
+}
+
+.wm-theme-win9x .wm-desk-icon.selected .wm-desk-label,
+.wm-theme-win9x .wm-desk-icon:focus-visible .wm-desk-label {
+  background: #000080;
+  outline: 1px dotted #ffff7f;
+}
+
+.wm-theme-win9x .wm-push {
+  border: 0;
+  background: #c0c0c0;
+  box-shadow: inset -1px -1px #000, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+
+.wm-theme-win9x .wm-push.is-default {
+  outline: 1px solid #000;
+  outline-offset: -1px;
+}
+
+.wm-theme-win9x .wm-push:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -4px;
+}
+
+.wm-theme-win9x .wm-push:active {
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #000, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+}
+
+/* Champ de saisie et cadre creusé façon 9x, réutilisables */
+.win9x-field {
+  background: #fff;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #000;
+}
+
+.win9x-raised {
+  background: #c0c0c0;
+  box-shadow: inset -1px -1px #000, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+
+.win9x-sunken {
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wm-shake,
+  .wm-flash .wm-titlebar {
+    animation: none;
+  }
+}

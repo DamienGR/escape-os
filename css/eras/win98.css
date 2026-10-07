@@ -1,0 +1,1814 @@
+/* Écran 5 — Windows 98 : la coquille 9x de Windows 95 (importée), avec ses
+   barres de titre en dégradé, la barre de lancement rapide, les menus qui
+   glissent, la connexion par modem et le navigateur Web. Autour de l'écran :
+   l'unité centrale de 1998, le téléphone fixe et le CD d'abonnement. */
+
+@import url('win95.css');
+
+/* ——— Variante 98 de la coquille ——— */
+
+.w9x-98 .w9x-banner {
+  background: linear-gradient(0deg, #000080, #1084d0);
+}
+
+.w9x-98 .w9x-banner span {
+  color: #fff;
+  font-family: Arial, 'Liberation Sans', var(--font-win);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.w9x-98 .w9x-banner b {
+  color: #fff;
+  font-weight: 900;
+}
+
+/* Les menus de 98 glissent en s'ouvrant */
+.w9x-98 .w9x-menu.slide-up {
+  animation: w98-slide-up 0.16s ease-out;
+}
+
+.w9x-98 .w9x-menu.slide-down {
+  animation: w98-slide-down 0.16s ease-out;
+}
+
+.w9x-98 .w9x-menu.slide-right {
+  animation: w98-slide-right 0.16s ease-out;
+}
+
+.w9x-98 .w9x-menu.slide-left {
+  animation: w98-slide-left 0.16s ease-out;
+}
+
+@keyframes w98-slide-up {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes w98-slide-down {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes w98-slide-right {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+@keyframes w98-slide-left {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+/* Ciel de 98 : plus vif, éclairé par la droite */
+.w9x-sky-98 {
+  background:
+    radial-gradient(ellipse 60% 50% at 82% 12%, rgba(255, 250, 220, 0.45), transparent 70%),
+    linear-gradient(180deg, #0b3d9e 0%, #1f68cf 34%, #4f98e8 66%, #9dd0f7 100%);
+}
+
+.w9x-sky-98 .w9x-cloud.k2 {
+  left: 330px;
+  top: 30px;
+  transform: scale(1.3);
+}
+
+.w9x-sky-98 .w9x-cloud.k3 {
+  left: 60px;
+  top: 250px;
+}
+
+.w9x-sky-98 .w9x-logo-ver {
+  background: linear-gradient(180deg, #ffffff 10%, #bfe6ff 55%, #59b4ff 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.w9x-sky-98 .w9x-splash-bar {
+  background: linear-gradient(90deg, #0d2e8c, #2b74e0, #7cc8ff, #f2fbff, #ffe9a8, #f2fbff, #7cc8ff, #2b74e0, #0d2e8c) 0 0 / 360px 100% repeat-x;
+}
+
+/* ——— Lancement rapide ——— */
+
+.w9x-quick {
+  display: flex;
+  flex: none;
+  align-items: center;
+  height: 22px;
+}
+
+.w9x-grip {
+  display: block;
+  width: 3px;
+  height: 20px;
+  margin: 0 3px 0 2px;
+  box-shadow: inset 1px 1px #fff, inset -1px -1px #808080;
+}
+
+.w9x-quick-btns {
+  display: flex;
+  gap: 1px;
+}
+
+.w9x-quick-btn {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  background: none;
+  outline: none;
+}
+
+.w9x-quick-btn .px {
+  width: 16px;
+  height: 16px;
+}
+
+.w9x-quick-btn:hover,
+.w9x-quick-btn:focus-visible {
+  box-shadow: inset -1px -1px #808080, inset 1px 1px #fff;
+}
+
+.w9x-quick-btn:active {
+  box-shadow: inset 1px 1px #808080, inset -1px -1px #fff;
+}
+
+.w9x-quick-btn:active .px {
+  translate: 1px 1px;
+}
+
+/* Modem dans la zone de notification : deux petits écrans qui clignotent */
+.w98-modem {
+  position: relative;
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.w98-modem i {
+  position: absolute;
+  width: 5px;
+  height: 4px;
+  background: #00ff00;
+  opacity: 0;
+  animation: w98-blink 0.9s steps(1) infinite;
+}
+
+.w98-modem i:first-of-type {
+  left: 2px;
+  top: 3px;
+}
+
+.w98-modem i:last-of-type {
+  left: 8px;
+  top: 8px;
+  width: 6px;
+  animation-duration: 0.7s;
+  animation-delay: 0.25s;
+}
+
+@keyframes w98-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  46%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ——— Bienvenue dans Windows 98 ——— */
+
+.w98-welcome > .wm-body {
+  padding: 0 0 12px;
+}
+
+.w98-welcome-head {
+  padding: 14px 16px 12px;
+  background:
+    radial-gradient(ellipse 50% 120% at 90% 0%, rgba(120, 190, 255, 0.45), transparent 70%),
+    linear-gradient(90deg, #000040, #0a2e8a 55%, #2a6fd0);
+  color: #fff;
+  font: 300 22px / 1 Arial, 'Liberation Sans', var(--font-win);
+}
+
+.w98-welcome-head span {
+  color: #bcd8ff;
+  font-size: 15px;
+}
+
+.w98-welcome-head b {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.w98-welcome-main {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 0;
+  margin: 12px 12px 0;
+  min-height: 140px;
+  background: #fff;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #000;
+}
+
+.w98-welcome-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 6px;
+  background: linear-gradient(180deg, #e7efff, #c6d8f7);
+  box-shadow: inset -1px 0 #9ab3dd;
+}
+
+.w98-welcome-nav button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px;
+  border: 0;
+  background: none;
+  color: #000080;
+  font: 700 11px var(--font-win);
+  text-align: left;
+  outline: none;
+}
+
+.w98-welcome-nav button:hover span,
+.w98-welcome-nav button:focus-visible span {
+  color: #0000ff;
+  text-decoration: underline;
+}
+
+.w98-welcome-nav .px {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.w98-welcome-text {
+  padding: 12px 14px;
+  line-height: 1.45;
+}
+
+.w98-welcome-text h3 {
+  margin: 0 0 8px;
+  color: #000080;
+  font: 700 14px Arial, 'Liberation Sans', var(--font-win);
+}
+
+.w98-welcome-text p {
+  margin: 0 0 8px;
+  font-size: 12px;
+}
+
+.w98-welcome .w95-welcome-foot {
+  margin: 12px 12px 0;
+}
+
+/* ——— Accès réseau à distance ——— */
+
+.w98-dun-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+  box-shadow: 0 1px #808080, 0 2px #fff;
+  font-size: 13px;
+}
+
+.w98-dun-head .px,
+.w98-netstat-body > .px,
+.w98-newhw-row .px {
+  flex: none;
+  width: 32px;
+  height: 32px;
+}
+
+.w98-dun .w9x-field-row > span:first-child {
+  min-width: 112px;
+}
+
+.w98-dun .w9x-check {
+  margin: 0;
+}
+
+.w98-dial-anim {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+
+.w98-dial-anim > .px {
+  width: 32px;
+  height: 32px;
+}
+
+.w98-dial-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.w98-dial-dots i {
+  width: 6px;
+  height: 6px;
+  background: #808080;
+  box-shadow: inset 1px 1px #000;
+  animation: w98-dot 1.2s steps(1) infinite;
+}
+
+.w98-dial-dots i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.w98-dial-dots i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.w98-dial-dots i:nth-child(4) {
+  animation-delay: 0.6s;
+}
+
+.w98-dial-dots i:nth-child(5) {
+  animation-delay: 0.8s;
+}
+
+@keyframes w98-dot {
+  0%,
+  30% {
+    background: #00ff00;
+  }
+}
+
+.w98-dialing.is-connected .w98-dial-dots i {
+  background: #00ff00;
+  animation: none;
+}
+
+.w98-dial-status {
+  min-height: 28px;
+  margin: 0;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.w98-netstat-body,
+.w98-newhw-row {
+  display: flex;
+  gap: 14px;
+}
+
+.w98-netstat-body dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 0;
+}
+
+.w98-netstat-body dt {
+  color: #404040;
+}
+
+.w98-netstat-body dd {
+  margin: 0;
+}
+
+.w98-newhw-row p {
+  margin: 0 0 6px;
+}
+
+.w98-newhw .w9x-meter {
+  margin-top: 6px;
+}
+
+/* ——— Navigateur Web ——— */
+
+.w98-browser > .wm-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.w98-coolbar {
+  display: flex;
+  flex: none;
+  align-items: stretch;
+  gap: 4px;
+  padding: 2px 2px 2px 4px;
+  box-shadow: inset 0 1px #fff, inset 0 -1px #808080;
+}
+
+.w98-toolbar {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0;
+}
+
+.w98-tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  min-width: 50px;
+  height: 40px;
+  padding: 2px 3px 1px;
+  border: 0;
+  background: none;
+  color: #000;
+  font: 11px var(--font-win);
+  outline: none;
+}
+
+.w98-tool .px {
+  width: 20px;
+  height: 20px;
+}
+
+.w98-tool:hover:not(:disabled),
+.w98-tool:focus-visible {
+  box-shadow: inset -1px -1px #808080, inset 1px 1px #fff;
+}
+
+.w98-tool:active:not(:disabled) {
+  box-shadow: inset 1px 1px #808080, inset -1px -1px #fff;
+}
+
+.w98-tool:active:not(:disabled) > * {
+  translate: 1px 1px;
+}
+
+.w98-tool:disabled {
+  color: #808080;
+  text-shadow: 1px 1px #fff;
+}
+
+.w98-tool:disabled .px {
+  filter: grayscale(1) contrast(0.4) brightness(1.25);
+  opacity: 0.75;
+}
+
+.w98-sep {
+  display: block;
+  width: 2px;
+  height: 34px;
+  margin: 0 3px;
+  box-shadow: inset 1px 0 #808080, inset -1px 0 #fff;
+}
+
+/* Le globe qui tourne pendant les chargements */
+.w98-throbber {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  background: #000;
+  box-shadow: inset 1px 1px #808080, inset -1px -1px #fff;
+}
+
+.w98-throbber i {
+  display: block;
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 256px 32px;
+  image-rendering: pixelated;
+}
+
+.w98-throbber.is-loading i {
+  animation: w98-spin 0.8s steps(8) infinite;
+}
+
+@keyframes w98-spin {
+  to {
+    background-position: -256px 0;
+  }
+}
+
+.w98-addressbar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  padding: 3px 4px 4px;
+  box-shadow: inset 0 1px #fff, inset 0 -1px #808080;
+}
+
+.w98-addressbar label {
+  flex: none;
+  color: #000;
+}
+
+.w98-address {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 3px;
+  height: 22px;
+  padding: 2px 20px 2px 4px;
+}
+
+.w98-address-icon .px {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+/* 16 px pour que le téléphone ne zoome pas, ramenés à 11 px à l'affichage */
+.w98-address input {
+  flex: 1;
+  min-width: 0;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #000;
+  font: 11px var(--font-win);
+  outline: none;
+}
+
+@media (pointer: coarse) {
+  .w98-address input {
+    width: 145%;
+    height: 23px;
+    margin-right: -45%;
+    font-size: 16px;
+    transform: scale(0.6875);
+    transform-origin: 0 50%;
+  }
+}
+
+.w98-address input::selection {
+  background: #000080;
+  color: #fff;
+}
+
+.w98-address > i {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 16px;
+  height: 18px;
+  background:
+    linear-gradient(#000, #000) 50% 55% / 7px 1px no-repeat,
+    linear-gradient(#000, #000) 50% calc(55% + 1px) / 5px 1px no-repeat,
+    linear-gradient(#000, #000) 50% calc(55% + 2px) / 3px 1px no-repeat,
+    linear-gradient(#000, #000) 50% calc(55% + 3px) / 1px 1px no-repeat,
+    #c0c0c0;
+  box-shadow: inset -1px -1px #000, inset 1px 1px #dfdfdf, inset -2px -2px #808080, inset 2px 2px #fff;
+}
+
+.w98-go {
+  flex: none;
+  min-width: 36px;
+  height: 22px;
+  padding: 0 6px;
+  border: 0;
+  background: #c0c0c0;
+  box-shadow: inset -1px -1px #000, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  color: #000;
+  font: 11px var(--font-win);
+}
+
+.w98-go:active {
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #000, inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+}
+
+.w98-links {
+  flex: none;
+  padding: 0 4px;
+  box-shadow: inset 1px 0 #808080, inset 2px 0 #fff;
+}
+
+.w98-view {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin: 0 1px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: #fff;
+  box-shadow: inset 1px 1px #808080, inset -1px -1px #fff, inset 2px 2px #000, inset -2px -2px #dfdfdf;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Barres de défilement de l'époque (Chromium, Safari) */
+.w98-view::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.w98-view::-webkit-scrollbar-track {
+  background: repeating-conic-gradient(#fff 0 25%, #c0c0c0 0 50%) 0 0 / 2px 2px;
+}
+
+.w98-view::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  box-shadow: inset -1px -1px #000, inset 1px 1px #dfdfdf, inset -2px -2px #808080, inset 2px 2px #fff;
+}
+
+.w98-view::-webkit-scrollbar-button:single-button {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background-color: #c0c0c0;
+  box-shadow: inset -1px -1px #000, inset 1px 1px #dfdfdf, inset -2px -2px #808080, inset 2px 2px #fff;
+}
+
+.w98-view::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background-image:
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000);
+  background-size: 1px 1px, 3px 1px, 5px 1px, 7px 1px;
+  background-position: 7px 6px, 6px 7px, 5px 8px, 4px 9px;
+  background-repeat: no-repeat;
+}
+
+.w98-view::-webkit-scrollbar-button:single-button:vertical:increment {
+  background-image:
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000),
+    linear-gradient(#000, #000);
+  background-size: 7px 1px, 5px 1px, 3px 1px, 1px 1px;
+  background-position: 4px 6px, 5px 7px, 6px 8px, 7px 9px;
+  background-repeat: no-repeat;
+}
+
+.w98-view {
+  scrollbar-color: #c0c0c0 #dfdfdf;
+}
+
+.w98-page {
+  min-height: 100%;
+}
+
+.w98-page a {
+  color: #0000ee;
+  cursor: var(--cur-hand, pointer);
+}
+
+.w98-blank {
+  height: 100%;
+}
+
+.w98-statusbar {
+  display: flex;
+  flex: none;
+  gap: 2px;
+  height: 20px;
+  margin-top: 2px;
+}
+
+.w98-statusbar > span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 0 4px;
+  box-shadow: inset 1px 1px #808080, inset -1px -1px #fff;
+  white-space: nowrap;
+}
+
+.w98-status-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.w98-status-progress {
+  width: 104px;
+  padding: 3px !important;
+}
+
+.w98-status-progress i {
+  display: none;
+  height: 100%;
+  background: repeating-linear-gradient(90deg, #000080 0 7px, transparent 7px 9px);
+  transition: width 0.25s steps(4);
+}
+
+.w98-status-progress.is-on i {
+  display: block;
+}
+
+.w98-status-zone {
+  width: 120px;
+}
+
+.w98-status-zone .px {
+  width: 16px;
+  height: 16px;
+}
+
+/* Pages d'erreur du navigateur */
+.w98-err {
+  max-width: 520px;
+  padding: 14px 20px 20px;
+  color: #000;
+  font: 12px / 1.45 Verdana, Tahoma, 'DejaVu Sans', var(--font-win);
+}
+
+.w98-err-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.w98-err-head .px {
+  flex: none;
+  width: 32px;
+  height: 32px;
+}
+
+.w98-err h1 {
+  margin: 0;
+  font: 700 18px Verdana, Tahoma, 'DejaVu Sans', var(--font-win);
+}
+
+.w98-err p {
+  margin: 0 0 8px;
+}
+
+.w98-err hr {
+  margin: 10px 0;
+  border: 0;
+  border-top: 1px solid #c0c0c0;
+}
+
+.w98-err ul {
+  margin: 0 0 10px;
+  padding-left: 22px;
+}
+
+.w98-err li {
+  margin: 0 0 4px;
+}
+
+.w98-err-note {
+  display: block;
+  margin-top: 10px;
+  padding: 6px 10px;
+  border: 1px solid #c0a000;
+  background: #ffffe1;
+}
+
+.w98-err-code {
+  margin-top: 16px !important;
+  color: #808080;
+  font-size: 11px;
+}
+
+/* ——— La page perso de 1998 ——— */
+
+.st98 {
+  position: relative;
+  isolation: isolate;
+  min-height: 100%;
+  padding: 10px 14px 18px;
+  background-color: #000040;
+  color: #fff;
+  font: 13px / 1.35 'Times New Roman', 'Liberation Serif', serif;
+}
+
+/* Le fond étoilé n'arrive qu'à la fin, tracé de haut en bas comme un GIF */
+.st98::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(1px 1px at 12px 18px, #fff 99%, transparent),
+    radial-gradient(1px 1px at 47px 9px, #ffff80 99%, transparent),
+    radial-gradient(1.5px 1.5px at 33px 41px, #fff 99%, transparent),
+    radial-gradient(1px 1px at 58px 52px, #a0c8ff 99%, transparent),
+    radial-gradient(1px 1px at 8px 58px, #fff 99%, transparent),
+    linear-gradient(180deg, #000040, #00002a);
+  background-size: 64px 64px, 64px 64px, 64px 64px, 64px 64px, 64px 64px, 100% 100%;
+  opacity: 0;
+}
+
+.st98.has-bg::before {
+  opacity: 1;
+  animation: st98-raster 0.6s steps(6);
+}
+
+@keyframes st98-raster {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+
+.st98-block {
+  visibility: hidden;
+}
+
+.st98-block.is-in {
+  visibility: visible;
+  animation: st98-raster 0.35s steps(4);
+}
+
+.st98 a {
+  color: #00ffff;
+}
+
+.st98-title {
+  margin: 0;
+  color: #ffff00;
+  font: 700 26px / 1.1 'Comic Sans MS', 'Comic Neue', 'Chalkboard SE', 'Marker Felt', cursive;
+  text-align: center;
+  text-shadow: 2px 2px 0 #ff0000, 4px 4px 0 #800000;
+}
+
+.st98-star {
+  display: inline-block;
+  color: #ff80ff;
+  text-shadow: none;
+  animation: st98-blink 1s steps(1) infinite;
+}
+
+@keyframes st98-blink {
+  50% {
+    visibility: hidden;
+  }
+}
+
+.st98-sub {
+  margin: 4px 0 8px;
+  color: #80ff80;
+  font: italic 12px 'Times New Roman', 'Liberation Serif', serif;
+  text-align: center;
+}
+
+.st98-marquee {
+  position: relative;
+  height: 20px;
+  margin: 0 0 10px;
+  overflow: hidden;
+  border: 2px inset #808080;
+  background: #000;
+  color: #00ff00;
+  font: 700 13px / 16px 'Courier New', 'Liberation Mono', monospace;
+}
+
+.st98-marquee span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  animation: st98-marquee 16s linear infinite;
+}
+
+@keyframes st98-marquee {
+  from {
+    transform: translateX(560px);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.st98-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.st98-text p {
+  margin: 0 0 6px;
+}
+
+.st98-center {
+  text-align: center;
+}
+
+.st98-gobox {
+  margin: 12px 0 10px;
+}
+
+.st98-go {
+  color: #ffff00 !important;
+  font: 700 18px 'Comic Sans MS', 'Comic Neue', 'Chalkboard SE', cursive;
+  animation: st98-pulse 0.9s steps(1) infinite;
+}
+
+@keyframes st98-pulse {
+  50% {
+    color: #ff8000 !important;
+  }
+}
+
+.st98-hr {
+  height: 4px;
+  margin: 10px 0;
+  border: 0;
+  background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+}
+
+/* Les images : un cadre « en attente », puis l'image tracée de haut en bas */
+.st98-img {
+  display: inline-grid;
+  place-items: center;
+  vertical-align: middle;
+}
+
+.st98-img.is-pending {
+  border: 1px dashed #808080;
+  background: #c0c0c0;
+  color: #000 !important;
+  font: 10px var(--font-win) !important;
+  text-shadow: none !important;
+  animation: none !important;
+}
+
+.st98-img.is-pending > * {
+  display: none !important;
+}
+
+.st98-img.is-pending::before {
+  content: attr(data-alt);
+  padding: 2px 4px;
+}
+
+.st98-img.is-loaded {
+  animation: st98-raster 0.5s steps(6);
+}
+
+.st98-construction {
+  flex: none;
+  width: 132px;
+  height: 64px;
+  padding: 0;
+  overflow: hidden;
+  background: #ffd800;
+  box-shadow: inset 0 0 0 2px #000;
+  color: #000;
+  font: 900 12px Arial, 'Liberation Sans', sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.st98-construction i {
+  align-self: stretch;
+  justify-self: stretch;
+  height: 12px;
+  background: repeating-linear-gradient(45deg, #000 0 8px, #ffd800 8px 16px) 0 0 / 22.6px 12px;
+  animation: st98-stripes 0.6s linear infinite;
+}
+
+.st98-construction.is-loaded {
+  display: grid;
+  grid-template-rows: 12px 1fr 12px;
+}
+
+@keyframes st98-stripes {
+  to {
+    background-position: 22.6px 0;
+  }
+}
+
+.st98-new {
+  margin-left: 6px;
+  padding: 1px 5px;
+  background: #ff0000;
+  color: #ffff00;
+  font: 900 11px Arial, 'Liberation Sans', sans-serif;
+  transform: rotate(-6deg);
+  animation: st98-blink 0.7s steps(1) infinite;
+}
+
+.st98-counter {
+  margin: 4px 0 12px;
+  color: #ffffc0;
+}
+
+.st98-digits {
+  display: inline-flex;
+  gap: 1px;
+  margin: 0 3px;
+  padding: 2px;
+  background: #202020;
+  box-shadow: inset 0 0 0 1px #808080;
+}
+
+.st98-digits i {
+  display: grid;
+  place-items: center;
+  width: 13px;
+  height: 18px;
+  background: linear-gradient(180deg, #000, #333 50%, #000 50%, #222);
+  color: #fff;
+  font: 700 13px 'Courier New', 'Liberation Mono', monospace;
+  font-style: normal;
+}
+
+.st98-guestbook {
+  margin: 0 auto 10px;
+  padding: 8px 12px;
+  max-width: 520px;
+  border: 3px ridge #c0c0c0;
+  background: rgba(0, 0, 80, 0.6);
+}
+
+.st98-guestbook h2 {
+  margin: 0 0 6px;
+  color: #ff80ff;
+  font: 700 15px 'Comic Sans MS', 'Comic Neue', cursive;
+}
+
+.st98-guestbook ul {
+  margin: 0 0 6px;
+  padding-left: 18px;
+  font-size: 12px;
+}
+
+.st98-guestbook p {
+  margin: 0;
+}
+
+.st98-ring {
+  margin: 0 0 10px;
+  font-size: 12px;
+}
+
+.st98-badges {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.st98-badge {
+  width: 88px;
+  height: 31px;
+  padding: 0;
+  background: linear-gradient(180deg, #ffffff, #b0c4ff);
+  box-shadow: inset 0 0 0 1px #000;
+  color: #000080;
+  font: 9px / 1.05 Arial, 'Liberation Sans', sans-serif;
+  text-align: center;
+}
+
+.st98-badge.b2 {
+  background: linear-gradient(180deg, #fff6a0, #ffb000);
+  color: #602000;
+}
+
+.st98-badge.b3 {
+  background: linear-gradient(180deg, #c8ffc8, #20a020);
+  color: #002000;
+}
+
+.st98-foot {
+  margin: 0;
+  color: #a0a0ff;
+  font-size: 11px;
+  text-align: center;
+}
+
+.st98-mail {
+  display: inline-block;
+  color: #fff;
+  animation: st98-blink 1.2s steps(1) infinite;
+}
+
+/* ——— L'unité centrale de 1998 : moyen-tour, bouton rond ——— */
+
+.w98-props {
+  position: absolute;
+  inset: 0;
+}
+
+.w9x-tower-98 {
+  --t: calc(var(--u) * 0.86);
+  --case-a: #eeebe3;
+  --case-b: #dcd8cc;
+  --case-c: #c6c1b2;
+  --ink: #6a6658;
+  left: auto;
+  right: calc(var(--u) * 1);
+  width: calc(var(--t) * 30);
+  height: calc(var(--t) * 78);
+}
+
+.w9x-tower-98 .tw-top {
+  width: calc(var(--t) * 33.4);
+  clip-path: polygon(0 100%, calc(var(--t) * 30) 100%, 100% 0, calc(var(--t) * 3.4) 0);
+}
+
+.w9x-tower-98 .tw-front {
+  border-radius: calc(var(--t) * 2.4) calc(var(--t) * 2.4) calc(var(--t) * 0.5) calc(var(--t) * 0.5);
+}
+
+/* Façade arrondie, avec une vague sous les lecteurs */
+.w9x-tower-98 .tw-front::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--t) * 1.2);
+  right: calc(var(--t) * 1.2);
+  top: calc(var(--t) * 29);
+  height: calc(var(--t) * 3);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  box-shadow: inset 0 calc(var(--t) * 0.3) 0 rgba(95, 82, 58, 0.25), inset 0 calc(var(--t) * 0.55) 0 rgba(255, 255, 255, 0.55);
+}
+
+.w9x-tower-98 .tw-cd {
+  top: calc(var(--t) * 4.4);
+}
+
+.w9x-tower-98 .tw-bay {
+  left: calc(var(--t) * 2.2);
+  right: calc(var(--t) * 2.2);
+}
+
+.w9x-tower-98 .tw-floppy {
+  top: calc(var(--t) * 20.4);
+  left: calc(var(--t) * 6.4);
+  right: calc(var(--t) * 6.4);
+}
+
+.w9x-tower-98 .tw-panel {
+  top: calc(var(--t) * 44);
+  left: calc(var(--t) * 9);
+  right: calc(var(--t) * 9);
+  justify-content: center;
+}
+
+.w9x-tower-98 .tw-leds {
+  grid-template-columns: auto auto auto auto;
+  font-size: calc(var(--t) * 1.2);
+}
+
+.w9x-tower-98 .tw-buttons {
+  top: calc(var(--t) * 33.4);
+}
+
+.w9x-tower-98 .tw-power {
+  width: calc(var(--t) * 7.6);
+  height: calc(var(--t) * 7.6);
+  margin-left: calc(var(--t) * -3.8);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #f6f2ea, #d3cdbd 70%);
+  box-shadow:
+    0 0 0 calc(var(--t) * 0.5) #b9b3a2,
+    0 0 0 calc(var(--t) * 0.75) #8e8878,
+    0 calc(var(--t) * 0.6) calc(var(--t) * 1) rgba(0, 0, 0, 0.3),
+    inset 0 calc(var(--t) * 0.25) 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Pictogramme d'alimentation gravé dans le bouton rond */
+.w9x-tower-98 .tw-power::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--t) * 3);
+  height: calc(var(--t) * 3);
+  margin: calc(var(--t) * -1.5) 0 0 calc(var(--t) * -1.5);
+  border: calc(var(--t) * 0.4) solid #8b8473;
+  border-top-color: transparent;
+  border-radius: 50%;
+}
+
+.w9x-tower-98 .tw-power span {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--t) * 1.6);
+  width: calc(var(--t) * 0.45);
+  height: calc(var(--t) * 2.3);
+  margin-left: calc(var(--t) * -0.22);
+  padding: 0;
+  background: #8b8473;
+}
+
+.w9x-tower-98 .tw-power:active,
+.w9x-tower-98 .tw-power.is-pressed {
+  transform: translateY(calc(var(--t) * 0.25)) scale(0.97);
+  box-shadow:
+    0 0 0 calc(var(--t) * 0.5) #b9b3a2,
+    0 0 0 calc(var(--t) * 0.75) #8e8878,
+    inset 0 calc(var(--t) * 0.4) calc(var(--t) * 0.6) rgba(0, 0, 0, 0.25);
+}
+
+.w9x-tower-98.is-on .tw-power {
+  box-shadow:
+    0 0 0 calc(var(--t) * 0.5) #b9b3a2,
+    0 0 0 calc(var(--t) * 0.75) #8e8878,
+    0 0 calc(var(--t) * 1.4) rgba(92, 232, 114, 0.35),
+    0 calc(var(--t) * 0.6) calc(var(--t) * 1) rgba(0, 0, 0, 0.3),
+    inset 0 calc(var(--t) * 0.25) 0 rgba(255, 255, 255, 0.8);
+}
+
+.w9x-tower-98 .tw-reset {
+  left: calc(50% + var(--t) * 7);
+  top: calc(var(--t) * 2.6);
+}
+
+.w9x-tower-98 .tw-grille {
+  top: calc(var(--t) * 50);
+  bottom: calc(var(--t) * 9);
+  left: calc(var(--t) * 5);
+  right: calc(var(--t) * 5);
+  border-radius: calc(var(--t) * 3);
+  background:
+    repeating-linear-gradient(90deg, rgba(55, 46, 30, 0.45) 0 calc(var(--t) * 0.6), rgba(255, 255, 255, 0.3) calc(var(--t) * 0.6) calc(var(--t) * 0.8), transparent calc(var(--t) * 0.8) calc(var(--t) * 1.7));
+  -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, #000 60%, transparent 72%);
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, #000 60%, transparent 72%);
+}
+
+.w9x-tower-98 .tw-sticker {
+  top: auto;
+  right: calc(var(--t) * 2.2);
+  bottom: calc(var(--t) * 9);
+  background: linear-gradient(135deg, #1b2f7a, #3c5fd0);
+  color: #fff;
+}
+
+.w9x-tower-98 .tw-sticker b {
+  color: #ffd84a;
+}
+
+/* ——— Le téléphone fixe ——— */
+
+.w98-phone {
+  --p: var(--u);
+  position: absolute;
+  right: calc(var(--u) * 1.2);
+  bottom: calc(var(--u) * 0.2);
+  z-index: 3;
+  width: calc(var(--p) * 22);
+  height: calc(var(--p) * 13);
+  font-family: Arial, 'Liberation Sans', var(--font-ui);
+}
+
+.w98-ph-hit {
+  position: absolute;
+  inset: calc(var(--p) * -1);
+  z-index: 4;
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--p) * 2);
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.w98-ph-hit:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+}
+
+.w98-ph-base {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--p) * 9);
+  border-radius: calc(var(--p) * 2.2) calc(var(--p) * 2.2) calc(var(--p) * 1) calc(var(--p) * 1);
+  background: linear-gradient(180deg, #e6e3da, #cfcabd 60%, #b5b0a3);
+  box-shadow:
+    0 calc(var(--p) * 0.8) calc(var(--p) * 1.4) rgba(0, 0, 0, 0.45),
+    inset 0 calc(var(--p) * 0.3) 0 rgba(255, 255, 255, 0.7),
+    inset 0 calc(var(--p) * -0.4) 0 rgba(60, 55, 40, 0.18);
+}
+
+/* Le berceau du combiné */
+.w98-ph-base::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--p) * 2.4);
+  right: calc(var(--p) * 2.4);
+  top: calc(var(--p) * -0.8);
+  height: calc(var(--p) * 1.6);
+  border-radius: calc(var(--p) * 0.8);
+  background: linear-gradient(180deg, #9e998b, #c8c3b5);
+}
+
+.w98-ph-keys {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--p) * 1.6);
+  display: grid;
+  grid-template-columns: repeat(3, calc(var(--p) * 2.3));
+  gap: calc(var(--p) * 0.35) calc(var(--p) * 0.5);
+  padding: calc(var(--p) * 0.5) calc(var(--p) * 0.7);
+  border-radius: calc(var(--p) * 0.6);
+  background: #a9a497;
+  box-shadow: inset 0 calc(var(--p) * 0.15) calc(var(--p) * 0.3) rgba(0, 0, 0, 0.35);
+  transform: translateX(-50%);
+}
+
+.w98-ph-keys i {
+  display: grid;
+  place-items: center;
+  height: calc(var(--p) * 1.2);
+  border-radius: calc(var(--p) * 0.3);
+  background: linear-gradient(180deg, #fbfaf6, #dedad0);
+  box-shadow: 0 calc(var(--p) * 0.12) 0 #7d7869;
+  color: #3a3a40;
+  font-size: calc(var(--p) * 0.85);
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.w98-ph-led {
+  position: absolute;
+  right: calc(var(--p) * 2);
+  top: calc(var(--p) * 2.2);
+  width: calc(var(--p) * 0.9);
+  height: calc(var(--p) * 0.9);
+  border-radius: 50%;
+  background: #5a1b14;
+  box-shadow: inset 0 0 0 calc(var(--p) * 0.1) rgba(0, 0, 0, 0.4);
+}
+
+.w98-phone.is-lifted .w98-ph-led {
+  background: #ff3b26;
+  box-shadow: 0 0 calc(var(--p) * 0.8) #ff3b26;
+}
+
+.w98-ph-label {
+  position: absolute;
+  left: calc(var(--p) * 1.6);
+  bottom: calc(var(--p) * 1);
+  color: #7c7768;
+  font-size: calc(var(--p) * 0.8);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+/* Le combiné, posé en travers */
+.w98-ph-handset {
+  position: absolute;
+  left: calc(var(--p) * -0.6);
+  right: calc(var(--p) * -0.6);
+  top: 0;
+  height: calc(var(--p) * 4.4);
+  border-radius: calc(var(--p) * 2) calc(var(--p) * 2) calc(var(--p) * 1.2) calc(var(--p) * 1.2);
+  background: linear-gradient(180deg, #f1eee6, #d2cdc0 70%, #b9b4a6);
+  box-shadow: 0 calc(var(--p) * 0.4) calc(var(--p) * 0.6) rgba(0, 0, 0, 0.35), inset 0 calc(var(--p) * 0.25) 0 rgba(255, 255, 255, 0.8);
+  transform-origin: 85% 100%;
+  transition: transform 0.35s var(--ease);
+}
+
+.w98-ph-handset i {
+  position: absolute;
+  bottom: calc(var(--p) * -0.6);
+  width: calc(var(--p) * 5.4);
+  height: calc(var(--p) * 2.2);
+  border-radius: calc(var(--p) * 1) calc(var(--p) * 1) calc(var(--p) * 1.4) calc(var(--p) * 1.4);
+  background: linear-gradient(180deg, #d9d5ca, #b3ae9f);
+}
+
+.w98-ph-handset i:first-child {
+  left: calc(var(--p) * 0.6);
+}
+
+.w98-ph-handset i:last-child {
+  right: calc(var(--p) * 0.6);
+}
+
+.w98-ph-cord {
+  position: absolute;
+  left: calc(var(--p) * -2.2);
+  top: calc(var(--p) * 2.6);
+  width: calc(var(--p) * 2.2);
+  height: calc(var(--p) * 9.6);
+  overflow: visible;
+  transform-origin: 50% 100%;
+  transition: transform 0.35s var(--ease);
+}
+
+.w98-ph-cord path {
+  fill: none;
+  stroke: #b5b0a2;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.w98-phone.is-lifted .w98-ph-handset {
+  transform: translate(calc(var(--p) * -2), calc(var(--p) * -6)) rotate(-16deg);
+  animation: w98-ph-wobble 0.5s ease-in-out 0.35s 3;
+}
+
+.w98-phone.is-lifted .w98-ph-cord {
+  transform: scaleY(1.55) translateX(calc(var(--p) * -0.6));
+}
+
+@keyframes w98-ph-wobble {
+  50% {
+    transform: translate(calc(var(--p) * -2), calc(var(--p) * -6.6)) rotate(-11deg);
+  }
+}
+
+.w98-phone.is-ringing .w98-ph-handset {
+  animation: w98-ph-ring 0.12s linear infinite;
+}
+
+@keyframes w98-ph-ring {
+  50% {
+    transform: translate(0, calc(var(--p) * -0.4)) rotate(1.5deg);
+  }
+}
+
+/* Bulle de bande dessinée */
+.w98-bubble {
+  position: absolute;
+  right: calc(var(--p) * 2);
+  bottom: calc(100% + var(--p) * 6);
+  z-index: 6;
+  width: max-content;
+  max-width: calc(var(--p) * 30);
+  margin: 0;
+  padding: calc(var(--p) * 1.2) calc(var(--p) * 1.6);
+  border: max(1.5px, calc(var(--p) * 0.3)) solid #222;
+  border-radius: calc(var(--p) * 2.4);
+  background: #fff;
+  box-shadow: 0 calc(var(--p) * 0.6) calc(var(--p) * 1.4) rgba(0, 0, 0, 0.35);
+  color: #111;
+  font: 700 max(12px, calc(var(--p) * 1.9)) / 1.2 'Comic Sans MS', 'Comic Neue', 'Chalkboard SE', 'Segoe Print', 'Trebuchet MS', var(--font-ui);
+  pointer-events: none;
+}
+
+.w98-bubble::after {
+  content: '';
+  position: absolute;
+  right: calc(var(--p) * 5);
+  top: 100%;
+  border: calc(var(--p) * 1.2) solid transparent;
+  border-top-color: #222;
+  border-right-width: 0;
+}
+
+.w98-bubble.is-in {
+  animation: bubble-in 0.3s var(--ease);
+}
+
+@keyframes bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--p) * 1)) scale(0.85);
+  }
+}
+
+/* ——— Le CD d'abonnement ——— */
+
+.w98-cd {
+  --s: calc(var(--u) * 0.22);
+  position: absolute;
+  left: calc(var(--u) * 0.5);
+  bottom: calc(var(--u) * 1);
+  z-index: 2;
+  width: calc(var(--s) * 100);
+  height: calc(var(--s) * 100);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform: rotate(-5deg);
+  transform-origin: 50% 100%;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.25s var(--ease);
+}
+
+.w98-cd:hover {
+  transform: rotate(-5deg) translateY(calc(var(--s) * -3));
+}
+
+.w98-cd:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+}
+
+.w98-cd.is-nudge {
+  animation: cd-nudge 0.7s var(--ease) 3;
+}
+
+@keyframes cd-nudge {
+  30% {
+    transform: rotate(-9deg) translateY(calc(var(--s) * -6));
+  }
+  60% {
+    transform: rotate(-2deg) translateY(calc(var(--s) * -2));
+  }
+}
+
+/* Le disque irisé, qui dépasse de la pochette */
+.cd-disc {
+  position: absolute;
+  right: calc(var(--s) * 4);
+  top: calc(var(--s) * -24);
+  width: calc(var(--s) * 78);
+  height: calc(var(--s) * 78);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 10%, rgba(255, 255, 255, 0.85) 10.5% 15%, #c9ced6 15.5% 17%, transparent 17.5%),
+    conic-gradient(from 30deg, #e8ebf0, #f7c8ff, #b8f0ff, #fff6b0, #ffd0c0, #c8d8ff, #e8ebf0, #f0b8ff, #b8fff0, #e8ebf0);
+  box-shadow: inset 0 0 0 calc(var(--s) * 0.6) rgba(120, 125, 140, 0.6), 0 calc(var(--s) * 1) calc(var(--s) * 2) rgba(0, 0, 0, 0.3);
+}
+
+.cd-disc i {
+  position: absolute;
+  inset: 22%;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 18%, rgba(255, 255, 255, 0.7) 19% 21%, transparent 22%),
+    conic-gradient(from 200deg, #5b1aa8, #c4285e, #ff7a1a, #5b1aa8);
+  -webkit-mask-image: radial-gradient(circle, transparent 0 17%, #000 18%);
+  mask-image: radial-gradient(circle, transparent 0 17%, #000 18%);
+  opacity: 0.92;
+}
+
+.cd-sleeve {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: calc(var(--s) * 1.4);
+  background:
+    radial-gradient(ellipse 70% 55% at 75% 30%, rgba(255, 120, 220, 0.55), transparent 70%),
+    linear-gradient(160deg, #2a0a6b 0%, #5b1aa8 45%, #c4285e 80%, #ff7a1a 100%);
+  box-shadow:
+    0 calc(var(--s) * 1.5) calc(var(--s) * 3) rgba(0, 0, 0, 0.45),
+    inset 0 0 0 calc(var(--s) * 0.6) rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-family: Arial, 'Liberation Sans', var(--font-ui);
+  text-align: left;
+}
+
+/* Reflet de la pochette plastifiée */
+.cd-sleeve::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.28), transparent 32%, transparent 70%, rgba(255, 255, 255, 0.08));
+  pointer-events: none;
+}
+
+.cd-stars {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 70%, #fff 0 0.6%, transparent 0.8%),
+    radial-gradient(circle at 86% 62%, #fff 0 0.5%, transparent 0.7%),
+    radial-gradient(circle at 64% 12%, #fff 0 0.6%, transparent 0.8%),
+    radial-gradient(circle at 44% 62%, #ffe 0 0.4%, transparent 0.6%),
+    radial-gradient(circle at 92% 30%, #fff 0 0.4%, transparent 0.6%);
+}
+
+/* Le tunnel temporel en spirale */
+.cd-vortex {
+  position: absolute;
+  right: calc(var(--s) * -14);
+  top: calc(var(--s) * 18);
+  width: calc(var(--s) * 70);
+  height: calc(var(--s) * 70);
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.16) 0 8deg, transparent 8deg 24deg);
+  -webkit-mask-image: radial-gradient(circle, transparent 0 14%, #000 30%, transparent 70%);
+  mask-image: radial-gradient(circle, transparent 0 14%, #000 30%, transparent 70%);
+}
+
+.cd-brand {
+  position: absolute;
+  left: calc(var(--s) * 7);
+  top: calc(var(--s) * 7);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: calc(var(--s) * 2.4);
+  align-items: center;
+}
+
+.cd-logo {
+  grid-row: span 2;
+  width: calc(var(--s) * 13);
+  height: calc(var(--s) * 13);
+  border-radius: 50%;
+  background:
+    linear-gradient(#1b1150, #1b1150) 50% 26% / calc(var(--s) * 1.1) 34% no-repeat,
+    linear-gradient(#1b1150, #1b1150) 66% 50% / 30% calc(var(--s) * 1.1) no-repeat,
+    radial-gradient(circle, #fff 0 52%, #ffd34a 54% 66%, #ff8a00 68%);
+  box-shadow: calc(var(--s) * -3) calc(var(--s) * 1.5) 0 calc(var(--s) * -1.5) rgba(255, 210, 80, 0.6), calc(var(--s) * -6) calc(var(--s) * 3) 0 calc(var(--s) * -3) rgba(255, 210, 80, 0.35);
+}
+
+.cd-brand b {
+  font: 900 italic calc(var(--s) * 8.6) / 1 'Arial Black', Arial, 'Liberation Sans', sans-serif;
+  letter-spacing: -0.02em;
+  text-shadow: calc(var(--s) * 0.6) calc(var(--s) * 0.6) 0 #2a0a6b;
+}
+
+.cd-brand em {
+  color: #ffd84a;
+  font: 700 calc(var(--s) * 5.2) / 1.2 Arial, 'Liberation Sans', sans-serif;
+  font-style: normal;
+  letter-spacing: 0.42em;
+}
+
+.cd-burst {
+  position: absolute;
+  right: calc(var(--s) * 3);
+  top: calc(var(--s) * 30);
+  display: grid;
+  place-items: center;
+  width: calc(var(--s) * 37);
+  height: calc(var(--s) * 37);
+  padding-bottom: calc(var(--s) * 1);
+  background: radial-gradient(circle, #fff36b 0 50%, #ffcf1a 70%);
+  color: #c4102c;
+  font: 900 calc(var(--s) * 4.2) / 1.05 Arial, 'Liberation Sans', sans-serif;
+  text-align: center;
+  transform: rotate(12deg);
+}
+
+.cd-burst b {
+  display: block;
+  font-size: calc(var(--s) * 11);
+  line-height: 0.95;
+}
+
+.cd-kit {
+  position: absolute;
+  left: calc(var(--s) * 7);
+  top: calc(var(--s) * 34);
+  width: calc(var(--s) * 52);
+  font: 700 calc(var(--s) * 6) / 1.15 Arial, 'Liberation Sans', sans-serif;
+  text-shadow: 0 calc(var(--s) * 0.5) calc(var(--s) * 1) rgba(0, 0, 0, 0.4);
+}
+
+/* L'adresse : l'information à lire, bien contrastée */
+.cd-url {
+  position: absolute;
+  left: calc(var(--s) * 4);
+  right: calc(var(--s) * 4);
+  bottom: calc(var(--s) * 14);
+  padding: calc(var(--s) * 2.2) calc(var(--s) * 2);
+  border-radius: calc(var(--s) * 1.6);
+  background: #fff;
+  box-shadow: 0 calc(var(--s) * 0.8) calc(var(--s) * 1.6) rgba(0, 0, 0, 0.35);
+  color: #120a5c;
+  font: 900 calc(var(--s) * 7.4) / 1 Arial, 'Liberation Sans', sans-serif;
+  letter-spacing: -0.01em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.cd-fine {
+  position: absolute;
+  left: calc(var(--s) * 4);
+  right: calc(var(--s) * 4);
+  bottom: calc(var(--s) * 5);
+  color: rgba(255, 255, 255, 0.85);
+  font: 700 calc(var(--s) * 3.3) / 1.2 Arial, 'Liberation Sans', sans-serif;
+  text-align: center;
+}
+
+/* La pochette en grand, par-dessus la scène (lisible au téléphone) */
+.w98-cdzoom {
+  position: fixed;
+  inset: 0;
+  z-index: 44;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(6, 6, 10, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+  cursor: zoom-out;
+  outline: none;
+}
+
+.w98-cdzoom.is-open {
+  opacity: 1;
+}
+
+.w98-cdzoom-card {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  transform: scale(0.85) rotate(-4deg);
+  transition: transform 0.35s var(--ease);
+}
+
+.w98-cdzoom.is-open .w98-cdzoom-card {
+  transform: none;
+}
+
+.w98-cd.is-big {
+  --s: min(3.6px, calc((100vw - 48px) / 100), calc((100dvh - 220px) / 100));
+  position: relative;
+  left: auto;
+  bottom: auto;
+  margin-top: calc(var(--s) * 22);
+  transform: rotate(-3deg);
+  pointer-events: none;
+}
+
+.w98-cdzoom-hint {
+  margin: 0;
+  padding: 8px 14px;
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  background: var(--glass);
+  color: var(--fg);
+  font: 500 13.5px / 1.4 var(--font-ui);
+  text-align: center;
+}
+
+/* ——— Disposition des accessoires ——— */
+
+/* Téléphone en portrait : sur le bureau, sous le moniteur, de gauche à droite */
+.scene[data-compact='true'] .w98-cd {
+  --s: calc(var(--u) * 0.3);
+  left: calc(var(--u) * 5);
+  top: calc(var(--u) * 9);
+  bottom: auto;
+}
+
+.scene[data-compact='true'] .w98-phone {
+  --p: calc(var(--u) * 1.05);
+  left: calc(var(--u) * 42);
+  right: auto;
+  top: calc(var(--u) * 20);
+  bottom: auto;
+}
+
+.scene[data-compact='true'] .w9x-tower-98 {
+  --t: calc(var(--u) * 0.66);
+  right: calc(var(--u) * 7);
+  top: calc(var(--u) * 1);
+}
+
+.scene[data-compact='true'] .w98-bubble {
+  font-size: max(12px, calc(var(--p) * 1.7));
+}
+
+/* ——— Mouvement réduit ——— */
+
+@media (prefers-reduced-motion: reduce) {
+  .w9x-98 .w9x-menu,
+  .w98-modem i,
+  .w98-dial-dots i,
+  .st98-star,
+  .st98-go,
+  .st98-new,
+  .st98-mail,
+  .st98-construction i,
+  .w98-throbber.is-loading i,
+  .w98-phone.is-lifted .w98-ph-handset,
+  .w98-phone.is-ringing .w98-ph-handset,
+  .w98-cd.is-nudge {
+    animation: none !important;
+  }
+
+  .w98-modem i {
+    opacity: 1;
+  }
+
+  .st98-marquee span {
+    position: static;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    animation: none;
+  }
+
+  .w98-cd.is-nudge {
+    outline: 3px solid #ffd84a;
+    outline-offset: 4px;
+  }
+}
